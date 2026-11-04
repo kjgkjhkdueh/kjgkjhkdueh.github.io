@@ -1,348 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realistic Branching Lightning Storm</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #030511; /* Deep midnight void */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+<!-- Lightning Canvas & Glitch Overlay Container -->
+<div class="glitch-screen" id="glitchScreen">
+    <canvas id="glitchLightningCanvas"></canvas>
+    <div class="glitch-text" id="glitchTextDisplay" data-text="SYSTEM OVERRIDE">SYSTEM OVERRIDE</div>
+</div>
 
-        /* Ambient deep blue atmospheric gas clouds */
-        .sky-glow {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 30% 20%, #152663 0%, transparent 60%);
-            opacity: 0.4;
-            mix-blend-mode: screen;
-            pointer-events: none;
-            z-index: 1;
-        }
+<style>
+/* Fullscreen transparent engine canvas layer */
+.glitch-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none; /* Allows user to still click elements underneath */
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
 
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-        }
+#glitchLightningCanvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
 
-        /* Sleek Glassmorphism Control Panel */
-        .dashboard {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            background: rgba(10, 15, 30, 0.65);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px rgba(255, 255, 255, 0.08) solid;
-            border-radius: 16px;
-            padding: 20px 30px;
-            display: flex;
-            gap: 25px;
-            align-items: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
+/* Electric Blue & White Cyberpunk Glitch Text */
+.glitch-text {
+    position: relative;
+    color: #ffffff;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 5rem;
+    font-weight: 900;
+    letter-spacing: 5px;
+    text-shadow: 0 0 20px rgba(57, 168, 255, 0.8);
+    opacity: 0;
+    transform: scale(0.9);
+}
 
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+/* Active Glitch Animations triggered by JavaScript */
+.glitch-active .glitch-text {
+    animation: glitchBlur 0.4s infinite, glitchShake 0.15s infinite;
+    opacity: 1;
+    transform: scale(1);
+}
 
-        .control-group label {
-            color: #8da2bb;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
+@keyframes glitchBlur {
+    0%, 100% { filter: blur(0px); text-shadow: 0 0 20px #fff, 0 0 30px #2672da; }
+    50% { filter: blur(2px); text-shadow: -3px -3px 0 #00ffff, 3px 3px 0 #ff00ff; }
+}
 
-        .control-group input[type="range"] {
-            -webkit-appearance: none;
-            width: 130px;
-            height: 4px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 2px;
-            outline: none;
-        }
-
-        .control-group input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #4dadff;
-            cursor: pointer;
-            box-shadow: 0 0 8px #4dadff;
-        }
-
-        .btn-strike {
-            background: linear-gradient(135deg, #1e5299 0%, #2672da 100%);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(38, 114, 218, 0.4);
-            transition: all 0.2s;
-        }
-
-        .btn-strike:hover {
-            background: linear-gradient(135deg, #2672da 0%, #4dadff 100%);
-            box-shadow: 0 6px 20px rgba(77, 173, 255, 0.6);
-        }
-
-        /* Lightning plasma shockwave room illumination */
-        .flash-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #122c83;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 3;
-            mix-blend-mode: color-dodge;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="sky-glow"></div>
-    <div class="flash-overlay" id="flashOverlay"></div>
-    <canvas id="stormCanvas"></canvas>
-
-    <div class="dashboard">
-        <div class="control-group">
-            <label for="rainDensity">Rain Intensity</label>
-            <input type="range" id="rainDensity" min="0" max="500" value="250">
-        </div>
-        <div class="control-group">
-            <label for="branching">Branching Matrix</label>
-            <input type="range" id="branching" min="1" max="5" value="4" step="0.5">
-        </div>
-        <div class="control-group">
-            <label for="boltGlow">Plasma Glow</label>
-            <input type="range" id="boltGlow" min="10" max="40" value="30">
-        </div>
-        <button class="btn-strike" id="btnStrike">STRIKE NOW</button>
-    </div>
-
-    <script>
-        const canvas = document.getElementById('stormCanvas');
-        const ctx = canvas.getContext('2d');
-        const flashOverlay = document.getElementById('flashOverlay');
-
-        const inputRain = document.getElementById('rainDensity');
-        const inputBranch = document.getElementById('branching');
-        const inputGlow = document.getElementById('boltGlow');
-        const btnStrike = document.getElementById('btnStrike');
-
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
-
-        // Atmospheric Rain Particle Simulator
-        class Drop {
-            constructor() {
-                this.reset();
-                this.y = Math.random() * height;
-            }
-            reset() {
-                this.x = Math.random() * (width + 100) - 50;
-                this.y = -20;
-                this.length = Math.random() * 15 + 15;
-                this.speed = Math.random() * 12 + 18;
-                this.opacity = Math.random() * 0.12 + 0.04;
-            }
-            fall() {
-                this.y += this.speed;
-                this.x -= 1.5;
-                if (this.y > height || this.x < -20) this.reset();
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.strokeStyle = `rgba(174, 207, 238, ${this.opacity})`;
-                ctx.lineWidth = 1;
-                ctx.moveTo(this.x, this.y);
-                ctx.lineTo(this.x - 1.5, this.y + this.length);
-                ctx.stroke();
-            }
-        }
-
-        let rainArray = [];
-        function adjustRain() {
-            const targetCount = parseInt(inputRain.value);
-            while (rainArray.length < targetCount) rainArray.push(new Drop());
-            if (rainArray.length > targetCount) rainArray.splice(targetCount);
-        }
-
-        // Plasma Segment Model
-        class LightningSegment {
-            constructor(startX, startY, endX, endY, width) {
-                this.startX = startX;
-                this.startY = startY;
-                this.endX = endX;
-                this.endY = endY;
-                this.width = width;
-            }
-        }
-
-        // Multi-Pass High-Complexity Fractal Lightning Generator
-        class LightningBolt {
-            constructor() {
-                this.segments = [];
-                this.generationChance = parseFloat(inputBranch.value) * 0.14; 
-                this.initGlow = parseInt(inputGlow.value);
-                
-                // Starts diagonal burst from upper left grid, matching the user image layout
-                this.startX = Math.random() * (width * 0.3);
-                this.startY = 0;
-                
-                this.targetX = this.startX + (width * 0.5) + (Math.random() * 200 - 100);
-                this.targetY = height * 0.8 + (Math.random() * (height * 0.2));
-                
-                this.generatePattern(this.startX, this.startY, this.targetX, this.targetY, 7, 0);
-                this.maxLife = Math.floor(Math.random() * 8) + 14;
-                this.life = this.maxLife;
-                this.opacity = 1;
-                this.triggerFlash();
-            }
-
-            triggerFlash() {
-                flashOverlay.style.transition = 'none';
-                flashOverlay.style.opacity = '0.5';
-                setTimeout(() => {
-                    flashOverlay.style.transition = 'opacity 0.3s ease-out';
-                    flashOverlay.style.opacity = '0';
-                }, 50);
-            }
-
-            generatePattern(sx, sy, ex, ey, thickness, depth) {
-                if (depth > 6 || thickness < 0.4) return;
-
-                const dx = ex - sx;
-                const dy = ey - sy;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                const displacement = dist * 0.22; // Higher offset variance makes it zigzag jaggedly
-                
-                let midX = (sx + ex) / 2;
-                let midY = (sy + ey) / 2;
-                
-                const perpX = -dy / dist;
-                const perpY = dx / dist;
-                const offset = (Math.random() * 2 - 1) * displacement;
-                
-                midX += perpX * offset;
-                midY += perpY * offset;
-
-                if (depth === 5 || dist < 30) {
-                    this.segments.push(new LightningSegment(sx, sy, ex, ey, thickness));
-                } else {
-                    this.generatePattern(sx, sy, midX, midY, thickness, depth + 1);
-                    this.generatePattern(midX, midY, ex, ey, thickness * 0.75, depth + 1);
-                }
-
-                // Generates expansive, sprawling side branches mirroring your reference photo
-                if (Math.random() < this.generationChance && depth > 0 && depth < 5) {
-                    const angleOffset = (Math.random() * 0.7 + 0.3) * (Math.random() > 0.5 ? 1 : -1);
-                    const branchLength = dist * (Math.random() * 0.4 + 0.3);
-                    const origAngle = Math.atan2(dy, dx);
-                    const branchAngle = origAngle + angleOffset;
-                    
-                    const bx = midX + Math.cos(branchAngle) * branchLength;
-                    const by = midY + Math.sin(branchAngle) * branchLength;
-                    
-                    this.generatePattern(midX, midY, bx, by, thickness * 0.45, depth + 1);
-                }
-            }
-
-            update() {
-                this.life--;
-                if (this.life <= 0) return false;
-                this.opacity = this.life < 6 ? this.life / 6 : (Math.random() > 0.15 ? 1 : 0.25);
-                return true;
-            }
-
-            draw() {
-                ctx.save();
-                ctx.globalCompositeOperation = 'screen';
-                
-                // Color layer stack array: 1. Deep Royal Blue Aura -> 2. Vibrant Cyan Glow -> 3. White Core
-                const glowSizes = [this.initGlow * 1.8, this.initGlow * 0.6, 2];
-                const glowColors = ['rgba(12, 43, 214, ', 'rgba(57, 168, 255, ', 'rgba(255, 255, 255, '];
-
-                for (let p = 0; p < 3; p++) {
-                    ctx.shadowBlur = glowSizes[p];
-                    ctx.shadowColor = glowColors[p].replace(', ', ')');
-                    ctx.strokeStyle = glowColors[p] + (this.opacity * (p === 2 ? 1 : 0.65)) + ')';
-                    
-                    this.segments.forEach(seg => {
-                        ctx.beginPath();
-                        ctx.lineWidth = seg.width * (3.5 - p * 1.1);
-                        ctx.lineCap = 'round';
-                        ctx.lineJoin = 'round';
-                        ctx.moveTo(seg.startX, seg.startY);
-                        ctx.lineTo(seg.endX, seg.endY);
-                        ctx.stroke();
-                    });
-                }
-                ctx.restore();
-            }
-        }
-
-        let activeLightning = null;
-        let autoStrikeTimer = 0;
-
-        btnStrike.addEventListener('click', () => { activeLightning = new LightningBolt(); });
-        window.addEventListener('keydown', (e) => { if (e.code === 'Space') activeLightning = new LightningBolt(); });
-
-        function coreLoop() {
-            ctx.fillStyle = 'rgba(3, 5, 17, 0.28)'; // Leaving long glow trails on background clear
-            ctx.fillRect(0, 0, width, height);
-
-            adjustRain();
-            rainArray.forEach(drop => { drop.fall(); drop.draw(); });
-
-            if (activeLightning) {
-                if (activeLightning.update()) activeLightning.draw();
-                else activeLightning = null;
-            } else {
-                autoStrikeTimer++;
-                if (autoStrikeTimer > 100 && Math.random() < 0.018) {
-                    activeLightning = new LightningBolt();
-                    autoStrikeTimer = 0;
-                }
-            }
-            requestAnimationFrame(coreLoop);
-        }
-
-        adjustRain();
-        coreLoop();
-    </script>
-</body>
-</html>
+@keyframes glitchShake {
+    0% { transform: translate(2px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(0px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(2px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(2px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+</style>
