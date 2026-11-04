@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lightning Flash Effect</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #0b0c10; /* Dark stormy background */
+            overflow: hidden;
+            animation: lightning 6s ease-in-out infinite; 
+        }
+
+        @keyframes lightning {
+            0%, 70%, 72%, 75%, 100% {
+                background-color: #0b0c10;
+            }
+            71% {
+                background-color: #ffffff;
+            }
+            73%, 74% {
+                background-color: #e3f2fd;
+            }
+        }
+    </style>
+</head>
+<body>
+</body>
+</html>
