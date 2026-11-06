@@ -37,12 +37,22 @@
             overflow-y: auto;
             z-index: 10;
             box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+            transition: border-color 0.3s;
+        }
+
+        #control-panel.overload-ui {
+            border-right-color: var(--accent-overload);
         }
 
         h1, h2 {
             margin: 0;
             color: var(--accent-blue);
             text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        #control-panel.overload-ui h1, #control-panel.overload-ui h2 {
+            color: var(--accent-overload);
         }
 
         h1 { font-size: 1.4rem; border-bottom: 1px solid #333; padding-bottom: 5px;}
@@ -63,38 +73,35 @@
         .val-display {
             color: var(--accent-blue);
         }
+        #control-panel.overload-ui .val-display {
+            color: var(--accent-overload);
+        }
 
-        input[type="range"], input[type="text"], select, button {
+        input[type="range"] {
             width: 100%;
+            accent-color: var(--accent-blue);
+        }
+        #control-panel.overload-ui input[type="range"] {
+            accent-color: var(--accent-overload);
+        }
+
+        select, button, input[type="text"] {
             background: #0b0c10;
             color: #fff;
             border: 1px solid var(--accent-blue);
             padding: 8px;
             font-family: inherit;
-            box-sizing: border-box;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-
-        input[type="range"] {
-            padding: 0;
-            accent-color: var(--accent-blue);
+        #control-panel.overload-ui select, 
+        #control-panel.overload-ui button, 
+        #control-panel.overload-ui input[type="text"] {
+            border-color: var(--accent-overload);
         }
 
         input[type="text"] {
-            border-style: dashed;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-style: solid;
-            background: #151b24;
-        }
-
-        button {
-            cursor: pointer;
-            transition: all 0.2s ease;
+            cursor: text;
         }
 
         button:hover {
@@ -102,6 +109,11 @@
             color: var(--text-sub);
             font-weight: bold;
             box-shadow: 0 0 10px var(--accent-blue);
+        }
+        #control-panel.overload-ui button:hover {
+            background: var(--accent-overload);
+            color: #fff;
+            box-shadow: 0 0 10px var(--accent-overload);
         }
 
         #status-panel {
@@ -130,21 +142,20 @@
             height: 100%;
         }
 
-        .overload-banner {
+        #overload-badge {
             display: none;
-            color: var(--accent-overload);
-            font-weight: bold;
-            text-align: center;
-            animation: blink 0.5s infinite alternate;
-            font-size: 0.9rem;
-            border: 1px solid var(--accent-overload);
+            background: var(--accent-overload);
+            color: white;
             padding: 5px;
-            background: rgba(255, 0, 85, 0.1);
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            animation: blink 1s infinite;
         }
 
         @keyframes blink {
-            from { opacity: 0.3; }
-            to { opacity: 1; }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
         }
     </style>
 </head>
@@ -153,33 +164,30 @@
     <div id="control-panel">
         <h1>⚡ Discharge Engine</h1>
         <div>High-Precision Lightning Simulation Matrix</div>
+        <div id="overload-badge">⚠️ OVERLOAD ACTIVE ⚠️</div>
         
         <button id="strike-btn">Force Plasma Strike</button>
 
-        <h2>Matrix Overrides</h2>
+        <h2>Frequency & Matrix Distortion</h2>
         <div class="control-group">
-            <input type="text" id="override-code" placeholder="Enter System Code...">
-            <div id="overload-status" class="overload-banner">⚠️ SYSTEM OVERLOAD ACTIVE ⚠️</div>
-        </div>
-
-        <h2>Discharge Tuning</h2>
-        <div class="control-group">
-            <label>Lightning Type</label>
-            <select id="cfg-type">
-                <option value="standard">Standard Ground Strike</option>
-                <option value="forked">Heavy Forked Discharge</option>
-                <option value="sheet">Cloud-to-Cloud Sheet Plasma</option>
-                <option value="bead">Bead Chain Lightning</option>
-                <option value="ball">Ascending Ball Lightning</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <label>Lightning Per Second (LPS): <span class="val-display" id="lbl-lps">1.0</span></label>
+            <label>Lightning Per Second (LPS): <span class="val-display" id="lbl-lps">1.00</span></label>
             <input type="range" id="cfg-lps" min="0.1" max="15.0" step="0.1" value="1.0">
         </div>
         <div class="control-group">
             <label>Plasma Noise Level: <span class="val-display" id="lbl-noise">15px</span></label>
             <input type="range" id="cfg-noise" min="0" max="50" step="1" value="15">
+        </div>
+
+        <h2>Discharge Matrix Type</h2>
+        <div class="control-group">
+            <label>Lightning Mode</label>
+            <select id="cfg-mode">
+                <option value="ground">Standard Ground Strike</option>
+                <option value="forked">Heavy Forked Discharge</option>
+                <option value="sheet">Cloud-to-Cloud Sheet Plasma</option>
+                <option value="bead">Bead Chain Lightning</option>
+                <option value="ball">Ascending Ball Lightning</option>
+            </select>
         </div>
 
         <h2>Intensity Matrix</h2>
@@ -234,11 +242,16 @@
             <input type="range" id="cfg-ambient" min="0.0" max="1.0" step="0.05" value="0.45">
         </div>
 
+        <h2>Matrix Overrides Terminal</h2>
+        <div class="control-group">
+            <input type="text" id="terminal-input" placeholder="Enter override code...">
+        </div>
+
         <div id="status-panel">
-            <div>Engine Status: <span class="status-val" id="engine-status">OPERATIONAL</span></div>
+            <div>Engine Status: <span class="status-val" id="stat-engine">OPERATIONAL</span></div>
             <div>Total Segments: <span class="status-val" id="stat-segments">0</span></div>
             <div>Active Branches: <span class="status-val" id="stat-branches">0</span></div>
-            <div>Render Context: <span class="status-val" style="color:#a1c5ff;">Canvas2D Multi-Bake</span></div>
+            <div>Audio Context: <span class="status-val" id="stat-audio" style="color: #ffaa00;">Click screen to init</span></div>
         </div>
     </div>
 
@@ -253,13 +266,13 @@
         const strikeBtn = document.getElementById('strike-btn');
         const statSegments = document.getElementById('stat-segments');
         const statBranches = document.getElementById('stat-branches');
-        const codeInput = document.getElementById('override-code');
-        const overloadBanner = document.getElementById('overload-status');
-        const engineStatusText = document.getElementById('engine-status');
-        const lpsSlider = document.getElementById('cfg-lps');
-        const noiseSlider = document.getElementById('cfg-noise');
+        const statEngine = document.getElementById('stat-engine');
+        const statAudio = document.getElementById('stat-audio');
+        const terminalInput = document.getElementById('terminal-input');
+        const controlPanel = document.getElementById('control-panel');
+        const overloadBadge = document.getElementById('overload-badge');
 
-        const config = { type: 'standard', isOverload: false };
+        const config = { mode: 'ground', isOverload: false };
         
         function syncControl(id, configKey, suffix = '') {
             const input = document.getElementById(`cfg-${id}`);
@@ -275,6 +288,8 @@
             update();
         }
 
+        syncControl('lps', 'lps');
+        syncControl('noise', 'noise', 'px');
         syncControl('luminance', 'luminance');
         syncControl('glow', 'glowRadius', 'px');
         syncControl('width', 'coreWidth', 'px');
@@ -284,40 +299,118 @@
         syncControl('fork', 'forkProb');
         syncControl('depth', 'depth');
         syncControl('ambient', 'ambient');
-        syncControl('lps', 'lps');
-        syncControl('noise', 'noise', 'px');
 
         const colorSelect = document.getElementById('cfg-color');
         colorSelect.addEventListener('change', () => config.color = colorSelect.value);
         config.color = colorSelect.value;
 
-        const typeSelect = document.getElementById('cfg-type');
-        typeSelect.addEventListener('change', () => config.type = typeSelect.value);
-        config.type = typeSelect.value;
+        const modeSelect = document.getElementById('cfg-mode');
+        modeSelect.addEventListener('change', () => config.mode = modeSelect.value);
+        config.mode = modeSelect.value;
 
-        // Secret Code Unlock Execution
-        codeInput.addEventListener('input', () => {
-            if (codeInput.value.trim().toUpperCase() === 'LIGHTNINGISCOOL!') {
-                config.isOverload = true;
-                overloadBanner.style.display = 'block';
-                engineStatusText.textContent = 'SUPERCHARGED OVERLOAD';
-                engineStatusText.style.color = '#ff0055';
+        // --- SYNTHESIZED WEB AUDIO ENGINE ---
+        let audioCtx = null;
+
+        function initAudio() {
+            if (audioCtx) return;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                statAudio.textContent = "READY";
+                statAudio.style.color = "#00ffcc";
+            } catch(e) {
+                statAudio.textContent = "UNSUPPORTED";
+            }
+        }
+
+        window.addEventListener('click', initAudio);
+        window.addEventListener('keydown', initAudio);
+
+        function playThunderSynth(intensity) {
+            if (!audioCtx) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const now = audioCtx.currentTime;
+            
+            // 1. Crack / Snap (High-frequency explosion using white noise)
+            const bufferSize = audioCtx.sampleRate * 0.15; // 150ms crack
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            
+            const crackNode = audioCtx.createBufferSource(buffer);
+            crackNode.buffer = buffer;
+
+            const crackFilter = audioCtx.createBiquadFilter();
+            crackFilter.type = 'bandpass';
+            crackFilter.frequency.setValueAtTime(800, now);
+            crackFilter.Q.setValueAtTime(3, now);
+
+            const crackGain = audioCtx.createGain();
+            crackGain.gain.setValueAtTime(intensity * 0.4, now);
+            crackGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+            crackNode.connect(crackFilter);
+            crackFilter.connect(crackGain);
+            crackGain.connect(audioCtx.destination);
+            crackNode.start(now);
+
+            // 2. Deep Low Rumbles (Oscillators low-passed over time)
+            const rumblesCount = config.isOverload ? 5 : 3;
+            for(let i=0; i < rumblesCount; i++) {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                const filter = audioCtx.createBiquadFilter();
+
+                osc.type = Math.random() < 0.4 ? 'sawtooth' : 'triangle';
+                // Random deep infrastructure frequencies
+                osc.frequency.setValueAtTime(30 + Math.random() * 45, now);
                 
-                // Break input boundaries
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(180, now);
+                filter.frequency.exponentialRampToValueAtTime(20, now + 0.4 + Math.random()*0.8);
+
+                gain.gain.setValueAtTime(intensity * 0.7, now + Math.random()*0.02);
+                // Modular crunch factor
+                gain.gain.linearRampToValueAtTime(intensity * 0.3, now + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5 + Math.random() * 1.2);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start(now);
+                osc.stop(now + 2.0);
+            }
+        }
+
+        // Override Terminal
+        terminalInput.addEventListener('input', () => {
+            if (terminalInput.value.trim() === 'LIGHTNINGISCOOL!') {
+                config.isOverload = true;
+                statEngine.textContent = "OVERLOAD MATRIX UNLOCKED";
+                statEngine.style.color = "#ff0055";
+                controlPanel.classList.add('overload-ui');
+                overloadBadge.style.display = 'block';
+
+                const lpsSlider = document.getElementById('cfg-lps');
+                const noiseSlider = document.getElementById('cfg-noise');
                 lpsSlider.max = "60.0";
                 noiseSlider.max = "200";
-                
-                // Set Overload conditions
                 lpsSlider.value = "45.0";
                 noiseSlider.value = "120";
                 
-                // Trigger events to sync display text metrics
-                lpsSlider.dispatchEvent(new Event('input'));
-                noiseSlider.dispatchEvent(new Event('input'));
+                config.lps = 45.0;
+                config.noise = 120;
+                document.getElementById('lbl-lps').textContent = "45.00";
+                document.getElementById('lbl-noise').textContent = "120px";
                 
-                document.documentElement.style.setProperty('--accent-blue', '#ff0055');
-                codeInput.disabled = true;
-                codeInput.style.borderColor = '#ff0055';
+                terminalInput.value = "";
+                terminalInput.placeholder = "OVERLOAD STATE LOCKED";
+                terminalInput.disabled = true;
             }
         });
 
@@ -329,8 +422,8 @@
         resizeCanvas();
 
         let activeBakes = [];
+        let activeBalls = [];
         let metrics = { segments: 0, branches: 0 };
-        let lastDischargeTime = performance.now();
 
         class Segment {
             constructor(x1, y1, x2, y2, width) {
@@ -340,7 +433,6 @@
             }
         }
 
-        // Recursive lightning with atmospheric fractal noise
         function generateLightningBranch(x1, y1, x2, y2, maxDeviation, depth, width) {
             let segments = [];
             metrics.branches++;
@@ -355,15 +447,12 @@
                 let midX = (xa + xb) / 2;
                 let midY = (ya + yb) / 2;
 
-                // Combine fracture displacement with atmospheric scalar noise
-                let noiseOffset = (Math.random() - 0.5) * config.noise;
-                let fractureOffset = (Math.random() - 0.5) * currentDev;
-                midX += fractureOffset + noiseOffset;
+                let offset = (Math.random() - 0.5) * currentDev;
+                // Inject plasma noise matrix components
+                offset += (Math.random() - 0.5) * config.noise;
+                midX += offset;
 
-                // Type tuning changes probability arrays
-                let baseForkChance = config.type === 'forked' ? config.forkProb * 1.6 : config.forkProb;
-
-                if (Math.random() < baseForkChance && currentDepth > 1 && config.type !== 'bead') {
+                if (Math.random() < config.forkProb && currentDepth > 1) {
                     let forkX = midX + (Math.random() - 0.5) * currentDev * 0.8;
                     let forkY = midY + (Math.random() * (yb - ya) * 0.5);
                     
@@ -388,142 +477,129 @@
             metrics.segments = 0;
             metrics.branches = 0;
 
-            let strikeSegments = [];
-            let strikeColor = config.isOverload ? '#ff0055' : config.color;
+            const mode = config.mode;
+            const startX = canvas.width / 2 + (Math.random() - 0.5) * (canvas.width * 0.4);
+            const startY = 0;
+            let targetY = canvas.height * (config.verticalRange / 100);
+            let targetX = startX + (Math.random() - 0.5) * config.deviation;
 
-            // Type handling matrix pipelines
-            if (config.type === 'sheet') {
-                // Flash entire viewport bounding cloud matrices
+            // Trigger real-time sound layer tracking current scale configs
+            playThunderSynth(config.luminance);
+
+            if (mode === 'sheet') {
                 activeBakes.push({
-                    type: 'sheet',
+                    mode: 'sheet',
+                    x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+                    y: canvas.height * 0.25,
                     opacity: config.luminance,
                     ambientFlash: config.ambient * 1.5,
-                    color: strikeColor,
-                    metricsCache: { segments: 12, branches: 2 }
-                });
-                return;
-            } else if (config.type === 'ball') {
-                // Floating point anchor sphere
-                activeBakes.push({
-                    type: 'ball',
-                    x: canvas.width * 0.3 + Math.random() * canvas.width * 0.4,
-                    y: canvas.height * 0.8 - Math.random() * canvas.height * 0.4,
-                    radius: config.coreWidth * 4 + Math.random() * 20,
-                    opacity: config.luminance,
-                    ambientFlash: config.ambient * 0.2,
-                    color: strikeColor,
-                    metricsCache: { segments: 25, branches: 1 }
+                    metricsCache: { segments: 1, branches: 1 }
                 });
                 return;
             }
 
-            // Path-based strikes (Standard, Forked, Bead)
-            const startX = canvas.width / 2 + (Math.random() - 0.5) * (canvas.width * 0.6);
-            const startY = 0;
-            const targetY = canvas.height * (config.verticalRange / 100);
-            const targetX = startX + (Math.random() - 0.5) * (config.deviation * 1.5);
+            if (mode === 'ball') {
+                activeBalls.push({
+                    x: Math.random() * canvas.width,
+                    y: canvas.height,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: -2 - Math.random() * 3,
+                    radius: 10 + Math.random() * 20,
+                    opacity: config.luminance,
+                    color: config.color
+                });
+                return;
+            }
 
-            strikeSegments = generateLightningBranch(
+            let effectiveDepth = config.depth;
+            let effectiveFork = config.forkProb;
+            if (mode === 'forked') {
+                effectiveDepth = Math.min(8, config.depth + 2);
+                effectiveFork = Math.min(0.9, config.forkProb * 2);
+            }
+
+            let strikeSegments = generateLightningBranch(
                 startX, startY, targetX, targetY,
-                config.deviation, config.depth, config.coreWidth
+                config.deviation, effectiveDepth, config.coreWidth
             );
 
             activeBakes.push({
-                type: config.type, // 'standard', 'forked', or 'bead'
+                mode: mode,
                 segments: strikeSegments,
                 opacity: config.luminance,
                 ambientFlash: config.ambient,
-                color: strikeColor,
                 metricsCache: { ...metrics }
             });
         }
 
         strikeBtn.addEventListener('click', triggerPlasmaStrike);
 
-        function renderLoop(currentTime) {
-            // Background update loop frame clearing
-            ctx.fillStyle = `rgba(11, 12, 16, 0.25)`;
+        let lastStrikeTime = performance.now();
+
+        function renderLoop(timestamp) {
+            ctx.fillStyle = config.isOverload ? `rgba(20, 0, 10, 0.28)` : `rgba(11, 12, 16, 0.25)`;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Automated LPS delta loop clock tracking
-            let lpsInterval = 1000 / config.lps;
-            if (currentTime - lastDischargeTime >= lpsInterval) {
+            // LPS Realtime Timeline Scheduler
+            const msInterval = 1000 / config.lps;
+            if (timestamp - lastStrikeTime >= msInterval) {
                 triggerPlasmaStrike();
-                lastDischargeTime = currentTime;
+                lastStrikeTime = timestamp;
             }
 
             let engineSegments = 0;
             let engineBranches = 0;
 
+            // Render Active Lightning Matrices
             for (let i = activeBakes.length - 1; i >= 0; i--) {
                 let strike = activeBakes[i];
-                
                 engineSegments += strike.metricsCache.segments;
                 engineBranches += strike.metricsCache.branches;
 
-                // Process sky glow discharges
+                let activeColor = config.isOverload ? '#ff0055' : config.color;
+
                 if (strike.ambientFlash > 0.02) {
-                    ctx.fillStyle = `${strike.color}${Math.floor(strike.ambientFlash * 35).toString(16).padStart(2, '0')}`;
+                    ctx.fillStyle = `${activeColor}${Math.floor(strike.ambientFlash * 35).toString(16).padStart(2, '0')}`;
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     strike.ambientFlash *= 0.75; 
                 }
 
-                ctx.save();
-                ctx.globalAlpha = strike.opacity;
-
-                if (strike.type === 'sheet') {
-                    // Draw smooth overlapping sky fields
-                    let gradient = ctx.createRadialGradient(canvas.width/2, 0, 10, canvas.width/2, 0, canvas.height * 0.8);
-                    gradient.addColorStop(0, strike.color);
-                    gradient.addColorStop(1, 'transparent');
-                    ctx.fillStyle = gradient;
-                    ctx.globalAlpha = strike.opacity * 0.4;
+                if (strike.mode === 'sheet') {
+                    let grad = ctx.createRadialGradient(strike.x, strike.y, 10, strike.x, strike.y, 300);
+                    grad.addColorStop(0, `${activeColor}${Math.floor(strike.opacity * 255).toString(16).padStart(2, '0')}`);
+                    grad.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = grad;
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
-                } 
-                else if (strike.type === 'ball') {
-                    // Draw glowing orb structures
-                    ctx.shadowBlur = config.glowRadius * 1.5;
-                    ctx.shadowColor = strike.color;
-                    ctx.fillStyle = '#ffffff';
-                    ctx.beginPath();
-                    ctx.arc(strike.x, strike.y, strike.radius, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Spasm floating coordinates slightly
-                    strike.x += (Math.random() - 0.5) * 4;
-                    strike.y -= Math.random() * 2; // Floating upwards
-                } 
-                else {
-                    // Render paths (Standard, Forked, Bead)
-                    ctx.strokeStyle = strike.color;
+                    strike.opacity *= 0.92;
+                } else {
+                    ctx.save();
+                    ctx.globalAlpha = strike.opacity;
+                    ctx.strokeStyle = activeColor;
                     ctx.shadowBlur = config.glowRadius;
-                    ctx.shadowColor = strike.color;
+                    ctx.shadowColor = activeColor;
                     ctx.lineCap = 'round';
                     ctx.lineJoin = 'round';
 
-                    if (strike.type === 'bead') {
-                        // Pass 1: Radiating Glow
+                    ctx.beginPath();
+                    strike.segments.forEach(seg => {
+                        ctx.moveTo(seg.x1, seg.y1);
+                        ctx.lineTo(seg.x2, seg.y2);
+                    });
+
+                    if (strike.mode === 'bead') {
+                        ctx.restore();
+                        ctx.save();
+                        ctx.globalAlpha = strike.opacity;
+                        ctx.fillStyle = '#ffffff';
+                        ctx.shadowBlur = config.glowRadius;
+                        ctx.shadowColor = activeColor;
                         strike.segments.forEach(seg => {
                             ctx.beginPath();
-                            ctx.arc(seg.x1, seg.y1, config.coreWidth * 1.8, 0, Math.PI * 2);
-                            ctx.fillStyle = strike.color;
+                            ctx.arc(seg.x1, seg.y1, config.coreWidth * 1.5, 0, Math.PI * 2);
                             ctx.fill();
                         });
-                        // Pass 2: Sharp core dots
-                        ctx.shadowBlur = 0;
-                        strike.segments.forEach(seg => {
-                            ctx.beginPath();
-                            ctx.arc(seg.x1, seg.y1, config.coreWidth * 0.8, 0, Math.PI * 2);
-                            ctx.fillStyle = '#ffffff';
-                            ctx.fill();
-                        });
+                        ctx.restore();
                     } else {
-                        // Line-based (Standard or Forked)
-                        ctx.beginPath();
-                        strike.segments.forEach(seg => {
-                            ctx.moveTo(seg.x1, seg.y1);
-                            ctx.lineTo(seg.x2, seg.y2);
-                        });
                         ctx.lineWidth = config.glowRadius * 0.2;
                         ctx.stroke();
 
@@ -534,18 +610,42 @@
                             ctx.moveTo(seg.x1, seg.y1);
                             ctx.lineTo(seg.x2, seg.y2);
                         });
-                        ctx.lineWidth = seg => seg.width;
                         ctx.lineWidth = config.coreWidth;
                         ctx.stroke();
+                        ctx.restore();
                     }
+
+                    strike.opacity *= 0.86;
                 }
+
+                if (strike.opacity < 0.03) {
+                    activeBakes.splice(i, 1);
+                }
+            }
+
+            // Draw Floating Ball Lightning Instances
+            for (let i = activeBalls.length - 1; i >= 0; i--) {
+                let ball = activeBalls[i];
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+                
+                let activeColor = config.isOverload ? '#ff0055' : ball.color;
+
+                ctx.save();
+                ctx.globalAlpha = ball.opacity;
+                let bGrad = ctx.createRadialGradient(ball.x, ball.y, ball.radius * 0.1, ball.x, ball.y, ball.radius);
+                bGrad.addColorStop(0, '#ffffff');
+                bGrad.addColorStop(0.3, activeColor);
+                bGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = bGrad;
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fill();
                 ctx.restore();
 
-                // Fade step decay processing
-                strike.opacity *= config.isOverload ? 0.94 : 0.88;
-
-                if (strike.opacity < 0.05) {
-                    activeBakes.splice(i, 1);
+                ball.opacity *= 0.97;
+                if (ball.opacity < 0.05 || ball.y < -50) {
+                    activeBalls.splice(i, 1);
                 }
             }
 
@@ -556,7 +656,6 @@
         }
 
         requestAnimationFrame(renderLoop);
-        setTimeout(triggerPlasmaStrike, 400);
     </script>
 </body>
 </html>
