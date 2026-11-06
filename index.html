@@ -9,6 +9,7 @@
             --bg-color: #0b0c10;
             --panel-bg: #1f2833;
             --accent-blue: #45f3ff;
+            --accent-overload: #ff0055;
             --text-main: #c5a1ff;
             --text-sub: #111;
         }
@@ -24,7 +25,6 @@
             overflow: hidden;
         }
 
-        /* Control Panel Layout */
         #control-panel {
             width: 360px;
             background-color: var(--panel-bg);
@@ -64,27 +64,35 @@
             color: var(--accent-blue);
         }
 
-        input[type="range"], input[type="text"] {
+        input[type="range"], input[type="text"], select, button {
             width: 100%;
-            accent-color: var(--accent-blue);
-        }
-
-        input[type="text"] {
-            background: #0b0c10;
-            border: 1px solid var(--accent-blue);
-            color: var(--accent-blue);
-            padding: 6px;
-            font-family: inherit;
-            box-sizing: border-box;
-            text-transform: uppercase;
-        }
-
-        select, button {
             background: #0b0c10;
             color: #fff;
             border: 1px solid var(--accent-blue);
             padding: 8px;
             font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        input[type="range"] {
+            padding: 0;
+            accent-color: var(--accent-blue);
+        }
+
+        input[type="text"] {
+            border-style: dashed;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-style: solid;
+            background: #151b24;
+        }
+
+        button {
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -96,7 +104,6 @@
             box-shadow: 0 0 10px var(--accent-blue);
         }
 
-        /* Status Block */
         #status-panel {
             border-top: 1px solid #333;
             padding-top: 15px;
@@ -109,7 +116,6 @@
             color: #00ffcc;
         }
 
-        /* Viewport Canvas container */
         #viewport {
             flex-grow: 1;
             position: relative;
@@ -124,37 +130,49 @@
             height: 100%;
         }
 
-        #cheat-unlock-msg {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 255, 102, 0.2);
-            border: 1px solid #00ff66;
-            color: #00ff66;
-            padding: 10px 20px;
-            font-weight: bold;
+        .overload-banner {
             display: none;
-            z-index: 100;
-            animation: fadeOut 3s forwards;
+            color: var(--accent-overload);
+            font-weight: bold;
+            text-align: center;
+            animation: blink 0.5s infinite alternate;
+            font-size: 0.9rem;
+            border: 1px solid var(--accent-overload);
+            padding: 5px;
+            background: rgba(255, 0, 85, 0.1);
         }
 
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            70% { opacity: 1; }
-            100% { opacity: 0; display: none; }
+        @keyframes blink {
+            from { opacity: 0.3; }
+            to { opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <!-- UI Panel -->
     <div id="control-panel">
         <h1>⚡ Discharge Engine</h1>
         <div>High-Precision Lightning Simulation Matrix</div>
         
         <button id="strike-btn">Force Plasma Strike</button>
 
-        <h2>Frequency & Matrix Distortion</h2>
+        <h2>Matrix Overrides</h2>
+        <div class="control-group">
+            <input type="text" id="override-code" placeholder="Enter System Code...">
+            <div id="overload-status" class="overload-banner">⚠️ SYSTEM OVERLOAD ACTIVE ⚠️</div>
+        </div>
+
+        <h2>Discharge Tuning</h2>
+        <div class="control-group">
+            <label>Lightning Type</label>
+            <select id="cfg-type">
+                <option value="standard">Standard Ground Strike</option>
+                <option value="forked">Heavy Forked Discharge</option>
+                <option value="sheet">Cloud-to-Cloud Sheet Plasma</option>
+                <option value="bead">Bead Chain Lightning</option>
+                <option value="ball">Ascending Ball Lightning</option>
+            </select>
+        </div>
         <div class="control-group">
             <label>Lightning Per Second (LPS): <span class="val-display" id="lbl-lps">1.0</span></label>
             <input type="range" id="cfg-lps" min="0.1" max="15.0" step="0.1" value="1.0">
@@ -216,23 +234,15 @@
             <input type="range" id="cfg-ambient" min="0.0" max="1.0" step="0.05" value="0.45">
         </div>
 
-        <h2>Matrix Overrides</h2>
-        <div class="control-group">
-            <label>Enter Key Code:</label>
-            <input type="text" id="cheat-input" placeholder="ENTER CODE HERE">
-        </div>
-
         <div id="status-panel">
-            <div>Engine Status: <span class="status-val" id="stat-engine-mode">OPERATIONAL</span></div>
+            <div>Engine Status: <span class="status-val" id="engine-status">OPERATIONAL</span></div>
             <div>Total Segments: <span class="status-val" id="stat-segments">0</span></div>
             <div>Active Branches: <span class="status-val" id="stat-branches">0</span></div>
             <div>Render Context: <span class="status-val" style="color:#a1c5ff;">Canvas2D Multi-Bake</span></div>
         </div>
     </div>
 
-    <!-- Graphics Window -->
     <div id="viewport">
-        <div id="cheat-unlock-msg">LIGHTNING MODE OVERLOAD UNLOCKED!</div>
         <canvas id="lightningCanvas"></canvas>
     </div>
 
@@ -240,19 +250,17 @@
         const canvas = document.getElementById('lightningCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Dynamic Elements linking
         const strikeBtn = document.getElementById('strike-btn');
         const statSegments = document.getElementById('stat-segments');
         const statBranches = document.getElementById('stat-branches');
-        const statEngineMode = document.getElementById('stat-engine-mode');
-        const cheatInput = document.getElementById('cheat-input');
-        const cheatMsg = document.getElementById('cheat-unlock-msg');
+        const codeInput = document.getElementById('override-code');
+        const overloadBanner = document.getElementById('overload-status');
+        const engineStatusText = document.getElementById('engine-status');
+        const lpsSlider = document.getElementById('cfg-lps');
+        const noiseSlider = document.getElementById('cfg-noise');
 
-        // Config storage object
-        const config = {};
-        let superchargedMode = false;
+        const config = { type: 'standard', isOverload: false };
         
-        // Dynamic binding mapping
         function syncControl(id, configKey, suffix = '') {
             const input = document.getElementById(`cfg-${id}`);
             const label = document.getElementById(`lbl-${id}`);
@@ -267,9 +275,6 @@
             update();
         }
 
-        // Initialize and lock controls to system configurations
-        syncControl('lps', 'lps');
-        syncControl('noise', 'noise', 'px');
         syncControl('luminance', 'luminance');
         syncControl('glow', 'glowRadius', 'px');
         syncControl('width', 'coreWidth', 'px');
@@ -279,39 +284,43 @@
         syncControl('fork', 'forkProb');
         syncControl('depth', 'depth');
         syncControl('ambient', 'ambient');
+        syncControl('lps', 'lps');
+        syncControl('noise', 'noise', 'px');
 
-        // Handle Selector separately
         const colorSelect = document.getElementById('cfg-color');
         colorSelect.addEventListener('change', () => config.color = colorSelect.value);
         config.color = colorSelect.value;
 
-        // Code verification terminal
-        cheatInput.addEventListener('input', () => {
-            if (cheatInput.value.trim().toUpperCase() === 'LIGHTNINGISCOOL!') {
-                superchargedMode = true;
-                statEngineMode.textContent = 'SUPERCHARGED OVERLOAD';
-                statEngineMode.style.color = '#ff0055';
-                statEngineMode.style.textShadow = '0 0 10px #ff0055';
+        const typeSelect = document.getElementById('cfg-type');
+        typeSelect.addEventListener('change', () => config.type = typeSelect.value);
+        config.type = typeSelect.value;
+
+        // Secret Code Unlock Execution
+        codeInput.addEventListener('input', () => {
+            if (codeInput.value.trim().toUpperCase() === 'LIGHTNINGISCOOL!') {
+                config.isOverload = true;
+                overloadBanner.style.display = 'block';
+                engineStatusText.textContent = 'SUPERCHARGED OVERLOAD';
+                engineStatusText.style.color = '#ff0055';
                 
-                // Visual notification trigger
-                cheatMsg.style.display = 'block';
-                cheatInput.value = '';
-                cheatInput.blur();
+                // Break input boundaries
+                lpsSlider.max = "60.0";
+                noiseSlider.max = "200";
                 
-                // Override base maximums dynamically
-                document.getElementById('cfg-lps').max = "60.0";
-                document.getElementById('cfg-lps').value = "45.0";
-                config.lps = 45.0;
-                document.getElementById('lbl-lps').textContent = "45.0 (OVERLOAD)";
+                // Set Overload conditions
+                lpsSlider.value = "45.0";
+                noiseSlider.value = "120";
                 
-                document.getElementById('cfg-noise').max = "200";
-                document.getElementById('cfg-noise').value = "120";
-                config.noise = 120;
-                document.getElementById('lbl-noise').textContent = "120px (OVERLOAD)";
+                // Trigger events to sync display text metrics
+                lpsSlider.dispatchEvent(new Event('input'));
+                noiseSlider.dispatchEvent(new Event('input'));
+                
+                document.documentElement.style.setProperty('--accent-blue', '#ff0055');
+                codeInput.disabled = true;
+                codeInput.style.borderColor = '#ff0055';
             }
         });
 
-        // Auto Window Scaler
         function resizeCanvas() {
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight;
@@ -319,12 +328,10 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // System Global Trackers
         let activeBakes = [];
         let metrics = { segments: 0, branches: 0 };
-        let lastStrikeTime = performance.now();
+        let lastDischargeTime = performance.now();
 
-        // Point Node generation container
         class Segment {
             constructor(x1, y1, x2, y2, width) {
                 this.x1 = x1; this.y1 = y1;
@@ -333,7 +340,7 @@
             }
         }
 
-        // Core Procedural Displacement Engine Recursive Algorithm with Noise Map
+        // Recursive lightning with atmospheric fractal noise
         function generateLightningBranch(x1, y1, x2, y2, maxDeviation, depth, width) {
             let segments = [];
             metrics.branches++;
@@ -345,20 +352,18 @@
                     return;
                 }
 
-                // Midpoint computation
                 let midX = (xa + xb) / 2;
                 let midY = (ya + yb) / 2;
 
-                // Displace perpendicular to direction vector + inject high frequency atmospheric plasma noise
-                let offset = (Math.random() - 0.5) * currentDev;
-                let noiseX = (Math.random() - 0.5) * config.noise;
-                let noiseY = (Math.random() - 0.5) * (config.noise * 0.3);
-                
-                midX += offset + noiseX;
-                midY += noiseY;
+                // Combine fracture displacement with atmospheric scalar noise
+                let noiseOffset = (Math.random() - 0.5) * config.noise;
+                let fractureOffset = (Math.random() - 0.5) * currentDev;
+                midX += fractureOffset + noiseOffset;
 
-                // Stochastic Split Chance
-                if (Math.random() < config.forkProb && currentDepth > 1) {
+                // Type tuning changes probability arrays
+                let baseForkChance = config.type === 'forked' ? config.forkProb * 1.6 : config.forkProb;
+
+                if (Math.random() < baseForkChance && currentDepth > 1 && config.type !== 'bead') {
                     let forkX = midX + (Math.random() - 0.5) * currentDev * 0.8;
                     let forkY = midY + (Math.random() * (yb - ya) * 0.5);
                     
@@ -379,47 +384,73 @@
             return segments;
         }
 
-        // Fire Trigger Event Matrix Generator
         function triggerPlasmaStrike() {
             metrics.segments = 0;
             metrics.branches = 0;
 
-            const startX = canvas.width / 2 + (Math.random() - 0.5) * (superchargedMode ? canvas.width * 0.6 : 100);
+            let strikeSegments = [];
+            let strikeColor = config.isOverload ? '#ff0055' : config.color;
+
+            // Type handling matrix pipelines
+            if (config.type === 'sheet') {
+                // Flash entire viewport bounding cloud matrices
+                activeBakes.push({
+                    type: 'sheet',
+                    opacity: config.luminance,
+                    ambientFlash: config.ambient * 1.5,
+                    color: strikeColor,
+                    metricsCache: { segments: 12, branches: 2 }
+                });
+                return;
+            } else if (config.type === 'ball') {
+                // Floating point anchor sphere
+                activeBakes.push({
+                    type: 'ball',
+                    x: canvas.width * 0.3 + Math.random() * canvas.width * 0.4,
+                    y: canvas.height * 0.8 - Math.random() * canvas.height * 0.4,
+                    radius: config.coreWidth * 4 + Math.random() * 20,
+                    opacity: config.luminance,
+                    ambientFlash: config.ambient * 0.2,
+                    color: strikeColor,
+                    metricsCache: { segments: 25, branches: 1 }
+                });
+                return;
+            }
+
+            // Path-based strikes (Standard, Forked, Bead)
+            const startX = canvas.width / 2 + (Math.random() - 0.5) * (canvas.width * 0.6);
             const startY = 0;
             const targetY = canvas.height * (config.verticalRange / 100);
-            const targetX = startX + (Math.random() - 0.5) * (config.deviation * 0.5);
+            const targetX = startX + (Math.random() - 0.5) * (config.deviation * 1.5);
 
-            const strikeSegments = generateLightningBranch(
+            strikeSegments = generateLightningBranch(
                 startX, startY, targetX, targetY,
                 config.deviation, config.depth, config.coreWidth
             );
 
             activeBakes.push({
+                type: config.type, // 'standard', 'forked', or 'bead'
                 segments: strikeSegments,
                 opacity: config.luminance,
-                ambientFlash: superchargedMode ? config.ambient * 1.5 : config.ambient,
-                metricsCache: { ...metrics },
-                overrideColor: superchargedMode ? (Math.random() > 0.5 ? '#ff0055' : config.color) : config.color
+                ambientFlash: config.ambient,
+                color: strikeColor,
+                metricsCache: { ...metrics }
             });
         }
 
         strikeBtn.addEventListener('click', triggerPlasmaStrike);
 
-        // Core Multi-Bake Animation Tick Engine
         function renderLoop(currentTime) {
-            // Delta timing evaluation for accurate LPS automated pacing
-            const elapsed = currentTime - lastStrikeTime;
-            const intervalNeeded = 1000 / config.lps;
-
-            if (elapsed >= intervalNeeded) {
-                triggerPlasmaStrike();
-                // Avoid catch-up spirals on large lag frames
-                lastStrikeTime = currentTime - (elapsed % intervalNeeded);
-            }
-
-            // Frame clearing trails wipe
-            ctx.fillStyle = `rgba(11, 12, 16, ${superchargedMode ? '0.35' : '0.25'})`;
+            // Background update loop frame clearing
+            ctx.fillStyle = `rgba(11, 12, 16, 0.25)`;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Automated LPS delta loop clock tracking
+            let lpsInterval = 1000 / config.lps;
+            if (currentTime - lastDischargeTime >= lpsInterval) {
+                triggerPlasmaStrike();
+                lastDischargeTime = currentTime;
+            }
 
             let engineSegments = 0;
             let engineBranches = 0;
@@ -430,43 +461,88 @@
                 engineSegments += strike.metricsCache.segments;
                 engineBranches += strike.metricsCache.branches;
 
+                // Process sky glow discharges
                 if (strike.ambientFlash > 0.02) {
-                    ctx.fillStyle = `${strike.overrideColor}${Math.floor(Math.min(strike.ambientFlash, 1) * 35).toString(16).padStart(2, '0')}`;
+                    ctx.fillStyle = `${strike.color}${Math.floor(strike.ambientFlash * 35).toString(16).padStart(2, '0')}`;
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     strike.ambientFlash *= 0.75; 
                 }
 
                 ctx.save();
                 ctx.globalAlpha = strike.opacity;
-                ctx.strokeStyle = strike.overrideColor;
-                ctx.shadowBlur = config.glowRadius;
-                ctx.shadowColor = strike.overrideColor;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
 
-                // Pass 1: Radiating Plasma Glow Layout Map
-                ctx.beginPath();
-                strike.segments.forEach(seg => {
-                    ctx.moveTo(seg.x1, seg.y1);
-                    ctx.lineTo(seg.x2, seg.y2);
-                });
-                ctx.lineWidth = config.glowRadius * 0.2;
-                ctx.stroke();
+                if (strike.type === 'sheet') {
+                    // Draw smooth overlapping sky fields
+                    let gradient = ctx.createRadialGradient(canvas.width/2, 0, 10, canvas.width/2, 0, canvas.height * 0.8);
+                    gradient.addColorStop(0, strike.color);
+                    gradient.addColorStop(1, 'transparent');
+                    ctx.fillStyle = gradient;
+                    ctx.globalAlpha = strike.opacity * 0.4;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                } 
+                else if (strike.type === 'ball') {
+                    // Draw glowing orb structures
+                    ctx.shadowBlur = config.glowRadius * 1.5;
+                    ctx.shadowColor = strike.color;
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(strike.x, strike.y, strike.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Spasm floating coordinates slightly
+                    strike.x += (Math.random() - 0.5) * 4;
+                    strike.y -= Math.random() * 2; // Floating upwards
+                } 
+                else {
+                    // Render paths (Standard, Forked, Bead)
+                    ctx.strokeStyle = strike.color;
+                    ctx.shadowBlur = config.glowRadius;
+                    ctx.shadowColor = strike.color;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
 
-                // Pass 2: High Concentration Core Beam Overlay Layer
-                ctx.shadowBlur = 0; 
-                ctx.strokeStyle = '#ffffff'; 
-                ctx.beginPath();
-                strike.segments.forEach(seg => {
-                    ctx.moveTo(seg.x1, seg.y1);
-                    ctx.lineTo(seg.x2, seg.y2);
-                });
-                ctx.lineWidth = config.coreWidth;
-                ctx.stroke();
+                    if (strike.type === 'bead') {
+                        // Pass 1: Radiating Glow
+                        strike.segments.forEach(seg => {
+                            ctx.beginPath();
+                            ctx.arc(seg.x1, seg.y1, config.coreWidth * 1.8, 0, Math.PI * 2);
+                            ctx.fillStyle = strike.color;
+                            ctx.fill();
+                        });
+                        // Pass 2: Sharp core dots
+                        ctx.shadowBlur = 0;
+                        strike.segments.forEach(seg => {
+                            ctx.beginPath();
+                            ctx.arc(seg.x1, seg.y1, config.coreWidth * 0.8, 0, Math.PI * 2);
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fill();
+                        });
+                    } else {
+                        // Line-based (Standard or Forked)
+                        ctx.beginPath();
+                        strike.segments.forEach(seg => {
+                            ctx.moveTo(seg.x1, seg.y1);
+                            ctx.lineTo(seg.x2, seg.y2);
+                        });
+                        ctx.lineWidth = config.glowRadius * 0.2;
+                        ctx.stroke();
+
+                        ctx.shadowBlur = 0; 
+                        ctx.strokeStyle = '#ffffff'; 
+                        ctx.beginPath();
+                        strike.segments.forEach(seg => {
+                            ctx.moveTo(seg.x1, seg.y1);
+                            ctx.lineTo(seg.x2, seg.y2);
+                        });
+                        ctx.lineWidth = seg => seg.width;
+                        ctx.lineWidth = config.coreWidth;
+                        ctx.stroke();
+                    }
+                }
                 ctx.restore();
 
-                // Exponential decay calculation
-                strike.opacity *= superchargedMode ? 0.82 : 0.88;
+                // Fade step decay processing
+                strike.opacity *= config.isOverload ? 0.94 : 0.88;
 
                 if (strike.opacity < 0.05) {
                     activeBakes.splice(i, 1);
@@ -479,8 +555,8 @@
             requestAnimationFrame(renderLoop);
         }
 
-        // Fire rendering loop execution
         requestAnimationFrame(renderLoop);
+        setTimeout(triggerPlasmaStrike, 400);
     </script>
 </body>
 </html>
