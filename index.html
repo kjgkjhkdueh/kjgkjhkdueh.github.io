@@ -1,637 +1,700 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Procedural Lightning Matrix Engine Pro - Ragdoll & Physics Sandbox</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: #06080f;
-      color: #e2e8f0;
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      overflow: hidden;
-      display: flex;
-      height: 100vh;
-    }
-    #sidebar {
-      width: 310px;
-      background: rgba(15, 23, 42, 0.92);
-      border-right: 1px solid #1e293b;
-      padding: 16px;
-      overflow-y: auto;
-      z-index: 10;
-      backdrop-filter: blur(8px);
-    }
-    h1 {
-      font-size: 16px;
-      color: #38bdf8;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-    }
-    .subtitle {
-      font-size: 11px;
-      color: #94a3b8;
-      margin-bottom: 14px;
-    }
-    .section {
-      border-top: 1px solid #1e293b;
-      padding-top: 10px;
-      margin-top: 10px;
-    }
-    .section-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: #7dd3fc;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin-bottom: 8px;
-    }
-    .btn-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
-    button {
-      background: #1e293b;
-      color: #e2e8f0;
-      border: 1px solid #334155;
-      padding: 7px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    button:hover {
-      background: #38bdf8;
-      color: #06080f;
-      border-color: #38bdf8;
-      font-weight: 600;
-    }
-    button.primary {
-      grid-column: span 2;
-      background: #0284c7;
-      border-color: #38bdf8;
-      color: #fff;
-      font-weight: 600;
-    }
-    button.primary:hover {
-      background: #38bdf8;
-      color: #06080f;
-    }
-    button.danger {
-      background: #450a0a;
-      border-color: #991b1b;
-      color: #fca5a5;
-    }
-    button.danger:hover {
-      background: #ef4444;
-      color: #fff;
-    }
-    .control-row {
-      margin-bottom: 10px;
-    }
-    .control-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      color: #cbd5e1;
-      margin-bottom: 3px;
-    }
-    input[type="range"] {
-      width: 100%;
-      accent-color: #38bdf8;
-    }
-    select {
-      width: 100%;
-      background: #1e293b;
-      color: #e2e8f0;
-      border: 1px solid #334155;
-      padding: 5px;
-      border-radius: 4px;
-      font-size: 12px;
-    }
-    #viewport {
-      flex: 1;
-      position: relative;
-      cursor: crosshair;
-    }
-    canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-    #hud {
-      position: absolute;
-      bottom: 12px;
-      right: 16px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid #1e293b;
-      padding: 8px 12px;
-      border-radius: 4px;
-      font-size: 11px;
-      color: #94a3b8;
-      pointer-events: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Procedural Lightning Matrix Engine Pro - Ragdoll & Physics Sandbox</title>
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            user-select: none;
+        }
+        body { 
+            background: #020205; 
+            color: #f1f5f9; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            overflow: hidden; 
+            display: flex; 
+            height: 100vh; 
+        }
+        #sidebar { 
+            width: 330px; 
+            background: rgba(6, 8, 16, 0.75); 
+            border-right: 1px solid rgba(56, 189, 248, 0.15); 
+            padding: 24px 20px; 
+            overflow-y: auto; 
+            z-index: 10; 
+            backdrop-filter: blur(16px);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        #sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        #sidebar::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.3);
+            border-radius: 2px;
+        }
+        .brand {
+            border-bottom: 1px dashed rgba(56, 189, 248, 0.2);
+            padding-bottom: 15px;
+        }
+        h1 { 
+            font-size: 18px; 
+            font-weight: 800;
+            color: #38bdf8; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            margin-bottom: 6px; 
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+        .subtitle { 
+            font-size: 11px; 
+            color: #64748b; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .section { 
+            background: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(255,255,255,0.03);
+            padding: 14px; 
+            border-radius: 8px;
+        }
+        .section-title { 
+            font-size: 11px; 
+            font-weight: 800; 
+            color: #7dd3fc; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin-bottom: 12px; 
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(125,211,252,0.2), transparent);
+        }
+        .btn-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 8px; 
+        }
+        button { 
+            background: rgba(30, 41, 59, 0.7); 
+            color: #cbd5e1; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            padding: 9px 12px; 
+            border-radius: 6px; 
+            font-size: 12px; 
+            font-weight: 500;
+            cursor: pointer; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        button:hover { 
+            background: rgba(56, 189, 248, 0.15); 
+            color: #fff; 
+            border-color: #38bdf8; 
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button.primary { 
+            grid-column: span 2; 
+            background: linear-gradient(135deg, #0284c7, #0369a1); 
+            border-color: #38bdf8; 
+            color: #fff; 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        }
+        button.primary:hover { 
+            background: linear-gradient(135deg, #009bf3, #0284c7); 
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.5);
+            border-color: #f0fdfa;
+        }
+        button.danger { 
+            background: rgba(69, 10, 10, 0.4); 
+            border-color: rgba(153, 27, 27, 0.4); 
+            color: #fca5a5; 
+        }
+        button.danger:hover { 
+            background: #7f1d1d; 
+            border-color: #ef4444;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+        }
+        .control-row { 
+            margin-bottom: 12px; 
+        }
+        .control-row:last-child {
+            margin-bottom: 0;
+        }
+        .control-label { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 11px; 
+            color: #94a3b8; 
+            margin-bottom: 6px; 
+        }
+        .control-label span:last-child {
+            font-family: monospace;
+            color: #38bdf8;
+            font-weight: 600;
+        }
+        input[type="range"] { 
+            width: 100%; 
+            accent-color: #38bdf8; 
+            background: #0f172a;
+            height: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        select { 
+            width: 100%; 
+            background: #0f172a; 
+            color: #e2e8f0; 
+            border: 1px solid rgba(255,255,255,0.08); 
+            padding: 8px 10px; 
+            border-radius: 6px; 
+            font-size: 12px; 
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        select:focus {
+            border-color: #38bdf8;
+        }
+        #viewport { 
+            flex: 1; 
+            position: relative; 
+            cursor: crosshair; 
+        }
+        canvas { 
+            display: block; 
+            width: 100%; 
+            height: 100%; 
+        }
+        #hud { 
+            position: absolute; 
+            bottom: 20px; 
+            right: 20px; 
+            background: rgba(6, 8, 16, 0.75); 
+            border: 1px solid rgba(56, 189, 248, 0.2); 
+            padding: 10px 16px; 
+            border-radius: 6px; 
+            font-size: 11px; 
+            color: #94a3b8; 
+            pointer-events: none; 
+            backdrop-filter: blur(8px);
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            font-family: monospace;
+        }
+        #hud span {
+            color: #38bdf8;
+        }
+    </style>
 </head>
 <body>
-
-<div id="sidebar">
-  <h1>⚡ Discharge Matrix</h1>
-  <div class="subtitle">Procedural Lightning + 2D Ragdoll & Physics Sandbox</div>
-
-  <button class="primary" onclick="forceStrike()">⚡ Force Plasma Strike</button>
-
-  <div class="section">
-    <div class="section-title">Spawn World Entities</div>
-    <div class="btn-grid">
-      <button onclick="spawnPerson()">+ Person (Ragdoll)</button>
-      <button onclick="spawnCar()">+ Car</button>
-      <button onclick="spawnTree()">+ Tree</button>
-      <button onclick="spawnCrowd()">+ Crowd & Traffic</button>
-      <button class="danger" style="grid-column: span 2;" onclick="clearEntities()">Clear All Entities</button>
+    <div id="sidebar">
+        <div class="brand">
+            <h1>⚡ Quantum Matrix</h1>
+            <div class="subtitle">Volumetric Discharge & Particle Sandbox</div>
+        </div>
+        
+        <button class="primary" onclick="forceStrike()">⚡ Emit Core Discharge</button>
+        
+        <div class="section">
+            <div class="section-title">Animate Entities</div>
+            <div class="btn-grid">
+                <button onclick="spawnPerson()">+ Biomass Unit</button>
+                <button onclick="spawnCar()">+ Kinetic Rover</button>
+                <button onclick="spawnTree()">+ Carbon Form</button>
+                <button onclick="spawnCrowd()">+ Populate Mesh</button>
+                <button class="danger" style="grid-column: span 2; margin-top: 4px;" onclick="clearEntities()">☢ Purge Simulation Matrix</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Excitation Mechanics</div>
+            <div class="control-row">
+                <div class="control-label"><span>Auto Discharge Hertz</span><span id="lpsVal">1.2</span></div>
+                <input type="range" id="lps" min="0" max="6" step="0.2" value="1.2" oninput="document.getElementById('lpsVal').textContent=this.value">
+            </div>
+            <div class="control-row">
+                <div class="control-label"><span>Glow Corona Field</span><span id="glowVal">25px</span></div>
+                <input type="range" id="glow" min="5" max="60" step="1" value="25" oninput="document.getElementById('glowVal').textContent=this.value+'px'">
+            </div>
+            <div class="control-row">
+                <div class="control-label"><span>Plasma Arc Thickness</span><span id="widthVal">3.5px</span></div>
+                <input type="range" id="coreWidth" min="1" max="8" step="0.5" value="3.5" oninput="document.getElementById('widthVal').textContent=this.value+'px'">
+            </div>
+            <div class="control-row">
+                <div class="control-label"><span>Shockwave Kinetic Multiplier</span><span id="forceVal">1.0x</span></div>
+                <input type="range" id="blastForce" min="0.2" max="3.0" step="0.1" value="1.0" oninput="document.getElementById('forceVal').textContent=this.value+'x'">
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Ionization Field</div>
+            <div class="control-row">
+                <div class="control-label"><span>Branching Fork Frequency</span><span id="forkVal">0.30</span></div>
+                <input type="range" id="forkProb" min="0" max="0.7" step="0.05" value="0.30" oninput="document.getElementById('forkVal').textContent=this.value">
+            </div>
+            <div class="control-row">
+                <div class="control-label"><span>Spectral Wavelength Profile</span></div>
+                <select id="colorProfile">
+                    <option value="sapphire">Electric Sapphire Blue</option>
+                    <option value="violet">Superheated Violet Plasma</option>
+                    <option value="white">Hyperthermic Clean White</option>
+                    <option value="yellow">Solar Ionized Yellow</option>
+                    <option value="green">Gamma Radiated Green</option>
+                    <option value="rainbow">Spectral Rolling Rainbow</option>
+                </select>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Intensity & Frequency</div>
-    <div class="control-row">
-      <div class="control-label"><span>Auto Lightning / Sec (LPS)</span><span id="lpsVal">1.2</span></div>
-      <input type="range" id="lps" min="0" max="6" step="0.2" value="1.2" oninput="document.getElementById('lpsVal').textContent=this.value">
+    
+    <div id="viewport">
+        <canvas id="canvas"></canvas>
+        <div id="hud"><span>[Left-Click Window]</span> Target Arc Discharge • Units react dynamically to explosive overpressures</div>
     </div>
-    <div class="control-row">
-      <div class="control-label"><span>Glow Envelope Radius</span><span id="glowVal">25px</span></div>
-      <input type="range" id="glow" min="5" max="60" step="1" value="25" oninput="document.getElementById('glowVal').textContent=this.value+'px'">
-    </div>
-    <div class="control-row">
-      <div class="control-label"><span>Dielectric Core Width</span><span id="widthVal">3.5px</span></div>
-      <input type="range" id="coreWidth" min="1" max="8" step="0.5" value="3.5" oninput="document.getElementById('widthVal').textContent=this.value+'px'">
-    </div>
-    <div class="control-row">
-      <div class="control-label"><span>Shockwave Blast Force</span><span id="forceVal">1.0x</span></div>
-      <input type="range" id="blastForce" min="0.2" max="3.0" step="0.1" value="1.0" oninput="document.getElementById('forceVal').textContent=this.value+'x'">
-    </div>
-  </div>
 
-  <div class="section">
-    <div class="section-title">Spatial & Spectrum</div>
-    <div class="control-row">
-      <div class="control-label"><span>Stochastic Fork Probability</span><span id="forkVal">0.30</span></div>
-      <input type="range" id="forkProb" min="0" max="0.7" step="0.05" value="0.30" oninput="document.getElementById('forkVal').textContent=this.value">
-    </div>
-    <div class="control-row">
-      <div class="control-label"><span>Ionization Color Spectrum</span></div>
-      <select id="colorProfile">
-        <option value="sapphire">Electric Sapphire Blue</option>
-        <option value="violet">Superheated Violet Plasma</option>
-        <option value="white">Hyperthermic Clean White</option>
-        <option value="yellow">Solar Ionized Yellow</option>
-        <option value="green">Gamma Radiated Green</option>
-        <option value="rainbow">Spectral Rolling Rainbow</option>
-      </select>
-    </div>
-  </div>
-</div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let W = canvas.width = document.getElementById('viewport').clientWidth;
+        let H = canvas.height = document.getElementById('viewport').clientHeight;
+        
+        window.addEventListener('resize', () => {
+            W = canvas.width = document.getElementById('viewport').clientWidth;
+            H = canvas.height = document.getElementById('viewport').clientHeight;
+        });
 
-<div id="viewport">
-  <canvas id="canvas"></canvas>
-  <div id="hud">Click anywhere on canvas to strike • Ragdolls, Cars & Trees react to shockwaves</div>
-</div>
+        const GRAVITY = 0.45;
+        const GROUND_Y = () => H - 45;
+        
+        let points = [];
+        let sticks = [];
+        let entities = [];
+        let bolts = [];
+        let particles = [];
+        let ambientGrid = [];
+        let flashOpacity = 0;
+        let flashColor = '#fff';
+        let hueCycle = 200;
 
-<script>
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-let W = canvas.width = document.getElementById('viewport').clientWidth;
-let H = canvas.height = document.getElementById('viewport').clientHeight;
+        function initGrid() {
+            ambientGrid = [];
+            for(let i = 0; i < 45; i++) {
+                ambientGrid.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    r: Math.random() * 1.5 + 0.5,
+                    alpha: Math.random() * 0.4 + 0.1,
+                    speed: Math.random() * 0.2 + 0.05
+                });
+            }
+        }
+        initGrid();
 
-window.addEventListener('resize', () => {
-  W = canvas.width = document.getElementById('viewport').clientWidth;
-  H = canvas.height = document.getElementById('viewport').clientHeight;
-});
+        class Point {
+            constructor(x, y, pinned = false, radius = 4) {
+                this.x = x;
+                this.y = y;
+                this.oldx = x;
+                this.oldy = y;
+                this.pinned = pinned;
+                this.radius = radius;
+            }
+            update() {
+                if (this.pinned) return;
+                let vx = (this.x - this.oldx) * 0.985;
+                let vy = (this.y - this.oldy) * 0.985;
+                this.oldx = this.x;
+                this.oldy = this.y;
+                this.x += vx;
+                this.y += vy + GRAVITY;
 
-const GRAVITY = 0.45;
-const GROUND_Y = () => H - 36;
+                const floor = GROUND_Y() - this.radius;
+                if (this.y > floor) {
+                    this.y = floor;
+                    this.oldy = this.y + vy * 0.35;
+                    this.oldx = this.x - vx * 0.85;
+                }
+                if (this.x < this.radius) {
+                    this.x = this.radius;
+                    this.oldx = this.x + vx * 0.5;
+                }
+                if (this.x > W - this.radius) {
+                    this.x = W - this.radius;
+                    this.oldx = this.x + vx * 0.5;
+                }
+            }
+        }
 
-// --- SELF-CONTAINED VERLET PHYSICS & RAGDOLL ENGINE ---
-let points = [];
-let sticks = [];
-let entities = []; // Metadata for rendering cars, trees, and ragdolls
+        class Stick {
+            constructor(p0, p1, stiffness = 0.9, visible = true, color = '#94a3b8', width = 3) {
+                this.p0 = p0;
+                this.p1 = p1;
+                this.length = Math.hypot(p1.x - p0.x, p1.y - p0.y);
+                this.stiffness = stiffness;
+                this.visible = visible;
+                this.color = color;
+                this.width = width;
+            }
+            update() {
+                const dx = this.p1.x - this.p0.x;
+                const dy = this.p1.y - this.p0.y;
+                const dist = Math.hypot(dx, dy) || 0.001;
+                const diff = (this.length - dist) / dist * this.stiffness * 0.5;
+                const offsetX = dx * diff;
+                const offsetY = dy * diff;
 
-class Point {
-  constructor(x, y, pinned = false, radius = 4) {
-    this.x = x;
-    this.y = y;
-    this.oldx = x;
-    this.oldy = y;
-    this.pinned = pinned;
-    this.radius = radius;
-  }
-  update() {
-    if (this.pinned) return;
-    let vx = (this.x - this.oldx) * 0.985;
-    let vy = (this.y - this.oldy) * 0.985;
-    this.oldx = this.x;
-    this.oldy = this.y;
-    this.x += vx;
-    this.y += vy + GRAVITY;
+                if (!this.p0.pinned) { this.p0.x -= offsetX; this.p0.y -= offsetY; }
+                if (!this.p1.pinned) { this.p1.x += offsetX; this.p1.y += offsetY; }
+            }
+        }
 
-    const floor = GROUND_Y() - this.radius;
-    if (this.y > floor) {
-      this.y = floor;
-      this.oldy = this.y + vy * 0.35;
-      this.oldx = this.x - vx * 0.85; // Ground friction
-    }
-    if (this.x < this.radius) {
-      this.x = this.radius;
-      this.oldx = this.x + vx * 0.5;
-    }
-    if (this.x > W - this.radius) {
-      this.x = W - this.radius;
-      this.oldx = this.x + vx * 0.5;
-    }
-  }
-}
+        function spawnPerson(x = Math.random() * (W - 120) + 60) {
+            const y = GROUND_Y() - 85;
+            const shirtColors = ['#38bdf8', '#f43f5e', '#10b981', '#fbbf24', '#a855f7'];
+            const shirt = shirtColors[Math.floor(Math.random() * shirtColors.length)];
+            
+            const head = new Point(x, y, false, 7);
+            const neck = new Point(x, y + 12, false, 3);
+            const pelvis = new Point(x, y + 36, false, 4);
+            const handL = new Point(x - 14, y + 28, false, 3);
+            const handR = new Point(x + 14, y + 28, false, 3);
+            const footL = new Point(x - 8, y + 66, false, 4);
+            const footR = new Point(x + 8, y + 66, false, 4);
 
-class Stick {
-  constructor(p0, p1, stiffness = 0.9, visible = true, color = '#94a3b8', width = 3) {
-    this.p0 = p0;
-    this.p1 = p1;
-    this.length = Math.hypot(p1.x - p0.x, p1.y - p0.y);
-    this.stiffness = stiffness;
-    this.visible = visible;
-    this.color = color;
-    this.width = width;
-  }
-  update() {
-    const dx = this.p1.x - this.p0.x;
-    const dy = this.p1.y - this.p0.y;
-    const dist = Math.hypot(dx, dy) || 0.001;
-    const diff = (this.length - dist) / dist * this.stiffness * 0.5;
-    const offsetX = dx * diff;
-    const offsetY = dy * diff;
+            points.push(head, neck, pelvis, handL, handR, footL, footR);
+            sticks.push(
+                new Stick(head, neck, 0.95, true, '#fdba74', 3),
+                new Stick(neck, pelvis, 0.95, true, shirt, 6),
+                new Stick(neck, handL, 0.85, true, shirt, 3),
+                new Stick(neck, handR, 0.85, true, shirt, 3),
+                new Stick(pelvis, footL, 0.9, true, '#334155', 4),
+                new Stick(pelvis, footR, 0.9, true, '#334155', 4),
+                new Stick(head, pelvis, 0.15, false),
+                new Stick(footL, footR, 0.1, false)
+            );
+            entities.push({ type: 'person', head, neck, pelvis, scorched: 0 });
+        }
 
-    if (!this.p0.pinned) {
-      this.p0.x -= offsetX;
-      this.p0.y -= offsetY;
-    }
-    if (!this.p1.pinned) {
-      this.p1.x += offsetX;
-      this.p1.y += offsetY;
-    }
-  }
-}
+        function spawnCar(x = Math.random() * (W - 200) + 100) {
+            const y = GROUND_Y() - 45;
+            const carColors = ['#f43f5e', '#06b6d4', '#eab308', '#d946ef', '#f97316'];
+            const color = carColors[Math.floor(Math.random() * carColors.length)];
+            
+            const wL = new Point(x - 36, y + 26, false, 12);
+            const wR = new Point(x + 36, y + 26, false, 12);
+            const bL = new Point(x - 46, y + 8, false, 5);
+            const bR = new Point(x + 46, y + 8, false, 5);
+            const roofL = new Point(x - 22, y - 16, false, 4);
+            const roofR = new Point(x + 20, y - 16, false, 4);
 
-// --- ENTITY FACTORIES ---
+            points.push(wL, wR, bL, bR, roofL, roofR);
+            sticks.push(
+                new Stick(bL, bR, 0.98, false),
+                new Stick(roofL, roofR, 0.98, false),
+                new Stick(bL, roofL, 0.98, false),
+                new Stick(bR, roofR, 0.98, false),
+                new Stick(bL, roofR, 0.98, false),
+                new Stick(bR, roofL, 0.98, false),
+                new Stick(wL, bL, 0.7, false),
+                new Stick(wL, bR, 0.7, false),
+                new Stick(wR, bR, 0.7, false),
+                new Stick(wR, bL, 0.7, false),
+                new Stick(wL, wR, 0.9, false)
+            );
+            entities.push({ type: 'car', wL, wR, bL, bR, roofL, roofR, color, scorched: 0 });
+        }
 
-function spawnPerson(x = Math.random() * (W - 120) + 60) {
-  const y = GROUND_Y() - 85;
-  const shirtColors = ['#3b82f6', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6'];
-  const shirt = shirtColors[Math.floor(Math.random() * shirtColors.length)];
+        function spawnTree(x = Math.random() * (W - 140) + 70) {
+            const baseY = GROUND_Y();
+            const base = new Point(x, baseY, true, 5);
+            const mid = new Point(x, baseY - 50, false, 5);
+            const top = new Point(x, baseY - 100, false, 8);
+            const branchL = new Point(x - 26, baseY - 82, false, 5);
+            const branchR = new Point(x + 26, baseY - 82, false, 5);
 
-  const head = new Point(x, y, false, 7);
-  const neck = new Point(x, y + 12, false, 3);
-  const pelvis = new Point(x, y + 36, false, 4);
-  const handL = new Point(x - 14, y + 28, false, 3);
-  const handR = new Point(x + 14, y + 28, false, 3);
-  const footL = new Point(x - 8, y + 66, false, 4);
-  const footR = new Point(x + 8, y + 66, false, 4);
+            points.push(base, mid, top, branchL, branchR);
+            sticks.push(
+                new Stick(base, mid, 0.95, true, '#451a03', 10),
+                new Stick(mid, top, 0.95, true, '#451a03', 7),
+                new Stick(mid, branchL, 0.9, true, '#451a03', 5),
+                new Stick(mid, branchR, 0.9, true, '#451a03', 5),
+                new Stick(base, top, 0.35, false),
+                new Stick(branchL, branchR, 0.4, false)
+            );
+            entities.push({ type: 'tree', base, mid, top, branchL, branchR, scorched: 0 });
+        }
 
-  points.push(head, neck, pelvis, handL, handR, footL, footR);
+        function spawnCrowd() {
+            for (let i = 0; i < 3; i++) spawnPerson();
+            for (let i = 0; i < 2; i++) spawnTree();
+            spawnCar();
+        }
 
-  sticks.push(
-    new Stick(head, neck, 0.95, true, '#fde047', 3),
-    new Stick(neck, pelvis, 0.95, true, shirt, 6),
-    new Stick(neck, handL, 0.85, true, shirt, 3),
-    new Stick(neck, handR, 0.85, true, shirt, 3),
-    new Stick(pelvis, footL, 0.9, true, '#1e3a8a', 4),
-    new Stick(pelvis, footR, 0.9, true, '#1e3a8a', 4),
-    // Structural posture constraints (invisible)
-    new Stick(head, pelvis, 0.15, false),
-    new Stick(footL, footR, 0.1, false)
-  );
+        function clearEntities() {
+            points = []; sticks = []; entities = [];
+        }
 
-  entities.push({ type: 'person', head, neck, pelvis, scorched: 0 });
-}
+        function getLightningColor() {
+            const profile = document.getElementById('colorProfile').value;
+            switch (profile) {
+                case 'violet': return { core: '#fff3ff', glow: '#d946ef', spark: '#f472b6' };
+                case 'white': return { core: '#ffffff', glow: '#64748b', spark: '#cbd5e1' };
+                case 'yellow': return { core: '#fffbeb', glow: '#f59e0b', spark: '#fef08a' };
+                case 'green': return { core: '#f0fdf4', glow: '#22c55e', spark: '#4ade80' };
+                case 'rainbow': 
+                    hueCycle = (hueCycle + 40) % 360;
+                    return { core: '#ffffff', glow: `hsl(${hueCycle}, 100%, 60%)`, spark: `hsl(${hueCycle}, 100%, 75%)` };
+                case 'sapphire':
+                default: return { core: '#f0f9ff', glow: '#06b6d4', spark: '#38bdf8' };
+            }
+        }
 
-function spawnCar(x = Math.random() * (W - 200) + 100) {
-  const y = GROUND_Y() - 45;
-  const carColors = ['#ef4444', '#06b6d4', '#eab308', '#a855f7', '#f97316'];
-  const color = carColors[Math.floor(Math.random() * carColors.length)];
+        function createBoltSegments(x1, y1, x2, y2, displace, depth) {
+            if (depth <= 0) return [{ x1, y1, x2, y2 }];
+            const midX = (x1 + x2) / 2 + (Math.random() - 0.5) * displace;
+            const midY = (y1 + y2) / 2 + (Math.random() - 0.5) * displace * 0.4;
+            let segs = [
+                ...createBoltSegments(x1, y1, midX, midY, displace * 0.52, depth - 1),
+                ...createBoltSegments(midX, midY, x2, y2, displace * 0.52, depth - 1)
+            ];
+            const forkProb = parseFloat(document.getElementById('forkProb').value);
+            if (depth >= 3 && Math.random() < forkProb) {
+                const forkX = midX + (Math.random() - 0.5) * 200;
+                const forkY = midY + Math.random() * 150 + 50;
+                segs.push(...createBoltSegments(midX, midY, forkX, forkY, displace * 0.45, depth - 2));
+            }
+            return segs;
+        }
 
-  const wL = new Point(x - 32, y + 28, false, 12);
-  const wR = new Point(x + 32, y + 28, false, 12);
-  const bL = new Point(x - 42, y + 10, false, 5);
-  const bR = new Point(x + 42, y + 10, false, 5);
-  const roofL = new Point(x - 20, y - 12, false, 4);
-  const roofR = new Point(x + 18, y - 12, false, 4);
+        function triggerLightning(targetX, targetY) {
+            const startX = targetX + (Math.random() - 0.5) * 350;
+            const colors = getLightningColor();
+            const segments = createBoltSegments(startX, 0, targetX, targetY, 150, 5);
+            
+            flashOpacity = 0.22;
+            flashColor = colors.glow;
 
-  points.push(wL, wR, bL, bR, roofL, roofR);
+            bolts.push({
+                segments, colors, alpha: 1.0,
+                width: parseFloat(document.getElementById('coreWidth').value),
+                glow: parseFloat(document.getElementById('glow').value)
+            });
 
-  // Rigid chassis truss
-  sticks.push(
-    new Stick(bL, bR, 0.98, false),
-    new Stick(roofL, roofR, 0.98, false),
-    new Stick(bL, roofL, 0.98, false),
-    new Stick(bR, roofR, 0.98, false),
-    new Stick(bL, roofR, 0.98, false),
-    new Stick(bR, roofL, 0.98, false),
-    // Suspension
-    new Stick(wL, bL, 0.7, false),
-    new Stick(wL, bR, 0.7, false),
-    new Stick(wR, bR, 0.7, false),
-    new Stick(wR, bL, 0.7, false),
-    new Stick(wL, wR, 0.9, false)
-  );
+            const count = Math.floor(Math.random() * 20) + 20;
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 11 + 3;
+                particles.push({
+                    x: targetX, y: targetY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed - 2,
+                    life: 1.0,
+                    decay: Math.random() * 0.02 + 0.015,
+                    size: Math.random() * 3 + 1.5,
+                    color: colors.spark
+                });
+            }
 
-  entities.push({ type: 'car', wL, wR, bL, bR, roofL, roofR, color, scorched: 0 });
-}
+            const blastMultiplier = parseFloat(document.getElementById('blastForce').value);
+            const radius = 200;
+            
+            points.forEach(p => {
+                const dx = p.x - targetX;
+                const dy = p.y - targetY;
+                const dist = Math.hypot(dx, dy);
+                if (dist < radius) {
+                    if (p.pinned && dist < 70 && blastMultiplier >= 0.7) {
+                        p.pinned = false;
+                    }
+                    if (!p.pinned) {
+                        const power = (1 - dist / radius) * 28 * blastMultiplier;
+                        const angle = Math.atan2(dy - 40, dx);
+                        p.oldx -= Math.cos(angle) * power;
+                        p.oldy -= Math.sin(angle) * power;
+                    }
+                }
+            });
 
-function spawnTree(x = Math.random() * (W - 140) + 70) {
-  const baseY = GROUND_Y();
-  const base = new Point(x, baseY, true, 5); // Rooted to ground initially
-  const mid = new Point(x, baseY - 45, false, 5);
-  const top = new Point(x, baseY - 90, false, 8);
-  const branchL = new Point(x - 24, baseY - 75, false, 5);
-  const branchR = new Point(x + 24, baseY - 75, false, 5);
+            entities.forEach(ent => {
+                const ref = ent.pelvis || ent.bL || ent.mid;
+                if (ref && Math.hypot(ref.x - targetX, ref.y - targetY) < 140) {
+                    ent.scorched = Math.min(1, ent.scorched + 0.6);
+                }
+            });
+        }
 
-  points.push(base, mid, top, branchL, branchR);
+        function forceStrike() {
+            triggerLightning(Math.random() * (W - 160) + 80, GROUND_Y() - Math.random() * 40);
+        }
 
-  sticks.push(
-    new Stick(base, mid, 0.95, true, '#78350f', 10),
-    new Stick(mid, top, 0.95, true, '#78350f', 7),
-    new Stick(mid, branchL, 0.9, true, '#78350f', 5),
-    new Stick(mid, branchR, 0.9, true, '#78350f', 5),
-    new Stick(base, top, 0.35, false),
-    new Stick(branchL, branchR, 0.4, false)
-  );
+        canvas.addEventListener('mousedown', e => {
+            const rect = canvas.getBoundingClientRect();
+            triggerLightning(e.clientX - rect.left, e.clientY - rect.top);
+        });
 
-  entities.push({ type: 'tree', base, mid, top, branchL, branchR, scorched: 0 });
-}
+        let lastTime = performance.now();
+        let strikeAccumulator = 0;
 
-function spawnCrowd() {
-  for (let i = 0; i < 4; i++) spawnPerson();
-  for (let i = 0; i < 2; i++) spawnTree();
-  spawnCar();
-}
+        function animate(now) {
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
 
-function clearEntities() {
-  points = [];
-  sticks = [];
-  entities = [];
-}
+            const lps = parseFloat(document.getElementById('lps').value);
+            if (lps > 0) {
+                strikeAccumulator += dt * lps;
+                if (strikeAccumulator >= 1) {
+                    strikeAccumulator = 0;
+                    forceStrike();
+                }
+            }
 
-// --- PROCEDURAL LIGHTNING ENGINE ---
-let bolts = [];
-let particles = [];
-let hueCycle = 200;
+            points.forEach(p => p.update());
+            for (let iter = 0; iter < 6; iter++) {
+                sticks.forEach(s => s.update());
+            }
 
-function getLightningColor() {
-  const profile = document.getElementById('colorProfile').value;
-  switch (profile) {
-    case 'violet': return { core: '#f5d0fe', glow: '#c026d3' };
-    case 'white': return { core: '#ffffff', glow: '#94a3b8' };
-    case 'yellow': return { core: '#fef08a', glow: '#eab308' };
-    case 'green': return { core: '#bbf7d0', glow: '#22c55e' };
-    case 'rainbow':
-      hueCycle = (hueCycle + 35) % 360;
-      return { core: '#ffffff', glow: `hsl(${hueCycle}, 100%, 55%)` };
-    case 'sapphire':
-    default: return { core: '#e0f2fe', glow: '#0284c7' };
-  }
-}
+            ctx.fillStyle = 'rgba(4, 5, 11, 0.38)';
+            ctx.fillRect(0, 0, W, H);
 
-function createBoltSegments(x1, y1, x2, y2, displace, depth) {
-  if (depth <= 0) {
-    return [{ x1, y1, x2, y2 }];
-  }
-  const midX = (x1 + x2) / 2 + (Math.random() - 0.5) * displace;
-  const midY = (y1 + y2) / 2 + (Math.random() - 0.5) * displace * 0.5;
-  let segs = [
-    ...createBoltSegments(x1, y1, midX, midY, displace * 0.55, depth - 1),
-    ...createBoltSegments(midX, midY, x2, y2, displace * 0.55, depth - 1)
-  ];
-  const forkProb = parseFloat(document.getElementById('forkProb').value);
-  if (depth >= 3 && Math.random() < forkProb) {
-    const forkX = midX + (Math.random() - 0.5) * 180;
-    const forkY = midY + Math.random() * 140 + 40;
-    segs.push(...createBoltSegments(midX, midY, forkX, forkY, displace * 0.45, depth - 2));
-  }
-  return segs;
-}
+            ambientGrid.forEach(p => {
+                p.y -= p.speed;
+                if(p.y < 0) { p.y = H; p.x = Math.random() * W; }
+                ctx.fillStyle = `rgba(56, 189, 248, ${p.alpha})`;
+                ctx.fillRect(p.x, p.y, p.r, p.r);
+            });
 
-function triggerLightning(targetX, targetY) {
-  const startX = targetX + (Math.random() - 0.5) * 240;
-  const colors = getLightningColor();
-  const segments = createBoltSegments(startX, 0, targetX, targetY, 130, 5);
+            let groundGrad = ctx.createLinearGradient(0, GROUND_Y(), 0, H);
+            groundGrad.addColorStop(0, '#090d16');
+            groundGrad.addColorStop(1, '#05070a');
+            ctx.fillStyle = groundGrad;
+            ctx.fillRect(0, GROUND_Y(), W, H - GROUND_Y());
+            
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.2)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(0, GROUND_Y()); ctx.lineTo(W, GROUND_Y()); ctx.stroke();
 
-  bolts.push({
-    segments,
-    colors,
-    alpha: 1.0,
-    width: parseFloat(document.getElementById('coreWidth').value),
-    glow: parseFloat(document.getElementById('glow').value)
-  });
+            sticks.forEach(s => {
+                if (!s.visible) return;
+                ctx.strokeStyle = s.color;
+                ctx.lineWidth = s.width;
+                ctx.lineCap = 'round';
+                ctx.beginPath(); ctx.moveTo(s.p0.x, s.p0.y); ctx.lineTo(s.p1.x, s.p1.y); ctx.stroke();
+            });
 
-  // Spawn sparks
-  for (let i = 0; i < 22; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 8 + 2;
-    particles.push({
-      x: targetX,
-      y: targetY,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed - 3,
-      life: 1.0,
-      color: colors.glow
-    });
-  }
+            entities.forEach(ent => {
+                if (ent.type === 'person') {
+                    ctx.fillStyle = ent.scorched > 0.5 ? '#1e293b' : '#fcd34d';
+                    ctx.beginPath(); ctx.arc(ent.head.x, ent.head.y, 7, 0, Math.PI * 2); ctx.fill();
+                    if(ent.scorched <= 0.5) {
+                        ctx.fillStyle = '#ef4444';
+                        ctx.fillRect(ent.head.x + 1, ent.head.y - 3, 3, 2);
+                    }
+                } else if (ent.type === 'car') {
+                    ctx.fillStyle = ent.scorched > 0.5 ? '#0f172a' : ent.color;
+                    ctx.beginPath();
+                    ctx.moveTo(ent.bL.x, ent.bL.y);
+                    ctx.lineTo(ent.roofL.x, ent.roofL.y);
+                    ctx.lineTo(ent.roofR.x, ent.roofR.y);
+                    ctx.lineTo(ent.bR.x, ent.bR.y);
+                    ctx.closePath(); ctx.fill();
+                    
+                    ctx.strokeStyle = ent.scorched > 0.5 ? '#334155' : 'rgba(255,255,255,0.7)';
+                    ctx.lineWidth = 1; ctx.stroke();
 
-  // Apply shockwave impulse to physics points
-  const blastMultiplier = parseFloat(document.getElementById('blastForce').value);
-  const radius = 170;
+                    [ent.wL, ent.wR].forEach(w => {
+                        ctx.fillStyle = '#020205';
+                        ctx.beginPath(); ctx.arc(w.x, w.y, 12, 0, Math.PI * 2); ctx.fill();
+                        ctx.strokeStyle = '#475569'; ctx.lineWidth = 3; ctx.stroke();
+                    });
+                } else if (ent.type === 'tree') {
+                    const leaves = ent.scorched > 0.5 ? ['#1e293b','#334155','#0f172a'] : ['#059669','#10b981','#34d399'];
+                    [
+                        { x: ent.top.x, y: ent.top.y, r: 28, c: leaves[0] },
+                        { x: ent.branchL.x, y: ent.branchL.y, r: 22, c: leaves[1] },
+                        { x: ent.branchR.x, y: ent.branchR.y, r: 22, c: leaves[2] }
+                    ].forEach(layer => {
+                        ctx.fillStyle = layer.c;
+                        ctx.beginPath(); ctx.arc(layer.x, layer.y, layer.r, 0, Math.PI * 2); ctx.fill();
+                    });
+                }
+            });
 
-  points.forEach(p => {
-    const dx = p.x - targetX;
-    const dy = p.y - targetY;
-    const dist = Math.hypot(dx, dy);
-    if (dist < radius) {
-      // Uproot tree if hit directly with high force
-      if (p.pinned && dist < 55 && blastMultiplier >= 0.8) {
-        p.pinned = false;
-      }
-      if (!p.pinned) {
-        const power = (1 - dist / radius) * 24 * blastMultiplier;
-        const angle = Math.atan2(dy - 35, dx);
-        p.oldx -= Math.cos(angle) * power;
-        p.oldy -= Math.sin(angle) * power;
-      }
-    }
-  });
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const pt = particles[i];
+                pt.x += pt.vx; pt.y += pt.vy;
+                pt.vy += 0.22;
+                pt.life -= pt.decay;
+                if (pt.life <= 0) { particles.splice(i, 1); continue; }
+                
+                ctx.fillStyle = pt.color;
+                ctx.globalAlpha = pt.life;
+                ctx.fillRect(pt.x, pt.y, pt.size, pt.size);
+            }
+            ctx.globalAlpha = 1.0;
 
-  // Scorch nearby entities
-  entities.forEach(ent => {
-    const ref = ent.pelvis || ent.bL || ent.mid;
-    if (ref && Math.hypot(ref.x - targetX, ref.y - targetY) < 120) {
-      ent.scorched = Math.min(1, ent.scorched + 0.65);
-    }
-  });
-}
+            for (let i = bolts.length - 1; i >= 0; i--) {
+                const b = bolts[i];
+                ctx.save();
+                ctx.globalAlpha = b.alpha;
+                
+                ctx.shadowBlur = b.glow;
+                ctx.shadowColor = b.colors.glow;
+                ctx.strokeStyle = b.colors.glow;
+                ctx.lineWidth = b.width * 2.5;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                
+                ctx.beginPath();
+                b.segments.forEach(seg => { ctx.moveTo(seg.x1, seg.y1); ctx.lineTo(seg.x2, seg.y2); });
+                ctx.stroke();
 
-function forceStrike() {
-  const tx = Math.random() * (W - 120) + 60;
-  const ty = GROUND_Y() - Math.random() * 60;
-  triggerLightning(tx, ty);
-}
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = b.colors.core;
+                ctx.lineWidth = b.width;
+                ctx.beginPath();
+                b.segments.forEach(seg => { ctx.moveTo(seg.x1, seg.y1); ctx.lineTo(seg.x2, seg.y2); });
+                ctx.stroke();
+                
+                ctx.restore();
+                b.alpha -= 0.055;
+                if (b.alpha <= 0) bolts.splice(i, 1);
+            }
 
-canvas.addEventListener('mousedown', e => {
-  const rect = canvas.getBoundingClientRect();
-  triggerLightning(e.clientX - rect.left, e.clientY - rect.top);
-});
+            if (flashOpacity > 0) {
+                ctx.fillStyle = flashColor;
+                ctx.globalAlpha = flashOpacity;
+                ctx.fillRect(0, 0, W, H);
+                ctx.globalAlpha = 1.0;
+                flashOpacity -= 0.02;
+            }
 
-// --- MAIN SIMULATION & RENDER LOOP ---
-let lastTime = performance.now();
-let strikeAccumulator = 0;
+            requestAnimationFrame(animate);
+        }
 
-function animate(now) {
-  const dt = (now - lastTime) / 1000;
-  lastTime = now;
-
-  // Auto-lightning timer
-  const lps = parseFloat(document.getElementById('lps').value);
-  if (lps > 0) {
-    strikeAccumulator += dt * lps;
-    if (strikeAccumulator >= 1) {
-      strikeAccumulator = 0;
-      forceStrike();
-    }
-  }
-
-  // Physics Step
-  points.forEach(p => p.update());
-  for (let iter = 0; iter < 5; iter++) {
-    sticks.forEach(s => s.update());
-  }
-
-  // Clear Screen with slight motion trail
-  ctx.fillStyle = 'rgba(6, 8, 15, 0.45)';
-  ctx.fillRect(0, 0, W, H);
-
-  // Draw Ground
-  ctx.fillStyle = '#0f172a';
-  ctx.fillRect(0, GROUND_Y(), W, H - GROUND_Y());
-  ctx.strokeStyle = '#334155';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, GROUND_Y());
-  ctx.lineTo(W, GROUND_Y());
-  ctx.stroke();
-
-  // Draw Sticks (Limbs & Trunks)
-  sticks.forEach(s => {
-    if (!s.visible) return;
-    ctx.strokeStyle = s.color;
-    ctx.lineWidth = s.width;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(s.p0.x, s.p0.y);
-    ctx.lineTo(s.p1.x, s.p1.y);
-    ctx.stroke();
-  });
-
-  // Draw Entity Details (Heads, Cars, Foliage)
-  entities.forEach(ent => {
-    if (ent.type === 'person') {
-      ctx.fillStyle = ent.scorched > 0.5 ? '#334155' : '#fde047';
-      ctx.beginPath();
-      ctx.arc(ent.head.x, ent.head.y, 7, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (ent.type === 'car') {
-      // Car Body Polygon
-      ctx.fillStyle = ent.scorched > 0.5 ? '#1e293b' : ent.color;
-      ctx.beginPath();
-      ctx.moveTo(ent.bL.x, ent.bL.y);
-      ctx.lineTo(ent.roofL.x, ent.roofL.y);
-      ctx.lineTo(ent.roofR.x, ent.roofR.y);
-      ctx.lineTo(ent.bR.x, ent.bR.y);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = '#e2e8f0';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Wheels
-      [ent.wL, ent.wR].forEach(w => {
-        ctx.fillStyle = '#0f172a';
-        ctx.beginPath();
-        ctx.arc(w.x, w.y, 12, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-      });
-    } else if (ent.type === 'tree') {
-      const leafColor = ent.scorched > 0.5 ? '#3f3f46' : '#16a34a';
-      ctx.fillStyle = leafColor;
-      [
-        { x: ent.top.x, y: ent.top.y, r: 26 },
-        { x: ent.branchL.x, y: ent.branchL.y, r: 20 },
-        { x: ent.branchR.x, y: ent.branchR.y, r: 20 }
-      ].forEach(c => {
-        ctx.beginPath();
-        ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-        ctx.fill();
-      });
-    }
-  });
-
-  // Draw Sparks
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const pt = particles[i];
-    pt.x += pt.vx;
-    pt.y += pt.vy;
-    pt.vy += 0.25;
-    pt.life -= 0.035;
-    if (pt.life <= 0) {
-      particles.splice(i, 1);
-      continue;
-    }
-    ctx.fillStyle = pt.color;
-    ctx.globalAlpha = pt.life;
-    ctx.fillRect(pt.x, pt.y, 3, 3);
-    ctx.globalAlpha = 1.0;
-  }
-
-  // Draw Procedural Lightning Bolts
-  for (let i = bolts.length - 1; i >= 0; i--) {
-    const b = bolts[i];
-    ctx.save();
-    ctx.globalAlpha = b.alpha;
-    ctx.shadowBlur = b.glow;
-    ctx.shadowColor = b.colors.glow;
-    ctx.strokeStyle = b.colors.core;
-    ctx.lineWidth = b.width;
-    ctx.lineCap = 'round';
-
-    ctx.beginPath();
-    b.segments.forEach(seg => {
-      ctx.moveTo(seg.x1, seg.y1);
-      ctx.lineTo(seg.x2, seg.y2);
-    });
-    ctx.stroke();
-    ctx.restore();
-
-    b.alpha -= 0.065;
-    if (b.alpha <= 0) bolts.splice(i, 1);
-  }
-
-  requestAnimationFrame(animate);
-}
-
-// Initial Scene Setup
-spawnCrowd();
-requestAnimationFrame(animate);
-</script>
+        spawnCrowd();
+        requestAnimationFrame(animate);
+    </script>
 </body>
 </html>
