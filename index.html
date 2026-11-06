@@ -1,67 +1,437 @@
-<!-- Lightning Canvas & Glitch Overlay Container -->
-<div class="glitch-screen" id="glitchScreen">
-    <canvas id="glitchLightningCanvas"></canvas>
-    <div class="glitch-text" id="glitchTextDisplay" data-text="SYSTEM OVERRIDE">SYSTEM OVERRIDE</div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Procedural Lightning Simulator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #050508;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e0e0e0;
+        }
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #ui-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 340px;
+            background: rgba(15, 15, 25, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+        h1 {
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            color: #4da6ff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 5px;
+        }
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 15px 0 8px 0;
+            color: #a0a0a0;
+        }
+        .control-group {
+            margin-bottom: 12px;
+        }
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        .control-group label span.val {
+            color: #4da6ff;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            background: #252535;
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #4da6ff;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #1a53ff;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+        }
+        button:hover {
+            background: #003cd8;
+        }
+        .stats {
+            margin-top: 15px;
+            font-size: 11px;
+            color: #888;
+            font-family: monospace;
+            background: rgba(0,0,0,0.2);
+            padding: 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
 
-<style>
-/* Fullscreen transparent engine canvas layer */
-.glitch-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none; /* Allows user to still click elements underneath */
-    z-index: 99999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
+    <div id="canvas-container">
+        <canvas id="lightningCanvas"></canvas>
+    </div>
 
-#glitchLightningCanvas {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
+    <div id="ui-panel">
+        <h1>Lightning Engine</h1>
+        
+        <button id="btn-trigger">Trigger Strike</button>
+        
+        <div class="section-title">Intensity Scale Matrix</div>
+        
+        <div class="control-group">
+            <label>Core Brightness <span class="val" id="val-brightness">1.0</span></label>
+            <input type="range" id="cfg-brightness" min="0.2" max="2.0" step="0.05" value="1.0">
+        </div>
+        
+        <div class="control-group">
+            <label>Glow Radius Scale <span class="val" id="val-glow">25</span></label>
+            <input type="range" id="cfg-glow" min="5" max="60" step="1" value="25">
+        </div>
 
-/* Electric Blue & White Cyberpunk Glitch Text */
-.glitch-text {
-    position: relative;
-    color: #ffffff;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 5rem;
-    font-weight: 900;
-    letter-spacing: 5px;
-    text-shadow: 0 0 20px rgba(57, 168, 255, 0.8);
-    opacity: 0;
-    transform: scale(0.9);
-}
+        <div class="control-group">
+            <label>Core Thickness (px) <span class="val" id="val-thickness">3.5</span></label>
+            <input type="range" id="cfg-thickness" min="1.0" max="10.0" step="0.5" value="3.5">
+        </div>
 
-/* Active Glitch Animations triggered by JavaScript */
-.glitch-active .glitch-text {
-    animation: glitchBlur 0.4s infinite, glitchShake 0.15s infinite;
-    opacity: 1;
-    transform: scale(1);
-}
+        <div class="control-group">
+            <label>Branch Fade Energy <span class="val" id="val-fade">0.65</span></label>
+            <input type="range" id="cfg-fade" min="0.3" max="0.95" step="0.05" value="0.65">
+        </div>
 
-@keyframes glitchBlur {
-    0%, 100% { filter: blur(0px); text-shadow: 0 0 20px #fff, 0 0 30px #2672da; }
-    50% { filter: blur(2px); text-shadow: -3px -3px 0 #00ffff, 3px 3px 0 #ff00ff; }
-}
+        <div class="section-title">Range & Spatial Scale</div>
+        
+        <div class="control-group">
+            <label>Max Range Y-Scale (%) <span class="val" id="val-range-y">90</span></label>
+            <input type="range" id="cfg-range-y" min="30" max="100" step="5" value="90">
+        </div>
 
-@keyframes glitchShake {
-    0% { transform: translate(2px, 1px) rotate(0deg); }
-    10% { transform: translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(0px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(2px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(2px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
-}
-</style>
+        <div class="control-group">
+            <label>Horizontal Sway Range <span class="val" id="val-sway">120</span></label>
+            <input type="range" id="cfg-sway" min="20" max="300" step="10" value="120">
+        </div>
+
+        <div class="control-group">
+            <label>Branch Probability <span class="val" id="val-branch-prob">0.25</span></label>
+            <input type="range" id="cfg-branch-prob" min="0.0" max="0.6" step="0.05" value="0.25">
+        </div>
+
+        <div class="control-group">
+            <label>Fractal Generations <span class="val" id="val-generations">5</span></label>
+            <input type="range" id="cfg-generations" min="3" max="7" step="1" value="5">
+        </div>
+
+        <div class="section-title">Atmospheric Context</div>
+        <div class="control-group">
+            <label>Flash Ambient Impact <span class="val" id="val-ambient">0.4</span></label>
+            <input type="range" id="cfg-ambient" min="0.0" max="1.0" step="0.05" value="0.4">
+        </div>
+        
+        <div class="stats">
+            <div>Render Mode: Procedural GPU-Bake</div>
+            <div>Segments: <span id="stat-segments">0</span></div>
+            <div>Active Branches: <span id="stat-branches">0</span></div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('lightningCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const Config = {
+            brightness: 1.0,
+            glowRadius: 25,
+            thickness: 3.5,
+            branchFade: 0.65,
+            rangeY: 0.90,
+            sway: 120,
+            branchProb: 0.25,
+            generations: 5,
+            ambient: 0.4
+        };
+
+        let activeStrikes = [];
+        let globalFlashOpacity = 0;
+        let segmentCountDisplay = 0;
+        let branchCountDisplay = 0;
+
+        function setupUI() {
+            const mappings = [
+                { id: 'brightness', key: 'brightness', suffix: '' },
+                { id: 'glow', key: 'glowRadius', suffix: '' },
+                { id: 'thickness', key: 'thickness', suffix: 'px' },
+                { id: 'fade', key: 'branchFade', suffix: '' },
+                { id: 'range-y', key: 'rangeY', suffix: '%', multiplier: 0.01, readMultiplier: 100 },
+                { id: 'sway', key: 'sway', suffix: '' },
+                { id: 'branch-prob', key: 'branchProb', suffix: '' },
+                { id: 'generations', key: 'generations', suffix: '' },
+                { id: 'ambient', key: 'ambient', suffix: '' }
+            ];
+
+            mappings.forEach(m => {
+                const slider = document.getElementById(`cfg-${m.id}`);
+                const display = document.getElementById(`val-${m.id}`);
+                
+                slider.addEventListener('input', (e) => {
+                    let val = parseFloat(e.target.value);
+                    Config[m.key] = m.multiplier ? val * m.multiplier : val;
+                    display.innerText = val + m.suffix;
+                });
+            });
+
+            document.getElementById('btn-trigger').addEventListener('click', () => {
+                triggerLightningStrike();
+            });
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Vector2D {
+            constructor(x = 0, y = 0) {
+                this.x = x;
+                this.y = y;
+            }
+            clone() { return new Vector2D(this.x, this.y); }
+            add(v) { this.x += v.x; this.y += v.y; return this; }
+            sub(v) { this.x -= v.x; this.y -= v.y; return this; }
+            scale(n) { this.x *= n; this.y *= n; return this; }
+            length() { return Math.sqrt(this.x * this.x + this.y * this.y); }
+            normalize() {
+                let l = this.length();
+                if (l !== 0) { this.x /= l; this.y /= l; }
+                return this;
+            }
+        }
+
+        class Segment {
+            constructor(start, end, intensity) {
+                this.start = start;
+                this.end = end;
+                this.intensity = intensity;
+            }
+        }
+
+        class LightningStrike {
+            constructor(startX, startY) {
+                this.startPoint = new Vector2D(startX, startY);
+                this.segments = [];
+                this.maxLifetime = 30 + Math.random() * 20; 
+                this.age = 0;
+                this.opacity = 1.0;
+                this.targetY = canvas.height * Config.rangeY;
+                this.generatePattern();
+            }
+
+            generatePattern() {
+                let roots = [];
+                let targetX = this.startPoint.x + (Math.random() - 0.5) * Config.sway * 2;
+                let endpoint = new Vector2D(targetX, this.targetY);
+                
+                roots.push({
+                    start: this.startPoint.clone(),
+                    end: endpoint,
+                    intensity: 1.0,
+                    gen: 0
+                });
+
+                let operationalBranches = 1;
+
+                for (let g = 0; g < Config.generations; g++) {
+                    let nextRoots = [];
+                    let displaceRange = Config.sway / (g + 1);
+
+                    for (let i = 0; i < roots.length; i++) {
+                        let r = roots[i];
+                        let start = r.start;
+                        let end = r.end;
+                        
+                        let mid = new Vector2D((start.x + end.x) / 2, (start.y + end.y) / 2);
+                        
+                        let delta = end.clone().sub(start);
+                        let normal = new Vector2D(-delta.y, delta.x).normalize();
+                        let displacement = (Math.random() - 0.5) * displaceRange;
+                        mid.add(normal.scale(displacement));
+
+                        nextRoots.push({ start: start, end: mid, intensity: r.intensity, gen: r.gen });
+                        nextRoots.push({ start: mid, end: end, intensity: r.intensity, gen: r.gen });
+
+                        if (Math.random() < Config.branchProb && r.gen < 3) {
+                            operationalBranches++;
+                            let branchDirection = end.clone().sub(mid);
+                            
+                            let angle = (Math.random() - 0.5) * 0.7 + (Math.random() > 0.5 ? 0.4 : -0.4);
+                            let cosA = Math.cos(angle);
+                            let sinA = Math.sin(angle);
+                            let rotatedX = branchDirection.x * cosA - branchDirection.y * sinA;
+                            let rotatedY = branchDirection.x * sinA + branchDirection.y * cosA;
+                            
+                            let branchEnd = mid.clone().add(new Vector2D(rotatedX, rotatedY).scale(0.65));
+                            nextRoots.push({
+                                start: mid,
+                                end: branchEnd,
+                                intensity: r.intensity * Config.branchFade,
+                                gen: r.gen + 1
+                            });
+                        }
+                    }
+                    roots = nextRoots;
+                }
+
+                roots.forEach(r => {
+                    this.segments.push(new Segment(r.start, r.end, r.intensity));
+                });
+
+                segmentCountDisplay += this.segments.length;
+                branchCountDisplay += operationalBranches;
+            }
+
+            update() {
+                this.age++;
+                if (this.age > this.maxLifetime) {
+                    return false;
+                }
+                this.opacity = Math.sin((1 - this.age / this.maxLifetime) * Math.PI);
+                return true;
+            }
+
+            render() {
+                ctx.save();
+                ctx.shadowBlur = Config.glowRadius;
+                
+                this.segments.forEach(seg => {
+                    let calculatedAlpha = this.opacity * seg.intensity * Config.brightness;
+                    if (calculatedAlpha <= 0) return;
+
+                    let baseWidth = Config.thickness * seg.intensity;
+
+                    ctx.strokeStyle = `rgba(140, 190, 255, ${calculatedAlpha * 0.35})`;
+                    ctx.lineWidth = baseWidth * 3.0;
+                    ctx.shadowColor = 'rgba(0, 110, 255, 0.9)';
+                    ctx.beginPath();
+                    ctx.moveTo(seg.start.x, seg.start.y);
+                    ctx.lineTo(seg.end.x, seg.end.y);
+                    ctx.stroke();
+
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${calculatedAlpha * 1.0})`;
+                    ctx.lineWidth = baseWidth;
+                    ctx.shadowColor = 'rgba(255, 255, 255, 1.0)';
+                    ctx.beginPath();
+                    ctx.moveTo(seg.start.x, seg.start.y);
+                    ctx.lineTo(seg.end.x, seg.end.y);
+                    ctx.stroke();
+                });
+
+                ctx.restore();
+            }
+        }
+
+        function triggerLightningStrike() {
+            let startPointX = Math.random() * canvas.width * 0.6 + canvas.width * 0.2;
+            let startPointY = 0; 
+            activeStrikes.push(new LightningStrike(startPointX, startPointY));
+            globalFlashOpacity = Config.ambient;
+        }
+
+        function handleSpontaneousStrikes() {
+            if (Math.random() < 0.015 && activeStrikes.length < 3) {
+                triggerLightningStrike();
+            }
+        }
+
+        function loop() {
+            ctx.fillStyle = `rgba(5, 5, 12, 0.25)`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            handleSpontaneousStrikes();
+
+            if (globalFlashOpacity > 0.01) {
+                ctx.fillStyle = `rgba(165, 210, 255, ${globalFlashOpacity * Config.brightness})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                globalFlashOpacity *= 0.82;
+            }
+
+            segmentCountDisplay = 0;
+            branchCountDisplay = 0;
+
+            activeStrikes = activeStrikes.filter(strike => {
+                let status = strike.update();
+                if (status) {
+                    strike.render();
+                }
+                return status;
+            });
+
+            document.getElementById('stat-segments').innerText = segmentCountDisplay;
+            document.getElementById('stat-branches').innerText = branchCountDisplay;
+
+            requestAnimationFrame(loop);
+        }
+
+        setupUI();
+        loop();
+    </script>
+</body>
+</html>
