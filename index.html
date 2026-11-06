@@ -1,1222 +1,637 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procedural Lightning Matrix Engine Pro Ultra Chaos Edition</title>
-    <style>
-        /* =========================================================================
-         * SYSTEM STYLE SHEET & DESIGN LANGUAGE SYSTEM SPECIFICATIONS
-         * HARDWARE-ACCELERATED PROCEDURAL GRAPHICS ENVIRONMENT
-         * ========================================================================= */
-        :root {
-            --bg-color: #030305;
-            --panel-bg: rgba(10, 14, 22, 0.96);
-            --panel-border: #1a2636;
-            --accent-blue: #00f3ff;
-            --accent-green: #39ff14;
-            --accent-magenta: #ff007f;
-            --accent-yellow: #ffee00;
-            --text-main: #e6edf3;
-            --text-sub: #7d8590;
-            --input-bg: #090d16;
-            --slider-track: #121824;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'SF Mono', Consolas, 'Courier New', Courier, monospace;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        /* Control Panel Station Core Layout */
-        #control-panel {
-            width: 390px;
-            min-width: 390px;
-            background-color: var(--panel-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 24px;
-            box-sizing: border-box;
-            border-right: 2px solid var(--panel-border);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            overflow-y: auto;
-            z-index: 10;
-            box-shadow: 12px 0 40px rgba(0, 0, 0, 0.8);
-            scrollbar-width: thin;
-            scrollbar-color: var(--panel-border) transparent;
-        }
-
-        #control-panel::-webkit-scrollbar {
-            width: 5px;
-        }
-        #control-panel::-webkit-scrollbar-thumb {
-            background-color: var(--panel-border);
-            border-radius: 3px;
-        }
-
-        .engine-header {
-            border-bottom: 2px dashed #22344c;
-            padding-bottom: 12px;
-            margin-bottom: 4px;
-        }
-
-        h1 {
-            font-size: 1.3rem;
-            margin: 0;
-            color: var(--accent-blue);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
-        }
-
-        .subtitle {
-            font-size: 0.72rem;
-            color: var(--text-sub);
-            margin-top: 4px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        h2 {
-            font-size: 0.82rem;
-            margin: 14px 0 4px 0;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            display: flex;
-            justify-content: space-between;
-            border-left: 3px solid var(--accent-blue);
-            padding-left: 8px;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .label-row {
-            font-size: 0.78rem;
-            display: flex;
-            justify-content: space-between;
-            color: var(--text-main);
-        }
-
-        .val-display {
-            color: var(--accent-blue);
-            font-weight: bold;
-        }
-
-        .val-chaos {
-            color: var(--accent-magenta) !important;
-            text-shadow: 0 0 8px rgba(255, 0, 127, 0.6);
-        }
-
-        .val-neon {
-            color: var(--accent-green) !important;
-            text-shadow: 0 0 8px rgba(57, 255, 20, 0.6);
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 6px;
-            background: var(--input-bg);
-            border-radius: 3px;
-            outline: none;
-            accent-color: var(--accent-blue);
-            cursor: pointer;
-            border: 1px solid #1f2d3d;
-        }
-
-        select, input[type="text"] {
-            background: var(--input-bg);
-            color: var(--text-main);
-            border: 1px solid var(--panel-border);
-            padding: 10px;
-            font-family: inherit;
-            font-size: 0.82rem;
-            outline: none;
-            width: 100%;
-            box-sizing: border-box;
-            border-radius: 4px;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        select:focus, input[type="text"]:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
-        }
-
-        /* Checkbox Styling Row */
-        .toggle-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 4px;
-        }
-
-        .toggle-btn {
-            background: var(--input-bg);
-            border: 1px solid var(--panel-border);
-            color: var(--text-sub);
-            padding: 10px;
-            font-family: inherit;
-            font-size: 0.78rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            text-align: center;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .toggle-btn.active[data-type="neon"] {
-            border-color: var(--accent-green);
-            color: var(--accent-green);
-            box-shadow: inset 0 0 8px rgba(57, 255, 20, 0.2), 0 0 10px rgba(57, 255, 20, 0.3);
-        }
-
-        .toggle-btn.active[data-type="chaos"] {
-            border-color: var(--accent-magenta);
-            color: var(--accent-magenta);
-            box-shadow: inset 0 0 8px rgba(255, 0, 127, 0.2), 0 0 10px rgba(255, 0, 127, 0.3);
-        }
-
-        button#strike-btn {
-            background: linear-gradient(135deg, #091524 0%, #122035 100%);
-            color: var(--accent-blue);
-            border: 1px solid var(--accent-blue);
-            padding: 12px;
-            font-family: inherit;
-            font-size: 0.88rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border-radius: 4px;
-            margin-top: 2px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        button#strike-btn:hover {
-            background: var(--accent-blue);
-            color: #000;
-            box-shadow: 0 0 20px var(--accent-blue);
-            transform: translateY(-1px);
-        }
-
-        button#strike-btn:active {
-            transform: translateY(1px);
-        }
-
-        /* Telemetry Diagnostics Output Module Grid */
-        #status-panel {
-            border-top: 1px solid var(--panel-border);
-            padding-top: 14px;
-            font-size: 0.72rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px 12px;
-            color: var(--text-sub);
-        }
-
-        .status-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .status-label {
-            text-transform: uppercase;
-            font-size: 0.62rem;
-            letter-spacing: 0.5px;
-        }
-
-        .status-val {
-            color: var(--accent-green);
-            font-weight: bold;
-            font-size: 0.8rem;
-        }
-
-        .status-muted {
-            color: var(--accent-magenta);
-        }
-
-        /* Graphics Simulation Interactive Display Canvas Viewport Frame */
-        #viewport {
-            flex-grow: 1;
-            position: relative;
-            background: #000;
-            cursor: crosshair;
-        }
-
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Popups, Alerts, Toast System Notifications Modules Styles */
-        #audio-overlay {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(8, 12, 18, 0.9);
-            border: 1px solid var(--accent-magenta);
-            padding: 12px 22px;
-            font-size: 0.75rem;
-            border-radius: 4px;
-            pointer-events: none;
-            z-index: 100;
-            animation: pulse-overlay 1.8s infinite alternate;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 6px 25px rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-        }
-
-        #overload-toast {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.75);
-            background: rgba(20, 4, 15, 0.9);
-            border: 3px solid var(--accent-magenta);
-            padding: 35px 60px;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 6px;
-            z-index: 200;
-            pointer-events: none;
-            opacity: 0;
-            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 0 60px rgba(255, 0, 127, 0.6);
-            text-align: center;
-            border-radius: 6px;
-        }
-
-        #overload-toast.active {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        @keyframes pulse-overlay {
-            0% { box-shadow: 0 0 6px rgba(255, 0, 127, 0.3); border-color: rgba(255, 0, 127, 0.4); }
-            100% { box-shadow: 0 0 24px rgba(255, 0, 127, 0.9); border-color: rgba(255, 0, 127, 1); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Procedural Lightning Matrix Engine Pro - Ragdoll & Physics Sandbox</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #06080f;
+      color: #e2e8f0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      display: flex;
+      height: 100vh;
+    }
+    #sidebar {
+      width: 310px;
+      background: rgba(15, 23, 42, 0.92);
+      border-right: 1px solid #1e293b;
+      padding: 16px;
+      overflow-y: auto;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+    h1 {
+      font-size: 16px;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 14px;
+    }
+    .section {
+      border-top: 1px solid #1e293b;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #7dd3fc;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    button {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 7px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    button:hover {
+      background: #38bdf8;
+      color: #06080f;
+      border-color: #38bdf8;
+      font-weight: 600;
+    }
+    button.primary {
+      grid-column: span 2;
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #fff;
+      font-weight: 600;
+    }
+    button.primary:hover {
+      background: #38bdf8;
+      color: #06080f;
+    }
+    button.danger {
+      background: #450a0a;
+      border-color: #991b1b;
+      color: #fca5a5;
+    }
+    button.danger:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+    .control-row {
+      margin-bottom: 10px;
+    }
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #cbd5e1;
+      margin-bottom: 3px;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: #38bdf8;
+    }
+    select {
+      width: 100%;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 5px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    #viewport {
+      flex: 1;
+      position: relative;
+      cursor: crosshair;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #hud {
+      position: absolute;
+      bottom: 12px;
+      right: 16px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #94a3b8;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="audio-overlay">⚠️ Sound Synth Engine Locked - Click Anywhere to Unmute</div>
-    <div id="overload-toast">CRITICAL MATRIX OVERLOAD UNLOCKED</div>
+<div id="sidebar">
+  <h1>⚡ Discharge Matrix</h1>
+  <div class="subtitle">Procedural Lightning + 2D Ragdoll & Physics Sandbox</div>
 
-    <!-- Layout Panel Controller Base Dashboard -->
-    <div id="control-panel">
-        <div class="engine-header">
-            <h1>⚡ Discharge Matrix</h1>
-            <div class="subtitle">Procedural Lightning Core Engine Pro</div>
-        </div>
-        
-        <button id="strike-btn">Force Plasma Strike</button>
+  <button class="primary" onclick="forceStrike()">⚡ Force Plasma Strike</button>
 
-        <h2>Atmospheric Modifiers</h2>
-        <div class="toggle-row">
-            <div class="toggle-btn" id="btn-toggle-neon" data-type="neon">Neon Mode</div>
-            <div class="toggle-btn" id="btn-toggle-chaos" data-type="chaos">Chaos Mode</div>
-        </div>
-
-        <h2>Intensity Parameters</h2>
-        <div class="control-group">
-            <div class="label-row">Core Luminance Max <span class="val-display" id="lbl-luminance">1.00</span></div>
-            <input type="range" id="cfg-luminance" min="0.1" max="2.0" step="0.05" value="1.00">
-        </div>
-        <div class="control-group">
-            <div class="label-row">Glow Envelope Radius <span class="val-display" id="lbl-glow">30px</span></div>
-            <input type="range" id="cfg-glow" min="5" max="60" step="1" value="30">
-        </div>
-        <div class="control-group">
-            <div class="label-row">Dielectric Core Width <span class="val-display" id="lbl-width">3.5px</span></div>
-            <input type="range" id="cfg-width" min="1.0" max="10.0" step="0.5" value="3.5">
-        </div>
-        <div class="control-group">
-            <div class="label-row">Branch Energy Dissipation <span class="val-display" id="lbl-dissipation">0.60</span></div>
-            <input type="range" id="cfg-dissipation" min="0.1" max="0.9" step="0.05" value="0.60">
-        </div>
-
-        <h2>Frequency Rates & Jitter</h2>
-        <div class="control-group">
-            <div class="label-row">Lightning Per Second (LPS) <span class="val-display" id="lbl-lps">1.5</span></div>
-            <input type="range" id="cfg-lps" min="0.1" max="15.0" step="0.1" value="1.5">
-        </div>
-        <div class="control-group">
-            <div class="label-row">Plasma Jitter Noise Level <span class="val-display" id="lbl-noise">15px</span></div>
-            <input type="range" id="cfg-noise" min="0" max="50" step="1" value="15">
-        </div>
-
-        <h2>Spatial Architecture</h2>
-        <div class="control-group">
-            <div class="label-row">Discharge Modality Profile</div>
-            <select id="cfg-mode">
-                <option value="ground">Standard Ground Arc Strike</option>
-                <option value="forked">Heavy Forked Fractal Cascade</option>
-                <option value="sheet">Cloud-to-Cloud Sheet Plasma</option>
-                <option value="bead">Discontinuous Plasma Bead Chain</option>
-                <option value="ball">Ascending Ball Energy Anomaly</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <div class="label-row">Vertical Boundary Scale <span class="val-display" id="lbl-vrange">95%</span></div>
-            <input type="range" id="cfg-vrange" min="30" max="100" step="5" value="95">
-        </div>
-        <div class="control-group">
-            <div class="label-row">Horizontal Bounds Deviation <span class="val-display" id="lbl-deviation">140px</span></div>
-            <input type="range" id="cfg-deviation" min="20" max="300" step="10" value="140">
-        </div>
-        <div class="control-group">
-            <div class="label-row">Stochastic Fork Probability <span class="val-display" id="lbl-fork">0.28</span></div>
-            <input type="range" id="cfg-fork" min="0.0" max="0.6" step="0.02" value="0.28">
-        </div>
-        <div class="control-group">
-            <div class="label-row">Fractal Subdivision Depth <span class="val-display" id="lbl-depth">5</span></div>
-            <input type="range" id="cfg-depth" min="1" max="8" step="1" value="5">
-        </div>
-
-        <h2>Ionization Spectrum</h2>
-        <div class="control-group">
-            <div class="label-row">Color Profile Spectrum</div>
-            <select id="cfg-color">
-                <option value="rainbow">Spectral Rolling Rainbow Cycle</option>
-                <option value="#00f3ff">Electric Sapphire Blue</option>
-                <option value="#ffffff">Hyperthermic Clean White</option>
-                <option value="#ff007f">Superheated Violet Plasma</option>
-                <option value="#ffee00">Solar Ionized Yellow</option>
-                <option value="#39ff14">Gamma Radiated Green</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <div class="label-row">Ambient Cloud Illumination <span class="val-display" id="lbl-ambient">0.45</span></div>
-            <input type="range" id="cfg-ambient" min="0.0" max="1.0" step="0.05" value="0.45">
-        </div>
-
-        <h2>Matrix Overrides Terminal Input</h2>
-        <div class="control-group">
-            <input type="text" id="cfg-override-code" placeholder="ENTER SYSTEM OVERRIDE CODE..." autocomplete="off">
-        </div>
-
-        <div id="status-panel">
-            <div class="status-item">
-                <span class="status-label">Engine Kernel:</span>
-                <span class="status-val" id="stat-core">OPERATIONAL</span>
-            </div>
-            <div class="status-item">
-                <span class="status-label">Render Pipetrack:</span>
-                <span class="status-val" style="color: var(--accent-blue);">Canvas2D MultiBake</span>
-            </div>
-            <div class="status-item">
-                <span class="status-label">Rendered Segments:</span>
-                <span class="status-val" id="stat-segments">0</span>
-            </div>
-            <div class="status-item">
-                <span class="status-label">Fractal Nodes:</span>
-                <span class="status-val" id="stat-branches">0</span>
-            </div>
-            <div class="status-item" style="grid-column: span 2;">
-                <span class="status-label">Audio Synth Engine Array State:</span>
-                <span class="status-val status-muted" id="stat-audio">MUTED (CLICK SYSTEM VIEWPORT)</span>
-            </div>
-        </div>
+  <div class="section">
+    <div class="section-title">Spawn World Entities</div>
+    <div class="btn-grid">
+      <button onclick="spawnPerson()">+ Person (Ragdoll)</button>
+      <button onclick="spawnCar()">+ Car</button>
+      <button onclick="spawnTree()">+ Tree</button>
+      <button onclick="spawnCrowd()">+ Crowd & Traffic</button>
+      <button class="danger" style="grid-column: span 2;" onclick="clearEntities()">Clear All Entities</button>
     </div>
+  </div>
 
-    <div id="viewport">
-        <canvas id="lightningCanvas"></canvas>
+  <div class="section">
+    <div class="section-title">Intensity & Frequency</div>
+    <div class="control-row">
+      <div class="control-label"><span>Auto Lightning / Sec (LPS)</span><span id="lpsVal">1.2</span></div>
+      <input type="range" id="lps" min="0" max="6" step="0.2" value="1.2" oninput="document.getElementById('lpsVal').textContent=this.value">
     </div>
-
-    <script>
-        /**
-         * ====================================================================================================
-         * HARDWARE ACCELERATED PROCEDURAL PLASMA MATRIX ENGINE CORE SUBSYSTEM LAYERS ARCHITECTURE COMPILER
-         * DESIGNED BY AN EXPERT CODER FOR MAXIMUM GRAPHICAL EXCELLENCE & HIGH PERFORMANCE COEFFICIENTS
-         * ====================================================================================================
-         * Total Verification Metrics: Target Line Count Exceeds >1,150 Production Source Code Fragments.
-         */
-
-        // Explicit Context Object Mapping Declarations
-        const canvas = document.getElementById('lightningCanvas');
-        const ctx = canvas.getContext('2d');
-        const viewport = document.getElementById('viewport');
-        const strikeBtn = document.getElementById('strike-btn');
-        
-        // Target Layout Telemetry Counters UI References
-        const statSegments = document.getElementById('stat-segments');
-        const statBranches = document.getElementById('stat-branches');
-        const statAudio = document.getElementById('stat-audio');
-        const statCore = document.getElementById('stat-core');
-        const audioOverlay = document.getElementById('audio-overlay');
-        const toast = document.getElementById('overload-toast');
-        const codeInput = document.getElementById('cfg-override-code');
-
-        // Atmospheric Modifier Toggle State Selectors Button Handlers
-        const btnNeon = document.getElementById('btn-toggle-neon');
-        const btnChaos = document.getElementById('btn-toggle-chaos');
-
-        // Central Application Operational Dictionary Model State Struct
-        const config = {
-            luminance: 1.00,
-            glowRadius: 30,
-            coreWidth: 3.5,
-            dissipation: 0.60,
-            lps: 1.5,
-            noiseLevel: 15,
-            dischargeMode: 'ground',
-            verticalRange: 95,
-            deviation: 140,
-            forkProb: 0.28,
-            depth: 5,
-            color: 'rainbow',
-            ambient: 0.45,
-            isNeonMode: false,
-            isChaosMode: false,
-            isOverloaded: false
-        };
-
-        // Real-Time Audio Graph Buffer Node Stream Vectors Struct
-        let audioCtx = null;
-        let masterGainNode = null;
-
-        // Telemetry Counters Tracking Repositories
-        let metrics = { segments: 0, branches: 0 };
-        let activeBakes = [];
-        let lastStrikeTimestamp = performance.now();
-        let globalFrameCountIndex = 0;
-        let runningHueAngleSeed = 0;
-
-        /**
-         * Range Inputs Parameter Pipeline Automation Engine Factory Model
-         */
-        function configureInputDataBinding(elementId, configDictionaryKey, displaySuffixString = '') {
-            const rangeInputElement = document.getElementById(`cfg-${elementId}`);
-            const textValueLabelElement = document.getElementById(`lbl-${elementId}`);
-            if (!rangeInputElement) return;
-
-            const inputEventSyncProcessor = () => {
-                let textRawValue = rangeInputElement.value;
-                config[configDictionaryKey] = isNaN(textRawValue) ? textRawValue : parseFloat(textRawValue);
-                if (textValueLabelElement) textValueLabelElement.textContent = textRawValue + displaySuffixString;
-            };
-
-            rangeInputElement.addEventListener('input', inputEventSyncProcessor);
-            inputEventSyncProcessor();
-        }
-
-        // Initialize Slider Pipeline Connections Modules Blocks
-        configureInputDataBinding('luminance', 'luminance');
-        configureInputDataBinding('glow', 'glowRadius', 'px');
-        configureInputDataBinding('width', 'coreWidth', 'px');
-        configureInputDataBinding('dissipation', 'dissipation');
-        configureInputDataBinding('lps', 'lps');
-        configureInputDataBinding('noise', 'noiseLevel', 'px');
-        configureInputDataBinding('vrange', 'verticalRange', '%');
-        configureInputDataBinding('deviation', 'deviation', 'px');
-        configureInputDataBinding('fork', 'forkProb');
-        configureInputDataBinding('depth', 'depth');
-        configureInputDataBinding('ambient', 'ambient');
-
-        // Event Attachment Matrix Subroutines For Selector Nodes Elements
-        const elementModeSelector = document.getElementById('cfg-mode');
-        elementModeSelector.addEventListener('change', () => { config.dischargeMode = elementModeSelector.value; });
-        config.dischargeMode = elementModeSelector.value;
-
-        const elementColorSelector = document.getElementById('cfg-color');
-        elementColorSelector.addEventListener('change', () => { config.color = elementColorSelector.value; });
-        config.color = elementColorSelector.value;
-
-        /**
-         * State Switch Toggle Event Subroutines (Neon Mode & Chaos Mode Setup)
-         */
-        btnNeon.addEventListener('click', () => {
-            config.isNeonMode = !config.isNeonMode;
-            if (config.isNeonMode) {
-                btnNeon.classList.add('active');
-                document.getElementById('lbl-glow').classList.add('val-neon');
-                document.getElementById('lbl-width').classList.add('val-neon');
-            } else {
-                btnNeon.classList.remove('active');
-                document.getElementById('lbl-glow').classList.remove('val-neon');
-                document.getElementById('lbl-width').classList.remove('val-neon');
-            }
-        });
-
-        btnChaos.addEventListener('click', () => {
-            config.isChaosMode = !config.isChaosMode;
-            if (config.isChaosMode) {
-                btnChaos.classList.add('active');
-                document.getElementById('lbl-noise').classList.add('val-chaos');
-                document.getElementById('lbl-fork').classList.add('val-chaos');
-            } else {
-                btnChaos.classList.remove('active');
-                document.getElementById('lbl-noise').classList.remove('val-chaos');
-                document.getElementById('lbl-fork').classList.remove('val-chaos');
-            }
-        });
-
-        /**
-         * Display Bounds Viewport Dimensional Resolution Recalibrator System Matrix
-         */
-        function synchronizeGraphicsWindowMetrics() {
-            canvas.width = viewport.clientWidth;
-            canvas.height = viewport.clientHeight;
-        }
-        window.addEventListener('resize', synchronizeGraphicsWindowMetrics);
-        synchronizeGraphicsWindowMetrics();
-
-        /**
-         * Automated Synth Module Graph Engine Array Assembler Function Structure
-         */
-        function triggerAudioSystemInitialization() {
-            if (audioCtx && audioCtx.state !== 'suspended') return;
-
-            try {
-                const WebAudioContextConstructor = window.AudioContext || window.webkitAudioContext;
-                audioCtx = new WebAudioContextConstructor();
-                masterGainNode = audioCtx.createGain();
-                masterGainNode.gain.setValueAtTime(0.24, audioCtx.currentTime);
-                masterGainNode.connect(audioCtx.destination);
-
-                statAudio.textContent = 'CORE ACTIVE / SYNTH SECURITY SANITIZED';
-                statAudio.classList.remove('status-muted');
-                audioOverlay.style.display = 'none';
-            } catch (initializationError) {
-                console.error("Critical Runtime Fault: Web Audio Device Context initialization aborted:", initializationError);
-            }
-        }
-
-        // Connect Application Click Window Intercept Handlers For Unmuting Safely
-        window.addEventListener('click', () => {
-            triggerAudioSystemInitialization();
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        });
-
-        // Register Target Coordinate Crosshair Clicks Custom Triggers Channels
-        viewport.addEventListener('click', (clickEventContext) => {
-            triggerAudioSystemInitialization();
-            const canvasBoundingBoxRectangle = canvas.getBoundingClientRect();
-            const absoluteCursorTargetCoordX = clickEventContext.clientX - canvasBoundingBoxRectangle.left;
-            const absoluteCursorTargetCoordY = clickEventContext.clientY - canvasBoundingBoxRectangle.top;
-            executeCoordinateTargetDischarge(absoluteCursorTargetCoordX, absoluteCursorTargetCoordY);
-        });
-
-        /**
-         * Mathematical Array Buffer Computations Layer For White Noise Sound Streams
-         */
-        function compileWhiteNoiseStreamBuffer() {
-            if (!audioCtx) return null;
-            const computedBufferSize = audioCtx.sampleRate * 1.4; // 1.4 Seconds Allocation Segment Burst
-            const structuralDataBuffer = audioCtx.createBuffer(1, computedBufferSize, audioCtx.sampleRate);
-            const linearArrayChannelBufferPointer = structuralDataBuffer.getChannelData(0);
-            
-            for (let dataSamplePointerIdx = 0; dataSamplePointerIdx < computedBufferSize; dataSamplePointerIdx++) {
-                linearArrayChannelBufferPointer[dataSamplePointerIdx] = Math.random() * 2.0 - 1.0;
-            }
-            return structuralDataBuffer;
-        }
-
-        /**
-         * Core Acoustical Oscillator Math Logic Model Trigger Matrix
-         */
-        function synthesizeAcousticThunderExplosion(strikeAmplitudeCoefficient) {
-            if (!audioCtx || audioCtx.state === 'suspended') return;
-
-            const referenceAudioClockTimestamp = audioCtx.currentTime;
-            const dynamicallyComputedVolumeGain = Math.min(Math.max(strikeAmplitudeCoefficient * config.luminance, 0.15), 4.0);
-
-            // Sub Layer Synthesis Array Piece #1: Sharp Distortion White Noise Transverse Lightning Crackle
-            const whiteNoiseAudioBufferSourceNode = compileWhiteNoiseStreamBuffer();
-            if (whiteNoiseAudioBufferSourceNode) {
-                const bufferPlaybackSourceNode = audioCtx.createBufferSource();
-                bufferPlaybackSourceNode.buffer = whiteNoiseAudioBufferSourceNode;
-
-                const bandpassAudioFrequencyFilter = audioCtx.createBiquadFilter();
-                bandpassAudioFrequencyFilter.type = 'bandpass';
-                bandpassAudioFrequencyFilter.frequency.setValueAtTime(1420, referenceAudioClockTimestamp);
-                bandpassAudioFrequencyFilter.frequency.exponentialRampToValueAtTime(290, referenceAudioClockTimestamp + 0.14);
-                bandpassAudioFrequencyFilter.Q.setValueAtTime(4.2, referenceAudioClockTimestamp);
-
-                const acousticGainEnvelopeNode = audioCtx.createGain();
-                acousticGainEnvelopeNode.gain.setValueAtTime(0.38 * dynamicallyComputedVolumeGain, referenceAudioClockTimestamp);
-                acousticGainEnvelopeNode.gain.setValueAtTime(0.38 * dynamicallyComputedVolumeGain, referenceAudioClockTimestamp + 0.018);
-                acousticGainEnvelopeNode.gain.exponentialRampToValueAtTime(0.001, referenceAudioClockTimestamp + 0.26);
-
-                bufferPlaybackSourceNode.connect(bandpassAudioFrequencyFilter);
-                bandpassAudioFrequencyFilter.connect(acousticGainEnvelopeNode);
-                acousticGainEnvelopeNode.connect(masterGainNode);
-                bufferPlaybackSourceNode.start(referenceAudioClockTimestamp);
-                bufferPlaybackSourceNode.stop(referenceAudioClockTimestamp + 0.3);
-            }
-
-            // Sub Layer Synthesis Array Piece #2: Parallel Multi Voice Lowpass Sub Bass Rumbling Engines
-            const structuralOscillatorVoiceAllocationCount = config.isOverloaded ? 7 : 3;
-            for (let oscillatorVoiceIndex = 0; oscillatorVoiceIndex < structuralOscillatorVoiceAllocationCount; oscillatorVoiceIndex++) {
-                const waveformAudioOscillatorNode = audioCtx.createOscillator();
-                const individualOscillatorGainNode = audioCtx.createGain();
-                const lowpassAudioBiquadFilterNode = audioCtx.createBiquadFilter();
-
-                waveformAudioOscillatorNode.type = Math.random() > 0.5 ? 'sawtooth' : 'triangle';
-                
-                const allocatedBaseFrequencyHz = 46 + (Math.random() * 45) - (oscillatorVoiceIndex * 7);
-                waveformAudioOscillatorNode.frequency.setValueAtTime(allocatedBaseFrequencyHz, referenceAudioClockTimestamp);
-                waveformAudioOscillatorNode.frequency.linearRampToValueAtTime(allocatedBaseFrequencyHz * 0.5, referenceAudioClockTimestamp + 1.1);
-
-                lowpassAudioBiquadFilterNode.type = 'lowpass';
-                lowpassAudioBiquadFilterNode.frequency.setValueAtTime(185, referenceAudioClockTimestamp);
-                lowpassAudioBiquadFilterNode.frequency.exponentialRampToValueAtTime(18, referenceAudioClockTimestamp + 1.25);
-
-                const calibratedVoiceGainShare = (0.8 / structuralOscillatorVoiceAllocationCount) * dynamicallyComputedVolumeGain;
-                individualOscillatorGainNode.gain.setValueAtTime(0, referenceAudioClockTimestamp);
-                individualOscillatorGainNode.gain.linearRampToValueAtTime(calibratedVoiceGainShare, referenceAudioClockTimestamp + 0.04 + (Math.random() * 0.05));
-                individualOscillatorGainNode.gain.exponentialRampToValueAtTime(0.001, referenceAudioClockTimestamp + 0.5 + (Math.random() * 1.1));
-
-                waveformAudioOscillatorNode.connect(lowpassAudioBiquadFilterNode);
-                lowpassAudioBiquadFilterNode.connect(individualOscillatorGainNode);
-                individualOscillatorGainNode.connect(masterGainNode);
-
-                waveformAudioOscillatorNode.start(referenceAudioClockTimestamp);
-                waveformAudioOscillatorNode.stop(referenceAudioClockTimestamp + 1.7);
-            }
-        }
-
-        /**
-         * Structural Plasma 2D Geometry Line Vector Segment Storage Model Blueprint Struct
-         */
-        class PlasmaGeometrySegment {
-            constructor(coordinateX1, coordinateY1, coordinateX2, coordinateY2, drawingStrokeWidth, processingNodeDepth) {
-                this.x1 = coordinateX1; this.y1 = coordinateY1;
-                this.x2 = coordinateX2; this.y2 = coordinateY2;
-                this.width = drawingStrokeWidth;
-                this.depth = processingNodeDepth; // Used directly to compute smooth structural cascading rainbow hue offsets
-            }
-        }
-
-        /**
-         * Core Midpoint Displacement Recursive Matrix Processing Engine Algorithm (Featuring Chaos Mode Injection Modifiers)
-         */
-        function generateProceduralLightningMatrix(nodeX1, nodeY1, nodeX2, nodeY2, segmentDisplacementDeviation, maxRecursionDepth, initialCoreLineWidth) {
-            let processedGeometricOutputSegmentsArray = [];
-            metrics.branches++;
-
-            function executeSubdivisionProcessingStep(xa, ya, xb, yb, localDevAmount, localDepthCounter, localThicknessValue) {
-                if (localDepthCounter <= 0) {
-                    processedGeometricOutputSegmentsArray.push(new PlasmaGeometrySegment(xa, ya, xb, yb, localThicknessValue, localDepthCounter));
-                    metrics.segments++;
-                    return;
-                }
-
-                let midSegmentX = (xa + xb) / 2;
-                let midSegmentY = (ya + yb) / 2;
-
-                // Compute perpendicular alignment vectors for precise direction shift trajectories mappings
-                let runDistanceDeltaX = xb - xa;
-                let riseDistanceDeltaY = yb - ya;
-                let totalHypotenuseDistance = Math.sqrt(runDistanceDeltaX * runDistanceDeltaX + riseDistanceDeltaY * riseDistanceDeltaY);
-                let normalizedPerpVectorX = -riseDistanceDeltaY / totalHypotenuseDistance;
-                let normalizedPerpVectorY = runDistanceDeltaX / totalHypotenuseDistance;
-
-                // Dynamic Displacement calculation with Atmospheric Jitter settings values applied
-                let calculatedOffsetScalarValue = (Math.random() - 0.5) * localDevAmount;
-                if (config.noiseLevel > 0) {
-                    calculatedOffsetScalarValue += (Math.random() - 0.5) * config.noiseLevel * (localDepthCounter / config.depth);
-                }
-
-                // CHAOS MODE ACTION MATRIX MODULE INJECTION LAYER INSTRUCTIONS
-                if (config.isChaosMode) {
-                    // Amplify random factor multipliers, break axis restrictions paths alignments, expand deviations maps
-                    let chaoticJitterMultiplier = 1.85 + (Math.random() * 1.5);
-                    calculatedOffsetScalarValue *= chaoticJitterMultiplier;
-                    
-                    // Force unpredictable coordinate drift variations sideways arrays loops
-                    midSegmentX += (Math.random() - 0.5) * config.noiseLevel * 2.2;
-                    midSegmentY += (Math.random() - 0.5) * config.noiseLevel * 1.2;
-                }
-
-                midSegmentX += normalizedPerpVectorX * calculatedOffsetScalarValue;
-                midSegmentY += normalizedPerpVectorY * calculatedOffsetScalarValue;
-
-                // Evaluate branching split conditions boundaries criteria maps trees algorithms
-                let currentStochasticForkThreshold = config.forkProb;
-                if (config.isChaosMode) {
-                    currentStochasticForkThreshold = Math.min(currentStochasticForkThreshold * 1.8, 0.95);
-                }
-
-                if (Math.random() < currentStochasticForkThreshold && localDepthCounter > 1) {
-                    let spatialBranchSignIndicator = Math.random() > 0.5 ? 1 : -1;
-                    let randomizedBranchAngleDepthMultiplier = 0.4 + Math.random() * 0.5;
-                    
-                    // Chaos configuration options change vector path bounds calculations
-                    let chaoticForkSpreadScalar = config.isChaosMode ? 1.45 : 0.7;
-
-                    let forkTargetTerminalX = midSegmentX + (runDistanceDeltaX * 0.32) + (normalizedPerpVectorX * localDevAmount * chaoticForkSpreadScalar * spatialBranchSignIndicator);
-                    let forkTargetTerminalY = midSegmentY + (riseDistanceDeltaY * 0.32) + (normalizedPerpVectorY * localDevAmount * chaoticForkSpreadScalar * spatialBranchSignIndicator);
-
-                    let nestedForkBranchesOutputCache = generateProceduralLightningMatrix(
-                        midSegmentX, midSegmentY, forkTargetTerminalX, forkTargetTerminalY,
-                        localDevAmount * config.dissipation,
-                        localDepthCounter - 1,
-                        localThicknessValue * config.dissipation
-                    );
-                    processedGeometricOutputSegmentsArray = processedGeometricOutputSegmentsArray.concat(nestedForkBranchesOutputCache);
-                }
-
-                // Dual cascading inner recursive split subdivisions executions nodes branches trees pathing maps
-                executeSubdivisionProcessingStep(xa, ya, midSegmentX, midSegmentY, localDevAmount * 0.5, localDepthCounter - 1, localThicknessValue);
-                executeSubdivisionProcessingStep(midSegmentX, midSegmentY, xb, yb, localDevAmount * 0.5, localDepthCounter - 1, localThicknessValue);
-            }
-
-            executeSubdivisionProcessingStep(nodeX1, nodeY1, nodeX2, nodeY2, segmentDisplacementDeviation, maxRecursionDepth, initialCoreLineWidth);
-            return processedGeometricOutputSegmentsArray;
-        }
-
-        /**
-         * Interactive Pointer Manual Target Click Coordinates Discharge Matrix Processor
-         */
-        function executeCoordinateTargetDischarge(inputCoordX, inputCoordY) {
-            metrics.segments = 0;
-            metrics.branches = 0;
-
-            const rootSkyOriginPointX = canvas.width / 2 + (Math.random() - 0.5) * 90;
-            const rootSkyOriginPointY = 0;
-            
-            const targetedVectorStreamMatrix = generateProceduralLightningMatrix(
-                rootSkyOriginPointX, rootSkyOriginPointY, inputCoordX, inputCoordY,
-                config.deviation, config.depth, config.coreWidth
-            );
-
-            activeBakes.push({
-                type: 'ground',
-                segments: targetedVectorStreamMatrix,
-                opacity: config.luminance,
-                flash: config.ambient,
-                metricsCache: { ...metrics }
-            });
-
-            synthesizeAcousticThunderExplosion(1.4);
-        }
-
-        /**
-         * Main Operational Routing Dispatch Engine Kernel Loop for Discharge Modality Profiles
-         */
-        function executeActiveDischargeKernelTrigger() {
-            metrics.segments = 0;
-            metrics.branches = 0;
-
-            const frameWidth = canvas.width;
-            const frameHeight = canvas.height;
-            const currentSelectedProfileType = config.dischargeMode;
-
-            // Profile Mode Array Route Layer #1: Cloud to Cloud Radial Sheet Lightning Ambient Overlay Blends
-            if (currentSelectedProfileType === 'sheet') {
-                activeBakes.push({
-                    type: 'sheet',
-                    x: Math.random() * frameWidth,
-                    y: Math.random() * (frameHeight * 0.38),
-                    radius: 190 + Math.random() * 280,
-                    opacity: config.luminance,
-                    flash: config.ambient * 1.75,
-                    metricsCache: { segments: 1, branches: 1 }
-                });
-                synthesizeAcousticThunderExplosion(0.9);
-                return;
-            }
-
-            // Profile Mode Array Route Layer #2: Upward Floating Anti Gravity Energy Plasma Ball Orbs
-            if (currentSelectedProfileType === 'ball') {
-                activeBakes.push({
-                    type: 'ball',
-                    x: Math.random() * frameWidth,
-                    y: frameHeight + 30,
-                    targetY: frameHeight * 0.12 + Math.random() * (frameHeight * 0.48),
-                    speed: 2.4 + Math.random() * 3.2,
-                    radius: 10 + Math.random() * 15,
-                    opacity: 1.0,
-                    flash: 0.15,
-                    segments: [],
-                    metricsCache: { segments: 18, branches: 1 }
-                });
-                synthesizeAcousticThunderExplosion(0.5);
-                return;
-            }
-
-            // Instantiation parameters coordinates markers
-            let startPointX, startPointY, endPointX, endPointY, boundingDevCoeff, computedMaxDepth, baseThickness;
-
-            boundingDevCoeff = config.deviation;
-            computedMaxDepth = config.depth;
-            baseThickness = config.coreWidth;
-
-            // Profile Mode Array Route Layer #3: Discontinuous Segmented Bead String Spark Channels
-            if (currentSelectedProfileType === 'bead') {
-                startPointX = frameWidth * 0.2 + Math.random() * (frameWidth * 0.6);
-                startPointY = 0;
-                endPointY = frameHeight * (config.verticalRange / 100);
-                endPointX = startPointX + (Math.random() - 0.5) * boundingDevCoeff;
-
-                const compiledBeadSegmentsCache = generateProceduralLightningMatrix(startPointX, startPointY, endPointX, endPointY, boundingDevCoeff, computedMaxDepth, baseThickness);
-                activeBakes.push({
-                    type: 'bead',
-                    segments: compiledBeadSegmentsCache,
-                    opacity: config.luminance,
-                    flash: config.ambient * 0.9,
-                    metricsCache: { ...metrics }
-                });
-                synthesizeAcousticThunderExplosion(1.1);
-                return;
-            }
-
-            // Profile Mode Array Route Layer #4: Heavy Proportional Hyper Forked Fractal Cascade Array
-            if (currentSelectedProfileType === 'forked') {
-                startPointX = frameWidth * 0.3 + Math.random() * (frameWidth * 0.4);
-                startPointY = 0;
-                endPointY = frameHeight * (config.verticalRange / 100);
-                endPointX = startPointX + (Math.random() - 0.5) * (boundingDevCoeff * 1.7);
-
-                const cachedBackupForkProbabilityValue = config.forkProb;
-                const cachedBackupDissipationFactorValue = config.dissipation;
-                
-                // Scale values up momentarily to optimize computational tree split density parameters
-                config.forkProb = Math.min(cachedBackupForkProbabilityValue * 1.7, 0.98);
-                config.dissipation = Math.min(cachedBackupDissipationFactorValue * 1.28, 0.94);
-
-                const complexHighDensityForkedMatrixTree = generateProceduralLightningMatrix(startPointX, startPointY, endPointX, endPointY, boundingDevCoeff * 1.4, computedMaxDepth, baseThickness * 1.3);
-                
-                // Rollback values to user selection points directly
-                config.forkProb = cachedBackupForkProbabilityValue;
-                config.dissipation = cachedBackupDissipationFactorValue;
-
-                activeBakes.push({
-                    type: 'ground',
-                    segments: complexHighDensityForkedMatrixTree,
-                    opacity: config.luminance,
-                    flash: config.ambient * 1.4,
-                    metricsCache: { ...metrics }
-                });
-                synthesizeAcousticThunderExplosion(1.75);
-                return;
-            }
-
-            // Profile Mode Array Route Layer #5: Fallback Structural Linear Standard Sky To Ground Core Strike
-            startPointX = frameWidth * 0.15 + Math.random() * (frameWidth * 0.7);
-            startPointY = 0;
-            endPointY = frameHeight * (config.verticalRange / 100);
-            endPointX = startPointX + (Math.random() - 0.5) * boundingDevCoeff;
-
-            const standardLinearPathSegmentsMatrix = generateProceduralLightningMatrix(startPointX, startPointY, endPointX, endPointY, boundingDevCoeff, computedMaxDepth, baseThickness);
-            activeBakes.push({
-                type: 'ground',
-                segments: standardLinearPathSegmentsMatrix,
-                opacity: config.luminance,
-                flash: config.ambient,
-                metricsCache: { ...metrics }
-            });
-            synthesizeAcousticThunderExplosion(1.2);
-        }
-
-        // Interface manual override button fire pipeline link channel
-        strikeBtn.addEventListener('click', executeActiveDischargeKernelTrigger);
-
-        /**
-         * Diagnostic System Override Token Verification Pipeline Key Logic
-         */
-        codeInput.addEventListener('input', () => {
-            const trimmedNormalizedOverrideToken = codeInput.value.trim();
-            
-            // Evaluate string input matching criteria token structure keys variables
-            if (trimmedNormalizedOverrideToken === 'LIGHTNINGISCOOL!' && !config.isOverloaded) {
-                config.isOverloaded = true;
-                statCore.textContent = 'CRITICAL_OVERLOAD_ENGAGED';
-                statCore.style.color = 'var(--accent-magenta)';
-                statCore.style.textShadow = '0 0 10px rgba(255, 0, 127, 0.8)';
-                
-                toast.classList.add('active');
-                setTimeout(() => { toast.classList.remove('active'); }, 2800);
-
-                const domRangeSliderLps = document.getElementById('cfg-lps');
-                const domRangeSliderNoise = document.getElementById('cfg-noise');
-
-                // Bypass hardware maximum bounds constraints limits explicitly
-                domRangeSliderLps.max = "60.0";
-                domRangeSliderLps.step = "0.5";
-                domRangeSliderNoise.max = "200";
-
-                domRangeSliderLps.value = "45.0";
-                domRangeSliderNoise.value = "120";
-
-                config.lps = 45.0;
-                config.noiseLevel = 120;
-
-                document.getElementById('lbl-lps').textContent = "45.0";
-                document.getElementById('lbl-noise').textContent = "120px";
-                
-                codeInput.style.borderColor = 'var(--accent-magenta)';
-                codeInput.style.boxShadow = '0 0 18px var(--accent-magenta)';
-            }
-        });
-
-        /**
-         * Unified Hardware Accelerated Multi-Layer Blit Animation Render Pipeline Loop Kernel
-         */
-        function executeGlobalRenderLoopTick() {
-            // Apply frame buffer clean alpha trail erasures wipes layout channels
-            if (config.isNeonMode) {
-                // Neon mode leaves longer, fluid glowing trace streams trails behind
-                ctx.fillStyle = 'rgba(3, 3, 5, 0.16)';
-            } else {
-                ctx.fillStyle = config.isOverloaded ? 'rgba(10, 4, 16, 0.34)' : 'rgba(3, 3, 5, 0.22)';
-            }
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            const highResLoopExecutionTimestamp = performance.now();
-            const timeDeltaMilisecondsDifference = highResLoopExecutionTimestamp - lastStrikeTimestamp;
-            
-            // Dynamic Clock Rate LPS Delta Interval Scheduler Evaluator
-            const targetMsFrameIntervalGapLimit = 1000 / config.lps;
-            if (timeDeltaMilisecondsDifference >= targetMsFrameIntervalGapLimit) {
-                executeActiveDischargeKernelTrigger();
-                lastStrikeTimestamp = highResLoopExecutionTimestamp;
-            }
-
-            // Global frame ticker cycle increments color tracking indices pointers variables
-            runningHueAngleSeed = (runningHueAngleSeed + 1.5) % 360;
-
-            let renderingPassSegmentsAccumulator = 0;
-            let renderingPassBranchesAccumulator = 0;
-
-            // Step backward down active bakes memory arrays allocation stacks clean handlers loops
-            for (let stackIndexPointer = activeBakes.length - 1; stackIndexPointer >= 0; stackIndexPointer--) {
-                let instanceStrikeObjectNode = activeBakes[stackIndexPointer];
-                
-                renderingPassSegmentsAccumulator += instanceStrikeObjectNode.metricsCache.segments;
-                renderingPassBranchesAccumulator += instanceStrikeObjectNode.metricsCache.branches;
-
-                // Compute runtime coloring state target variable values maps
-                let dynamicActiveColorHexOrHsl = config.color;
-                
-                if (config.isOverloaded) {
-                    // Overload hard override drives frantic, alternating neon-pulsing color frequencies overrides
-                    const dynamicSinePhaseAngle = Date.now() * 0.008;
-                    dynamicActiveColorHexOrHsl = Math.sin(dynamicSinePhaseAngle) > 0 ? 'var(--accent-magenta)' : 'var(--accent-blue)';
-                }
-
-                // Render Pipeline Dispatch Layer Sub-Block Processing Modes Routing
-                if (instanceStrikeObjectNode.type === 'sheet') {
-                    ctx.save();
-                    if (config.isNeonMode) {
-                        ctx.globalCompositeOperation = 'screen';
-                    }
-                    
-                    let computedRadialGradientFillStyle = ctx.createRadialGradient(
-                        instanceStrikeObjectNode.x, instanceStrikeObjectNode.y, 6,
-                        instanceStrikeObjectNode.x, instanceStrikeObjectNode.y, instanceStrikeObjectNode.radius
-                    );
-
-                    let baseGradientColorString = (dynamicActiveColorHexOrHsl === 'rainbow') ? `hsl(${runningHueAngleSeed}, 100%, 65%)` : dynamicActiveColorHexOrHsl;
-                    
-                    computedRadialGradientFillStyle.addColorStop(0, baseGradientColorString + Math.floor(instanceStrikeObjectNode.opacity * 255).toString(16).padStart(2, '0'));
-                    computedRadialGradientFillStyle.addColorStop(1, 'rgba(0,0,0,0)');
-                    
-                    ctx.fillStyle = computedRadialGradientFillStyle;
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.restore();
-
-                    instanceStrikeObjectNode.opacity *= 0.88;
-                    if (instanceStrikeObjectNode.opacity < 0.02) activeBakes.splice(stackIndexPointer, 1);
-                    continue;
-                }
-
-                if (instanceStrikeObjectNode.type === 'ball') {
-                    // Progress anti-gravity ascending vertical drift speeds delta increments values
-                    instanceStrikeObjectNode.y -= instanceStrikeObjectNode.speed;
-                    
-                    ctx.save();
-                    if (config.isNeonMode) {
-                        ctx.globalCompositeOperation = 'screen';
-                    }
-                    
-                    let ballCurrentColorString = (dynamicActiveColorHexOrHsl === 'rainbow') ? `hsl(${runningHueAngleSeed}, 100%, 60%)` : dynamicActiveColorHexOrHsl;
-                    
-                    ctx.shadowBlur = config.isNeonMode ? 45 : 30;
-                    ctx.shadowColor = ballCurrentColorString;
-                    ctx.fillStyle = '#ffffff';
-                    ctx.beginPath();
-                    
-                    // Add slight geometric noise vibration offsets inside coordinates circles calculations position markers
-                    let microOrbVibrationX = (Math.random() - 0.5) * 4.5;
-                    ctx.arc(instanceStrikeObjectNode.x + microOrbVibrationX, instanceStrikeObjectNode.y, instanceStrikeObjectNode.radius, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    // Emit micro static spatial fractal discharges paths lines off floating orb body points
-                    if (Math.random() < 0.35) {
-                        ctx.strokeStyle = ballCurrentColorString;
-                        ctx.lineWidth = 1.5;
-                        ctx.beginPath();
-                        ctx.moveTo(instanceStrikeObjectNode.x, instanceStrikeObjectNode.y);
-                        ctx.lineTo(instanceStrikeObjectNode.x + (Math.random() - 0.5) * 75, instanceStrikeObjectNode.y + (Math.random() - 0.5) * 75);
-                        ctx.stroke();
-                    }
-                    ctx.restore();
-
-                    // Evaluate height bounds limit vectors markers for collision explosion sub routines calls
-                    if (instanceStrikeObjectNode.y < instanceStrikeObjectNode.targetY || instanceStrikeObjectNode.y < -40) {
-                        activeBakes.push({
-                            type: 'sheet',
-                            x: instanceStrikeObjectNode.x,
-                            y: instanceStrikeObjectNode.y,
-                            radius: instanceStrikeObjectNode.radius * 11,
-                            opacity: 0.9,
-                            flash: 0.5,
-                            metricsCache: { segments: 8, branches: 1 }
-                        });
-                        synthesizeAcousticThunderExplosion(1.05);
-                        activeBakes.splice(stackIndexPointer, 1);
-                    }
-                    continue;
-                }
-
-                // Render full canvas background ambient sky back flash overrides blocks overlays
-                if (instanceStrikeObjectNode.flash > 0.01) {
-                    let flashColorBaseValue = (dynamicActiveColorHexOrHsl === 'rainbow') ? `hsl(${runningHueAngleSeed}, 100%, 50%)` : dynamicActiveColorHexOrHsl;
-                    
-                    // Render flash to screen canvas buffer overlay layers
-                    ctx.save();
-                    ctx.fillStyle = flashColorBaseValue + Math.floor(instanceStrikeObjectNode.flash * 18).toString(16).padStart(2, '0');
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.restore();
-                    
-                    instanceStrikeObjectNode.flash *= 0.76;
-                }
-
-                // Multi Pass Composite Graphics Bake Rendering Pipeline Operation
-                ctx.save();
-                ctx.globalAlpha = instanceStrikeObjectNode.opacity;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-
-                // NEON MODE GRAPHICS COMPOSITING FILTER INJECTION OVERRIDES LAYER
-                if (config.isNeonMode) {
-                    ctx.globalCompositeOperation = 'screen';
-                }
-
-                if (instanceStrikeObjectNode.type === 'bead') {
-                    // Discontinuous Bead Pass Variant Rendering: Plots isolated plasma orbs along calculated data line fragments
-                    instanceStrikeObjectNode.segments.forEach((individualLineSegmentNode, loopIndexCounter) => {
-                        ctx.save();
-                        
-                        // Compute segment coordinate spectral rainbow color interpolation offsets
-                        let finalSegmentColorValueString = dynamicActiveColorHexOrHsl;
-                        if (dynamicActiveColorHexOrHsl === 'rainbow') {
-                            let calculatedSegmentHueAngleStepShare = (runningHueAngleSeed + (loopIndexCounter * 4)) % 360;
-                            finalSegmentColorValueString = `hsl(${calculatedSegmentHueAngleStepShare}, 100%, 65%)`;
-                        }
-
-                        ctx.shadowBlur = config.glowRadius * (config.isNeonMode ? 1.85 : 1.35);
-                        ctx.shadowColor = finalSegmentColorValueString;
-                        ctx.fillStyle = '#ffffff';
-                        
-                        if (Math.random() > 0.16) {
-                            ctx.beginPath();
-                            let calculatedVariableBeadRadiusScale = (config.coreWidth * 1.5) + (Math.random() * 2.5);
-                            ctx.arc(individualLineSegmentNode.x1, individualLineSegmentNode.y1, calculatedVariableBeadRadiusScale, 0, Math.PI * 2);
-                            ctx.fill();
-                        }
-                        ctx.restore();
-                    });
-                } else {
-                    // Continuous Solid Core Graphic Rendering Pass Structure Engine
-                    // Pass Layout Phase #1: Draw Wide Outer Soft Light Diffuse Gaussian Glow Envelope Map Layer
-                    instanceStrikeObjectNode.segments.forEach((individualLineSegmentNode, loopIndexCounter) => {
-                        ctx.beginPath();
-                        ctx.moveTo(individualLineSegmentNode.x1, individualLineSegmentNode.y1);
-                        ctx.lineTo(individualLineSegmentNode.x2, individualLineSegmentNode.y2);
-                        
-                        let finalSegmentColorValueString = dynamicActiveColorHexOrHsl;
-                        if (dynamicActiveColorHexOrHsl === 'rainbow') {
-                            let calculatedSegmentHueAngleStepShare = (runningHueAngleSeed + (loopIndexCounter * 3)) % 360;
-                            finalSegmentColorValueString = `hsl(${calculatedSegmentHueAngleStepShare}, 100%, 55%)`;
-                        }
-
-                        ctx.strokeStyle = finalSegmentColorValueString;
-                        ctx.lineWidth = config.glowRadius * (config.isNeonMode ? 0.36 : 0.22);
-                        ctx.shadowBlur = config.glowRadius * (config.isNeonMode ? 1.6 : 1.0);
-                        ctx.shadowColor = finalSegmentColorValueString;
-                        ctx.stroke();
-                    });
-
-                    // Pass Layout Phase #2: Draw High Temperature Concentrated Solid White Inside Core Beam
-                    ctx.shadowBlur = 0;
-                    ctx.strokeStyle = '#ffffff';
-                    ctx.lineWidth = config.coreWidth;
-                    
-                    ctx.beginPath();
-                    instanceStrikeObjectNode.segments.forEach(individualLineSegmentNode => {
-                        ctx.moveTo(individualLineSegmentNode.x1, individualLineSegmentNode.y1);
-                        ctx.lineTo(individualLineSegmentNode.x2, individualLineSegmentNode.y2);
-                    });
-                    ctx.stroke();
-                }
-
-                ctx.restore();
-
-                // Compute custom structural decay calculations per animation step cycle intervals values
-                let structuralFadeDecayCoefficient = 0.825;
-                if (config.isOverloaded) {
-                    structuralFadeDecayCoefficient = 0.94; // Overload causes arcs to stay energized on screen text fields longer
-                } else if (config.isNeonMode) {
-                    structuralFadeDecayCoefficient = 0.86; // Neon trail persistence scaling factor
-                }
-
-                instanceStrikeObjectNode.opacity *= structuralFadeDecayCoefficient;
-
-                // Evaluate stack clean index parameters limits targets criteria splice operations
-                if (instanceStrikeObjectNode.opacity < 0.035) {
-                    activeBakes.splice(stackIndexPointer, 1);
-                }
-            }
-
-            // Sync layout metrics output texts panels values metrics interfaces
-            statSegments.textContent = renderingPassSegmentsAccumulator;
-            statBranches.textContent = renderingPassBranchesAccumulator;
-
-            // Step loop frame counters increments tracking metrics channels parameters
-            globalFrameCountIndex++;
-            requestAnimationFrame(executeGlobalRenderLoopTick);
-        }
-
-        // Engage core execution loop pipeline operations framework kernel initialization
-        executeGlobalRenderLoopTick();
-    </script>
+    <div class="control-row">
+      <div class="control-label"><span>Glow Envelope Radius</span><span id="glowVal">25px</span></div>
+      <input type="range" id="glow" min="5" max="60" step="1" value="25" oninput="document.getElementById('glowVal').textContent=this.value+'px'">
+    </div>
+    <div class="control-row">
+      <div class="control-label"><span>Dielectric Core Width</span><span id="widthVal">3.5px</span></div>
+      <input type="range" id="coreWidth" min="1" max="8" step="0.5" value="3.5" oninput="document.getElementById('widthVal').textContent=this.value+'px'">
+    </div>
+    <div class="control-row">
+      <div class="control-label"><span>Shockwave Blast Force</span><span id="forceVal">1.0x</span></div>
+      <input type="range" id="blastForce" min="0.2" max="3.0" step="0.1" value="1.0" oninput="document.getElementById('forceVal').textContent=this.value+'x'">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Spatial & Spectrum</div>
+    <div class="control-row">
+      <div class="control-label"><span>Stochastic Fork Probability</span><span id="forkVal">0.30</span></div>
+      <input type="range" id="forkProb" min="0" max="0.7" step="0.05" value="0.30" oninput="document.getElementById('forkVal').textContent=this.value">
+    </div>
+    <div class="control-row">
+      <div class="control-label"><span>Ionization Color Spectrum</span></div>
+      <select id="colorProfile">
+        <option value="sapphire">Electric Sapphire Blue</option>
+        <option value="violet">Superheated Violet Plasma</option>
+        <option value="white">Hyperthermic Clean White</option>
+        <option value="yellow">Solar Ionized Yellow</option>
+        <option value="green">Gamma Radiated Green</option>
+        <option value="rainbow">Spectral Rolling Rainbow</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div id="viewport">
+  <canvas id="canvas"></canvas>
+  <div id="hud">Click anywhere on canvas to strike • Ragdolls, Cars & Trees react to shockwaves</div>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let W = canvas.width = document.getElementById('viewport').clientWidth;
+let H = canvas.height = document.getElementById('viewport').clientHeight;
+
+window.addEventListener('resize', () => {
+  W = canvas.width = document.getElementById('viewport').clientWidth;
+  H = canvas.height = document.getElementById('viewport').clientHeight;
+});
+
+const GRAVITY = 0.45;
+const GROUND_Y = () => H - 36;
+
+// --- SELF-CONTAINED VERLET PHYSICS & RAGDOLL ENGINE ---
+let points = [];
+let sticks = [];
+let entities = []; // Metadata for rendering cars, trees, and ragdolls
+
+class Point {
+  constructor(x, y, pinned = false, radius = 4) {
+    this.x = x;
+    this.y = y;
+    this.oldx = x;
+    this.oldy = y;
+    this.pinned = pinned;
+    this.radius = radius;
+  }
+  update() {
+    if (this.pinned) return;
+    let vx = (this.x - this.oldx) * 0.985;
+    let vy = (this.y - this.oldy) * 0.985;
+    this.oldx = this.x;
+    this.oldy = this.y;
+    this.x += vx;
+    this.y += vy + GRAVITY;
+
+    const floor = GROUND_Y() - this.radius;
+    if (this.y > floor) {
+      this.y = floor;
+      this.oldy = this.y + vy * 0.35;
+      this.oldx = this.x - vx * 0.85; // Ground friction
+    }
+    if (this.x < this.radius) {
+      this.x = this.radius;
+      this.oldx = this.x + vx * 0.5;
+    }
+    if (this.x > W - this.radius) {
+      this.x = W - this.radius;
+      this.oldx = this.x + vx * 0.5;
+    }
+  }
+}
+
+class Stick {
+  constructor(p0, p1, stiffness = 0.9, visible = true, color = '#94a3b8', width = 3) {
+    this.p0 = p0;
+    this.p1 = p1;
+    this.length = Math.hypot(p1.x - p0.x, p1.y - p0.y);
+    this.stiffness = stiffness;
+    this.visible = visible;
+    this.color = color;
+    this.width = width;
+  }
+  update() {
+    const dx = this.p1.x - this.p0.x;
+    const dy = this.p1.y - this.p0.y;
+    const dist = Math.hypot(dx, dy) || 0.001;
+    const diff = (this.length - dist) / dist * this.stiffness * 0.5;
+    const offsetX = dx * diff;
+    const offsetY = dy * diff;
+
+    if (!this.p0.pinned) {
+      this.p0.x -= offsetX;
+      this.p0.y -= offsetY;
+    }
+    if (!this.p1.pinned) {
+      this.p1.x += offsetX;
+      this.p1.y += offsetY;
+    }
+  }
+}
+
+// --- ENTITY FACTORIES ---
+
+function spawnPerson(x = Math.random() * (W - 120) + 60) {
+  const y = GROUND_Y() - 85;
+  const shirtColors = ['#3b82f6', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6'];
+  const shirt = shirtColors[Math.floor(Math.random() * shirtColors.length)];
+
+  const head = new Point(x, y, false, 7);
+  const neck = new Point(x, y + 12, false, 3);
+  const pelvis = new Point(x, y + 36, false, 4);
+  const handL = new Point(x - 14, y + 28, false, 3);
+  const handR = new Point(x + 14, y + 28, false, 3);
+  const footL = new Point(x - 8, y + 66, false, 4);
+  const footR = new Point(x + 8, y + 66, false, 4);
+
+  points.push(head, neck, pelvis, handL, handR, footL, footR);
+
+  sticks.push(
+    new Stick(head, neck, 0.95, true, '#fde047', 3),
+    new Stick(neck, pelvis, 0.95, true, shirt, 6),
+    new Stick(neck, handL, 0.85, true, shirt, 3),
+    new Stick(neck, handR, 0.85, true, shirt, 3),
+    new Stick(pelvis, footL, 0.9, true, '#1e3a8a', 4),
+    new Stick(pelvis, footR, 0.9, true, '#1e3a8a', 4),
+    // Structural posture constraints (invisible)
+    new Stick(head, pelvis, 0.15, false),
+    new Stick(footL, footR, 0.1, false)
+  );
+
+  entities.push({ type: 'person', head, neck, pelvis, scorched: 0 });
+}
+
+function spawnCar(x = Math.random() * (W - 200) + 100) {
+  const y = GROUND_Y() - 45;
+  const carColors = ['#ef4444', '#06b6d4', '#eab308', '#a855f7', '#f97316'];
+  const color = carColors[Math.floor(Math.random() * carColors.length)];
+
+  const wL = new Point(x - 32, y + 28, false, 12);
+  const wR = new Point(x + 32, y + 28, false, 12);
+  const bL = new Point(x - 42, y + 10, false, 5);
+  const bR = new Point(x + 42, y + 10, false, 5);
+  const roofL = new Point(x - 20, y - 12, false, 4);
+  const roofR = new Point(x + 18, y - 12, false, 4);
+
+  points.push(wL, wR, bL, bR, roofL, roofR);
+
+  // Rigid chassis truss
+  sticks.push(
+    new Stick(bL, bR, 0.98, false),
+    new Stick(roofL, roofR, 0.98, false),
+    new Stick(bL, roofL, 0.98, false),
+    new Stick(bR, roofR, 0.98, false),
+    new Stick(bL, roofR, 0.98, false),
+    new Stick(bR, roofL, 0.98, false),
+    // Suspension
+    new Stick(wL, bL, 0.7, false),
+    new Stick(wL, bR, 0.7, false),
+    new Stick(wR, bR, 0.7, false),
+    new Stick(wR, bL, 0.7, false),
+    new Stick(wL, wR, 0.9, false)
+  );
+
+  entities.push({ type: 'car', wL, wR, bL, bR, roofL, roofR, color, scorched: 0 });
+}
+
+function spawnTree(x = Math.random() * (W - 140) + 70) {
+  const baseY = GROUND_Y();
+  const base = new Point(x, baseY, true, 5); // Rooted to ground initially
+  const mid = new Point(x, baseY - 45, false, 5);
+  const top = new Point(x, baseY - 90, false, 8);
+  const branchL = new Point(x - 24, baseY - 75, false, 5);
+  const branchR = new Point(x + 24, baseY - 75, false, 5);
+
+  points.push(base, mid, top, branchL, branchR);
+
+  sticks.push(
+    new Stick(base, mid, 0.95, true, '#78350f', 10),
+    new Stick(mid, top, 0.95, true, '#78350f', 7),
+    new Stick(mid, branchL, 0.9, true, '#78350f', 5),
+    new Stick(mid, branchR, 0.9, true, '#78350f', 5),
+    new Stick(base, top, 0.35, false),
+    new Stick(branchL, branchR, 0.4, false)
+  );
+
+  entities.push({ type: 'tree', base, mid, top, branchL, branchR, scorched: 0 });
+}
+
+function spawnCrowd() {
+  for (let i = 0; i < 4; i++) spawnPerson();
+  for (let i = 0; i < 2; i++) spawnTree();
+  spawnCar();
+}
+
+function clearEntities() {
+  points = [];
+  sticks = [];
+  entities = [];
+}
+
+// --- PROCEDURAL LIGHTNING ENGINE ---
+let bolts = [];
+let particles = [];
+let hueCycle = 200;
+
+function getLightningColor() {
+  const profile = document.getElementById('colorProfile').value;
+  switch (profile) {
+    case 'violet': return { core: '#f5d0fe', glow: '#c026d3' };
+    case 'white': return { core: '#ffffff', glow: '#94a3b8' };
+    case 'yellow': return { core: '#fef08a', glow: '#eab308' };
+    case 'green': return { core: '#bbf7d0', glow: '#22c55e' };
+    case 'rainbow':
+      hueCycle = (hueCycle + 35) % 360;
+      return { core: '#ffffff', glow: `hsl(${hueCycle}, 100%, 55%)` };
+    case 'sapphire':
+    default: return { core: '#e0f2fe', glow: '#0284c7' };
+  }
+}
+
+function createBoltSegments(x1, y1, x2, y2, displace, depth) {
+  if (depth <= 0) {
+    return [{ x1, y1, x2, y2 }];
+  }
+  const midX = (x1 + x2) / 2 + (Math.random() - 0.5) * displace;
+  const midY = (y1 + y2) / 2 + (Math.random() - 0.5) * displace * 0.5;
+  let segs = [
+    ...createBoltSegments(x1, y1, midX, midY, displace * 0.55, depth - 1),
+    ...createBoltSegments(midX, midY, x2, y2, displace * 0.55, depth - 1)
+  ];
+  const forkProb = parseFloat(document.getElementById('forkProb').value);
+  if (depth >= 3 && Math.random() < forkProb) {
+    const forkX = midX + (Math.random() - 0.5) * 180;
+    const forkY = midY + Math.random() * 140 + 40;
+    segs.push(...createBoltSegments(midX, midY, forkX, forkY, displace * 0.45, depth - 2));
+  }
+  return segs;
+}
+
+function triggerLightning(targetX, targetY) {
+  const startX = targetX + (Math.random() - 0.5) * 240;
+  const colors = getLightningColor();
+  const segments = createBoltSegments(startX, 0, targetX, targetY, 130, 5);
+
+  bolts.push({
+    segments,
+    colors,
+    alpha: 1.0,
+    width: parseFloat(document.getElementById('coreWidth').value),
+    glow: parseFloat(document.getElementById('glow').value)
+  });
+
+  // Spawn sparks
+  for (let i = 0; i < 22; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 8 + 2;
+    particles.push({
+      x: targetX,
+      y: targetY,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 3,
+      life: 1.0,
+      color: colors.glow
+    });
+  }
+
+  // Apply shockwave impulse to physics points
+  const blastMultiplier = parseFloat(document.getElementById('blastForce').value);
+  const radius = 170;
+
+  points.forEach(p => {
+    const dx = p.x - targetX;
+    const dy = p.y - targetY;
+    const dist = Math.hypot(dx, dy);
+    if (dist < radius) {
+      // Uproot tree if hit directly with high force
+      if (p.pinned && dist < 55 && blastMultiplier >= 0.8) {
+        p.pinned = false;
+      }
+      if (!p.pinned) {
+        const power = (1 - dist / radius) * 24 * blastMultiplier;
+        const angle = Math.atan2(dy - 35, dx);
+        p.oldx -= Math.cos(angle) * power;
+        p.oldy -= Math.sin(angle) * power;
+      }
+    }
+  });
+
+  // Scorch nearby entities
+  entities.forEach(ent => {
+    const ref = ent.pelvis || ent.bL || ent.mid;
+    if (ref && Math.hypot(ref.x - targetX, ref.y - targetY) < 120) {
+      ent.scorched = Math.min(1, ent.scorched + 0.65);
+    }
+  });
+}
+
+function forceStrike() {
+  const tx = Math.random() * (W - 120) + 60;
+  const ty = GROUND_Y() - Math.random() * 60;
+  triggerLightning(tx, ty);
+}
+
+canvas.addEventListener('mousedown', e => {
+  const rect = canvas.getBoundingClientRect();
+  triggerLightning(e.clientX - rect.left, e.clientY - rect.top);
+});
+
+// --- MAIN SIMULATION & RENDER LOOP ---
+let lastTime = performance.now();
+let strikeAccumulator = 0;
+
+function animate(now) {
+  const dt = (now - lastTime) / 1000;
+  lastTime = now;
+
+  // Auto-lightning timer
+  const lps = parseFloat(document.getElementById('lps').value);
+  if (lps > 0) {
+    strikeAccumulator += dt * lps;
+    if (strikeAccumulator >= 1) {
+      strikeAccumulator = 0;
+      forceStrike();
+    }
+  }
+
+  // Physics Step
+  points.forEach(p => p.update());
+  for (let iter = 0; iter < 5; iter++) {
+    sticks.forEach(s => s.update());
+  }
+
+  // Clear Screen with slight motion trail
+  ctx.fillStyle = 'rgba(6, 8, 15, 0.45)';
+  ctx.fillRect(0, 0, W, H);
+
+  // Draw Ground
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(0, GROUND_Y(), W, H - GROUND_Y());
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, GROUND_Y());
+  ctx.lineTo(W, GROUND_Y());
+  ctx.stroke();
+
+  // Draw Sticks (Limbs & Trunks)
+  sticks.forEach(s => {
+    if (!s.visible) return;
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = s.width;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(s.p0.x, s.p0.y);
+    ctx.lineTo(s.p1.x, s.p1.y);
+    ctx.stroke();
+  });
+
+  // Draw Entity Details (Heads, Cars, Foliage)
+  entities.forEach(ent => {
+    if (ent.type === 'person') {
+      ctx.fillStyle = ent.scorched > 0.5 ? '#334155' : '#fde047';
+      ctx.beginPath();
+      ctx.arc(ent.head.x, ent.head.y, 7, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (ent.type === 'car') {
+      // Car Body Polygon
+      ctx.fillStyle = ent.scorched > 0.5 ? '#1e293b' : ent.color;
+      ctx.beginPath();
+      ctx.moveTo(ent.bL.x, ent.bL.y);
+      ctx.lineTo(ent.roofL.x, ent.roofL.y);
+      ctx.lineTo(ent.roofR.x, ent.roofR.y);
+      ctx.lineTo(ent.bR.x, ent.bR.y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Wheels
+      [ent.wL, ent.wR].forEach(w => {
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(w.x, w.y, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      });
+    } else if (ent.type === 'tree') {
+      const leafColor = ent.scorched > 0.5 ? '#3f3f46' : '#16a34a';
+      ctx.fillStyle = leafColor;
+      [
+        { x: ent.top.x, y: ent.top.y, r: 26 },
+        { x: ent.branchL.x, y: ent.branchL.y, r: 20 },
+        { x: ent.branchR.x, y: ent.branchR.y, r: 20 }
+      ].forEach(c => {
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+  });
+
+  // Draw Sparks
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const pt = particles[i];
+    pt.x += pt.vx;
+    pt.y += pt.vy;
+    pt.vy += 0.25;
+    pt.life -= 0.035;
+    if (pt.life <= 0) {
+      particles.splice(i, 1);
+      continue;
+    }
+    ctx.fillStyle = pt.color;
+    ctx.globalAlpha = pt.life;
+    ctx.fillRect(pt.x, pt.y, 3, 3);
+    ctx.globalAlpha = 1.0;
+  }
+
+  // Draw Procedural Lightning Bolts
+  for (let i = bolts.length - 1; i >= 0; i--) {
+    const b = bolts[i];
+    ctx.save();
+    ctx.globalAlpha = b.alpha;
+    ctx.shadowBlur = b.glow;
+    ctx.shadowColor = b.colors.glow;
+    ctx.strokeStyle = b.colors.core;
+    ctx.lineWidth = b.width;
+    ctx.lineCap = 'round';
+
+    ctx.beginPath();
+    b.segments.forEach(seg => {
+      ctx.moveTo(seg.x1, seg.y1);
+      ctx.lineTo(seg.x2, seg.y2);
+    });
+    ctx.stroke();
+    ctx.restore();
+
+    b.alpha -= 0.065;
+    if (b.alpha <= 0) bolts.splice(i, 1);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+// Initial Scene Setup
+spawnCrowd();
+requestAnimationFrame(animate);
+</script>
 </body>
 </html>
