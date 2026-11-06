@@ -64,9 +64,19 @@
             color: var(--accent-blue);
         }
 
-        input[type="range"] {
+        input[type="range"], input[type="text"] {
             width: 100%;
             accent-color: var(--accent-blue);
+        }
+
+        input[type="text"] {
+            background: #0b0c10;
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            padding: 6px;
+            font-family: inherit;
+            box-sizing: border-box;
+            text-transform: uppercase;
         }
 
         select, button {
@@ -113,6 +123,26 @@
             width: 100%;
             height: 100%;
         }
+
+        #cheat-unlock-msg {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 255, 102, 0.2);
+            border: 1px solid #00ff66;
+            color: #00ff66;
+            padding: 10px 20px;
+            font-weight: bold;
+            display: none;
+            z-index: 100;
+            animation: fadeOut 3s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; display: none; }
+        }
     </style>
 </head>
 <body>
@@ -123,6 +153,16 @@
         <div>High-Precision Lightning Simulation Matrix</div>
         
         <button id="strike-btn">Force Plasma Strike</button>
+
+        <h2>Frequency & Matrix Distortion</h2>
+        <div class="control-group">
+            <label>Lightning Per Second (LPS): <span class="val-display" id="lbl-lps">1.0</span></label>
+            <input type="range" id="cfg-lps" min="0.1" max="15.0" step="0.1" value="1.0">
+        </div>
+        <div class="control-group">
+            <label>Plasma Noise Level: <span class="val-display" id="lbl-noise">15px</span></label>
+            <input type="range" id="cfg-noise" min="0" max="50" step="1" value="15">
+        </div>
 
         <h2>Intensity Matrix</h2>
         <div class="control-group">
@@ -176,8 +216,14 @@
             <input type="range" id="cfg-ambient" min="0.0" max="1.0" step="0.05" value="0.45">
         </div>
 
+        <h2>Matrix Overrides</h2>
+        <div class="control-group">
+            <label>Enter Key Code:</label>
+            <input type="text" id="cheat-input" placeholder="ENTER CODE HERE">
+        </div>
+
         <div id="status-panel">
-            <div>Engine Status: <span class="status-val">OPERATIONAL</span></div>
+            <div>Engine Status: <span class="status-val" id="stat-engine-mode">OPERATIONAL</span></div>
             <div>Total Segments: <span class="status-val" id="stat-segments">0</span></div>
             <div>Active Branches: <span class="status-val" id="stat-branches">0</span></div>
             <div>Render Context: <span class="status-val" style="color:#a1c5ff;">Canvas2D Multi-Bake</span></div>
@@ -186,6 +232,7 @@
 
     <!-- Graphics Window -->
     <div id="viewport">
+        <div id="cheat-unlock-msg">LIGHTNING MODE OVERLOAD UNLOCKED!</div>
         <canvas id="lightningCanvas"></canvas>
     </div>
 
@@ -197,9 +244,13 @@
         const strikeBtn = document.getElementById('strike-btn');
         const statSegments = document.getElementById('stat-segments');
         const statBranches = document.getElementById('stat-branches');
+        const statEngineMode = document.getElementById('stat-engine-mode');
+        const cheatInput = document.getElementById('cheat-input');
+        const cheatMsg = document.getElementById('cheat-unlock-msg');
 
         // Config storage object
         const config = {};
+        let superchargedMode = false;
         
         // Dynamic binding mapping
         function syncControl(id, configKey, suffix = '') {
@@ -217,6 +268,8 @@
         }
 
         // Initialize and lock controls to system configurations
+        syncControl('lps', 'lps');
+        syncControl('noise', 'noise', 'px');
         syncControl('luminance', 'luminance');
         syncControl('glow', 'glowRadius', 'px');
         syncControl('width', 'coreWidth', 'px');
@@ -232,6 +285,32 @@
         colorSelect.addEventListener('change', () => config.color = colorSelect.value);
         config.color = colorSelect.value;
 
+        // Code verification terminal
+        cheatInput.addEventListener('input', () => {
+            if (cheatInput.value.trim().toUpperCase() === 'LIGHTNINGISCOOL!') {
+                superchargedMode = true;
+                statEngineMode.textContent = 'SUPERCHARGED OVERLOAD';
+                statEngineMode.style.color = '#ff0055';
+                statEngineMode.style.textShadow = '0 0 10px #ff0055';
+                
+                // Visual notification trigger
+                cheatMsg.style.display = 'block';
+                cheatInput.value = '';
+                cheatInput.blur();
+                
+                // Override base maximums dynamically
+                document.getElementById('cfg-lps').max = "60.0";
+                document.getElementById('cfg-lps').value = "45.0";
+                config.lps = 45.0;
+                document.getElementById('lbl-lps').textContent = "45.0 (OVERLOAD)";
+                
+                document.getElementById('cfg-noise').max = "200";
+                document.getElementById('cfg-noise').value = "120";
+                config.noise = 120;
+                document.getElementById('lbl-noise').textContent = "120px (OVERLOAD)";
+            }
+        });
+
         // Auto Window Scaler
         function resizeCanvas() {
             canvas.width = canvas.parentElement.clientWidth;
@@ -243,6 +322,7 @@
         // System Global Trackers
         let activeBakes = [];
         let metrics = { segments: 0, branches: 0 };
+        let lastStrikeTime = performance.now();
 
         // Point Node generation container
         class Segment {
@@ -253,7 +333,7 @@
             }
         }
 
-        // Core Procedural Displacement Engine Recursive Algorithm
+        // Core Procedural Displacement Engine Recursive Algorithm with Noise Map
         function generateLightningBranch(x1, y1, x2, y2, maxDeviation, depth, width) {
             let segments = [];
             metrics.branches++;
@@ -269,17 +349,19 @@
                 let midX = (xa + xb) / 2;
                 let midY = (ya + yb) / 2;
 
-                // Displace perpendicular to direction vector
+                // Displace perpendicular to direction vector + inject high frequency atmospheric plasma noise
                 let offset = (Math.random() - 0.5) * currentDev;
-                midX += offset;
+                let noiseX = (Math.random() - 0.5) * config.noise;
+                let noiseY = (Math.random() - 0.5) * (config.noise * 0.3);
+                
+                midX += offset + noiseX;
+                midY += noiseY;
 
                 // Stochastic Split Chance
                 if (Math.random() < config.forkProb && currentDepth > 1) {
-                    // Fork output calculates paths scaling downwards
                     let forkX = midX + (Math.random() - 0.5) * currentDev * 0.8;
                     let forkY = midY + (Math.random() * (yb - ya) * 0.5);
                     
-                    // Recursive array branch generation
                     let forkSegments = generateLightningBranch(
                         midX, midY, forkX, forkY, 
                         currentDev * config.dissipation, 
@@ -289,7 +371,6 @@
                     segments = segments.concat(forkSegments);
                 }
 
-                // Inner subdivision call execution
                 subdivide(xa, ya, midX, midY, currentDev * 0.5, currentDepth - 1, currentWidth);
                 subdivide(midX, midY, xb, yb, currentDev * 0.5, currentDepth - 1, currentWidth);
             }
@@ -303,7 +384,7 @@
             metrics.segments = 0;
             metrics.branches = 0;
 
-            const startX = canvas.width / 2 + (Math.random() - 0.5) * 100;
+            const startX = canvas.width / 2 + (Math.random() - 0.5) * (superchargedMode ? canvas.width * 0.6 : 100);
             const startY = 0;
             const targetY = canvas.height * (config.verticalRange / 100);
             const targetX = startX + (Math.random() - 0.5) * (config.deviation * 0.5);
@@ -313,27 +394,36 @@
                 config.deviation, config.depth, config.coreWidth
             );
 
-            // Append item structure matrix into the baking renderer cache pool
             activeBakes.push({
                 segments: strikeSegments,
                 opacity: config.luminance,
-                ambientFlash: config.ambient,
-                metricsCache: { ...metrics }
+                ambientFlash: superchargedMode ? config.ambient * 1.5 : config.ambient,
+                metricsCache: { ...metrics },
+                overrideColor: superchargedMode ? (Math.random() > 0.5 ? '#ff0055' : config.color) : config.color
             });
         }
 
         strikeBtn.addEventListener('click', triggerPlasmaStrike);
 
         // Core Multi-Bake Animation Tick Engine
-        function renderLoop() {
-            // Apply a slight frame trails clearing wipe
-            ctx.fillStyle = `rgba(11, 12, 16, 0.25)`;
+        function renderLoop(currentTime) {
+            // Delta timing evaluation for accurate LPS automated pacing
+            const elapsed = currentTime - lastStrikeTime;
+            const intervalNeeded = 1000 / config.lps;
+
+            if (elapsed >= intervalNeeded) {
+                triggerPlasmaStrike();
+                // Avoid catch-up spirals on large lag frames
+                lastStrikeTime = currentTime - (elapsed % intervalNeeded);
+            }
+
+            // Frame clearing trails wipe
+            ctx.fillStyle = `rgba(11, 12, 16, ${superchargedMode ? '0.35' : '0.25'})`;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             let engineSegments = 0;
             let engineBranches = 0;
 
-            // Render loop over global instances
             for (let i = activeBakes.length - 1; i >= 0; i--) {
                 let strike = activeBakes[i];
                 
@@ -341,17 +431,16 @@
                 engineBranches += strike.metricsCache.branches;
 
                 if (strike.ambientFlash > 0.02) {
-                    ctx.fillStyle = `${config.color}${Math.floor(strike.ambientFlash * 35).toString(16).padStart(2, '0')}`;
+                    ctx.fillStyle = `${strike.overrideColor}${Math.floor(Math.min(strike.ambientFlash, 1) * 35).toString(16).padStart(2, '0')}`;
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     strike.ambientFlash *= 0.75; 
                 }
 
-                // Double Render Bake Strategy (Glow pass followed by Core High Precision pass)
                 ctx.save();
                 ctx.globalAlpha = strike.opacity;
-                ctx.strokeStyle = config.color;
+                ctx.strokeStyle = strike.overrideColor;
                 ctx.shadowBlur = config.glowRadius;
-                ctx.shadowColor = config.color;
+                ctx.shadowColor = strike.overrideColor;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
 
@@ -377,15 +466,13 @@
                 ctx.restore();
 
                 // Exponential decay calculation
-                strike.opacity *= 0.88;
+                strike.opacity *= superchargedMode ? 0.82 : 0.88;
 
-                // Cache Removal optimization
                 if (strike.opacity < 0.05) {
                     activeBakes.splice(i, 1);
                 }
             }
 
-            // Sync metrics dashboard data interface
             statSegments.textContent = engineSegments;
             statBranches.textContent = engineBranches;
 
@@ -393,13 +480,7 @@
         }
 
         // Fire rendering loop execution
-        renderLoop();
-
-        // Run automated initialization discharges
-        setTimeout(triggerPlasmaStrike, 400);
-        setInterval(() => {
-            if(Math.random() < 0.15 && activeBakes.length < 2) triggerPlasmaStrike();
-        }, 1000);
+        requestAnimationFrame(renderLoop);
     </script>
 </body>
 </html>
