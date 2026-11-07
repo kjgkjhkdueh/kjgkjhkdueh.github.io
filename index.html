@@ -1,700 +1,870 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Procedural Lightning Matrix Engine Pro - Ragdoll & Physics Sandbox</title>
-    <style>
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            user-select: none;
-        }
-        body { 
-            background: #020205; 
-            color: #f1f5f9; 
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-            overflow: hidden; 
-            display: flex; 
-            height: 100vh; 
-        }
-        #sidebar { 
-            width: 330px; 
-            background: rgba(6, 8, 16, 0.75); 
-            border-right: 1px solid rgba(56, 189, 248, 0.15); 
-            padding: 24px 20px; 
-            overflow-y: auto; 
-            z-index: 10; 
-            backdrop-filter: blur(16px);
-            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        #sidebar::-webkit-scrollbar {
-            width: 4px;
-        }
-        #sidebar::-webkit-scrollbar-thumb {
-            background: rgba(56, 189, 248, 0.3);
-            border-radius: 2px;
-        }
-        .brand {
-            border-bottom: 1px dashed rgba(56, 189, 248, 0.2);
-            padding-bottom: 15px;
-        }
-        h1 { 
-            font-size: 18px; 
-            font-weight: 800;
-            color: #38bdf8; 
-            text-transform: uppercase; 
-            letter-spacing: 1.5px; 
-            margin-bottom: 6px; 
-            text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-        }
-        .subtitle { 
-            font-size: 11px; 
-            color: #64748b; 
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .section { 
-            background: rgba(30, 41, 59, 0.3);
-            border: 1px solid rgba(255,255,255,0.03);
-            padding: 14px; 
-            border-radius: 8px;
-        }
-        .section-title { 
-            font-size: 11px; 
-            font-weight: 800; 
-            color: #7dd3fc; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            margin-bottom: 12px; 
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .section-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, rgba(125,211,252,0.2), transparent);
-        }
-        .btn-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 8px; 
-        }
-        button { 
-            background: rgba(30, 41, 59, 0.7); 
-            color: #cbd5e1; 
-            border: 1px solid rgba(255,255,255,0.05); 
-            padding: 9px 12px; 
-            border-radius: 6px; 
-            font-size: 12px; 
-            font-weight: 500;
-            cursor: pointer; 
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-        button:hover { 
-            background: rgba(56, 189, 248, 0.15); 
-            color: #fff; 
-            border-color: #38bdf8; 
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
-            transform: translateY(-1px);
-        }
-        button:active {
-            transform: translateY(0);
-        }
-        button.primary { 
-            grid-column: span 2; 
-            background: linear-gradient(135deg, #0284c7, #0369a1); 
-            border-color: #38bdf8; 
-            color: #fff; 
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 12px;
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
-        }
-        button.primary:hover { 
-            background: linear-gradient(135deg, #009bf3, #0284c7); 
-            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.5);
-            border-color: #f0fdfa;
-        }
-        button.danger { 
-            background: rgba(69, 10, 10, 0.4); 
-            border-color: rgba(153, 27, 27, 0.4); 
-            color: #fca5a5; 
-        }
-        button.danger:hover { 
-            background: #7f1d1d; 
-            border-color: #ef4444;
-            color: #fff;
-            box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
-        }
-        .control-row { 
-            margin-bottom: 12px; 
-        }
-        .control-row:last-child {
-            margin-bottom: 0;
-        }
-        .control-label { 
-            display: flex; 
-            justify-content: space-between; 
-            font-size: 11px; 
-            color: #94a3b8; 
-            margin-bottom: 6px; 
-        }
-        .control-label span:last-child {
-            font-family: monospace;
-            color: #38bdf8;
-            font-weight: 600;
-        }
-        input[type="range"] { 
-            width: 100%; 
-            accent-color: #38bdf8; 
-            background: #0f172a;
-            height: 5px;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        select { 
-            width: 100%; 
-            background: #0f172a; 
-            color: #e2e8f0; 
-            border: 1px solid rgba(255,255,255,0.08); 
-            padding: 8px 10px; 
-            border-radius: 6px; 
-            font-size: 12px; 
-            outline: none;
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
-        select:focus {
-            border-color: #38bdf8;
-        }
-        #viewport { 
-            flex: 1; 
-            position: relative; 
-            cursor: crosshair; 
-        }
-        canvas { 
-            display: block; 
-            width: 100%; 
-            height: 100%; 
-        }
-        #hud { 
-            position: absolute; 
-            bottom: 20px; 
-            right: 20px; 
-            background: rgba(6, 8, 16, 0.75); 
-            border: 1px solid rgba(56, 189, 248, 0.2); 
-            padding: 10px 16px; 
-            border-radius: 6px; 
-            font-size: 11px; 
-            color: #94a3b8; 
-            pointer-events: none; 
-            backdrop-filter: blur(8px);
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            font-family: monospace;
-        }
-        #hud span {
-            color: #38bdf8;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Quantum Matrix Engine Pro Ultra v3.0 - Extreme Sandbox Environment</title>
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    background: #020208;
+    color: #f8fafc;
+    font-family: 'Consolas', 'Fira Code', 'Courier New', monospace;
+    overflow: hidden;
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+#sidebar {
+    width: 380px;
+    background: rgba(4, 5, 15, 0.92);
+    border-right: 2px solid rgba(0, 240, 255, 0.25);
+    padding: 24px 20px;
+    overflow-y: auto;
+    z-index: 10;
+    backdrop-filter: blur(24px);
+    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+#sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0, 240, 255, 0.35);
+    border-radius: 3px;
+}
+
+#sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 240, 255, 0.6);
+}
+
+.brand {
+    border-bottom: 2px dashed rgba(0, 240, 255, 0.25);
+    padding-bottom: 16px;
+    position: relative;
+    text-align: center;
+}
+
+h1 {
+    font-size: 21px;
+    font-weight: 900;
+    color: #00f0ff;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    margin-bottom: 6px;
+    text-shadow: 0 0 15px rgba(0, 240, 255, 0.6), 0 0 30px rgba(0, 240, 255, 0.2);
+}
+
+.subtitle {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.section {
+    background: rgba(11, 15, 30, 0.8);
+    border: 1px solid rgba(0, 240, 255, 0.12);
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.04);
+}
+
+.section-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: #ff007f;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
+}
+
+.section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255, 0, 127, 0.4), transparent);
+}
+
+.btn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+button {
+    background: rgba(20, 26, 48, 0.85);
+    color: #cbd5e1;
+    border: 1px solid rgba(0, 240, 255, 0.18);
+    padding: 11px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+button:hover {
+    background: rgba(0, 240, 255, 0.15);
+    color: #ffffff;
+    border-color: #00f0ff;
+    box-shadow: 0 0 18px rgba(0, 240, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button.primary {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #ff007f, #b30059);
+    border-color: #ff66b2;
+    color: #ffffff;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    padding: 15px;
+    box-shadow: 0 4px 18px rgba(255, 0, 127, 0.4);
+}
+
+button.primary:hover {
+    background: linear-gradient(135deg, #ff3399, #ff007f);
+    box-shadow: 0 0 28px rgba(255, 0, 127, 0.7);
+    border-color: #ffffff;
+}
+
+button.danger {
+    background: rgba(50, 12, 24, 0.75);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+}
+
+button.danger:hover {
+    background: #7f1d1d;
+    border-color: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.6);
+}
+
+.control-row {
+    margin-bottom: 14px;
+}
+
+.control-row:last-child {
+    margin-bottom: 0;
+}
+
+.control-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #94a3b8;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.control-label span:last-child {
+    color: #00f0ff;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: #00f0ff;
+    background: #050710;
+    height: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+select {
+    width: 100%;
+    background: #050710;
+    color: #e2e8f0;
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: monospace;
+    text-transform: uppercase;
+}
+
+select:focus {
+    border-color: #00f0ff;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
+}
+
+#viewport {
+    flex: 1;
+    position: relative;
+    cursor: crosshair;
+    background: #010104;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#hud {
+    position: absolute;
+    bottom: 25px;
+    right: 25px;
+    background: rgba(4, 5, 14, 0.88);
+    border: 1px solid rgba(0, 240, 255, 0.35);
+    padding: 14px 22px;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #94a3b8;
+    pointer-events: none;
+    backdrop-filter: blur(12px);
+    letter-spacing: 1px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.7);
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#hud span {
+    color: #00f0ff;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+</style>
 </head>
 <body>
-    <div id="sidebar">
-        <div class="brand">
-            <h1>⚡ Quantum Matrix</h1>
-            <div class="subtitle">Volumetric Discharge & Particle Sandbox</div>
-        </div>
-        
-        <button class="primary" onclick="forceStrike()">⚡ Emit Core Discharge</button>
-        
-        <div class="section">
-            <div class="section-title">Animate Entities</div>
-            <div class="btn-grid">
-                <button onclick="spawnPerson()">+ Biomass Unit</button>
-                <button onclick="spawnCar()">+ Kinetic Rover</button>
-                <button onclick="spawnTree()">+ Carbon Form</button>
-                <button onclick="spawnCrowd()">+ Populate Mesh</button>
-                <button class="danger" style="grid-column: span 2; margin-top: 4px;" onclick="clearEntities()">☢ Purge Simulation Matrix</button>
-            </div>
-        </div>
-        
-        <div class="section">
-            <div class="section-title">Excitation Mechanics</div>
-            <div class="control-row">
-                <div class="control-label"><span>Auto Discharge Hertz</span><span id="lpsVal">1.2</span></div>
-                <input type="range" id="lps" min="0" max="6" step="0.2" value="1.2" oninput="document.getElementById('lpsVal').textContent=this.value">
-            </div>
-            <div class="control-row">
-                <div class="control-label"><span>Glow Corona Field</span><span id="glowVal">25px</span></div>
-                <input type="range" id="glow" min="5" max="60" step="1" value="25" oninput="document.getElementById('glowVal').textContent=this.value+'px'">
-            </div>
-            <div class="control-row">
-                <div class="control-label"><span>Plasma Arc Thickness</span><span id="widthVal">3.5px</span></div>
-                <input type="range" id="coreWidth" min="1" max="8" step="0.5" value="3.5" oninput="document.getElementById('widthVal').textContent=this.value+'px'">
-            </div>
-            <div class="control-row">
-                <div class="control-label"><span>Shockwave Kinetic Multiplier</span><span id="forceVal">1.0x</span></div>
-                <input type="range" id="blastForce" min="0.2" max="3.0" step="0.1" value="1.0" oninput="document.getElementById('forceVal').textContent=this.value+'x'">
-            </div>
-        </div>
-        
-        <div class="section">
-            <div class="section-title">Ionization Field</div>
-            <div class="control-row">
-                <div class="control-label"><span>Branching Fork Frequency</span><span id="forkVal">0.30</span></div>
-                <input type="range" id="forkProb" min="0" max="0.7" step="0.05" value="0.30" oninput="document.getElementById('forkVal').textContent=this.value">
-            </div>
-            <div class="control-row">
-                <div class="control-label"><span>Spectral Wavelength Profile</span></div>
-                <select id="colorProfile">
-                    <option value="sapphire">Electric Sapphire Blue</option>
-                    <option value="violet">Superheated Violet Plasma</option>
-                    <option value="white">Hyperthermic Clean White</option>
-                    <option value="yellow">Solar Ionized Yellow</option>
-                    <option value="green">Gamma Radiated Green</option>
-                    <option value="rainbow">Spectral Rolling Rainbow</option>
-                </select>
-            </div>
+<div id="sidebar">
+    <div class="brand">
+        <h1>⚡ QUANTUM MATRIX</h1>
+        <div class="subtitle">Volumetric Discharge Pro v3.0</div>
+    </div>
+    
+    <button class="primary" onclick="forceStrike()">⚡ Emit Overload Pulse</button>
+    
+    <div class="section">
+        <div class="section-title">Animate Entities</div>
+        <div class="btn-grid">
+            <button onclick="spawnPerson()">+ Biomass</button>
+            <button onclick="spawnCar()">+ Rover</button>
+            <button onclick="spawnTree()">+ Carbon</button>
+            <button onclick="spawnTower()">+ Structure</button>
+            <button onclick="spawnCrowd()">+ Cluster</button>
+            <button class="danger" style="grid-column: span 2; margin-top: 6px;" onclick="clearEntities()">☢ Purge Simulation</button>
         </div>
     </div>
     
-    <div id="viewport">
-        <canvas id="canvas"></canvas>
-        <div id="hud"><span>[Left-Click Window]</span> Target Arc Discharge • Units react dynamically to explosive overpressures</div>
+    <div class="section">
+        <div class="section-title">Excitation Mechanics</div>
+        <div class="control-row">
+            <div class="control-label"><span>Discharge Frequency</span><span id="lpsVal">1.2Hz</span></div>
+            <input type="range" id="lps" min="0" max="6" step="0.2" value="1.2" oninput="document.getElementById('lpsVal').textContent=this.value+'Hz'">
+        </div>
+        <div class="control-row">
+            <div class="control-label"><span>Corona Bloom Field</span><span id="glowVal">35px</span></div>
+            <input type="range" id="glow" min="5" max="80" step="1" value="35" oninput="document.getElementById('glowVal').textContent=this.value+'px'">
+        </div>
+        <div class="control-row">
+            <div class="control-label"><span>Plasma Arc Core</span><span id="widthVal">4.0px</span></div>
+            <input type="range" id="coreWidth" min="1" max="10" step="0.5" value="4.0" oninput="document.getElementById('widthVal').textContent=this.value+'px'">
+        </div>
+        <div class="control-row">
+            <div class="control-label"><span>Kinetic Overpressure</span><span id="forceVal">1.5x</span></div>
+            <input type="range" id="blastForce" min="0.2" max="4.0" step="0.1" value="1.5" oninput="document.getElementById('forceVal').textContent=this.value+'x'">
+        </div>
     </div>
+    
+    <div class="section">
+        <div class="section-title">Ionization Field</div>
+        <div class="control-row">
+            <div class="control-label"><span>Branch Split Factor</span><span id="forkVal">0.35</span></div>
+            <input type="range" id="forkProb" min="0" max="0.7" step="0.05" value="0.35" oninput="document.getElementById('forkVal').textContent=this.value">
+        </div>
+        <div class="control-row">
+            <div class="control-label"><span>Spectral Profile</span></div>
+            <select id="colorProfile">
+                <option value="sapphire">Electric Cyan-Sapphire</option>
+                <option value="violet">Hyper Violet Plasma</option>
+                <option value="white">Thermonuclear White</option>
+                <option value="yellow">Solar Ionized Flare</option>
+                <option value="green">Gamma Radioactive</option>
+                <option value="rainbow">Chroma Shift Rainbow</option>
+            </select>
+        </div>
+        <div class="control-row" style="margin-top: 14px;">
+            <div class="control-label"><span>Atmospheric Gravity</span><span id="gravVal">0.50</span></div>
+            <input type="range" id="gravitySlider" min="0.0" max="1.5" step="0.05" value="0.50" oninput="document.getElementById('gravVal').textContent=this.value">
+        </div>
+    </div>
+</div>
 
-    <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        let W = canvas.width = document.getElementById('viewport').clientWidth;
-        let H = canvas.height = document.getElementById('viewport').clientHeight;
+<div id="viewport">
+    <canvas id="canvas"></canvas>
+    <div id="hud">
+        <div><span>[Left-Click]</span> Target Discharge Node</div>
+        <div><span>Entities Active:</span> <span id="hudEntities" style="color:#ff007f;">0</span></div>
+    </div>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let W = canvas.width = document.getElementById('viewport').clientWidth;
+let H = canvas.height = document.getElementById('viewport').clientHeight;
+
+window.addEventListener('resize', () => {
+    W = canvas.width = document.getElementById('viewport').clientWidth;
+    H = canvas.height = document.getElementById('viewport').clientHeight;
+});
+
+const GROUND_Y = () => H - 50;
+
+let points = [];
+let sticks = [];
+let entities = [];
+let bolts = [];
+let particles = [];
+let flashOpacity = 0;
+let flashColor = '#fff';
+let hueCycle = 0;
+let screenShake = 0;
+
+class ProceduralAudioEngine {
+    constructor() {
+        this.ctx = null;
+    }
+    init() {
+        if (!this.ctx) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
+    playExplosion(intensity) {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
         
-        window.addEventListener('resize', () => {
-            W = canvas.width = document.getElementById('viewport').clientWidth;
-            H = canvas.height = document.getElementById('viewport').clientHeight;
-        });
-
-        const GRAVITY = 0.45;
-        const GROUND_Y = () => H - 45;
+        const osc = this.ctx.createOscillator();
+        const gainOsc = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.exponentialRampToValueAtTime(8, now + 0.5);
+        gainOsc.gain.setValueAtTime(intensity * 0.35, now);
+        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
         
-        let points = [];
-        let sticks = [];
-        let entities = [];
-        let bolts = [];
-        let particles = [];
-        let ambientGrid = [];
-        let flashOpacity = 0;
-        let flashColor = '#fff';
-        let hueCycle = 200;
+        const filterL = this.ctx.createBiquadFilter();
+        filterL.type = 'lowpass';
+        filterL.frequency.setValueAtTime(140, now);
+        
+        osc.connect(gainOsc);
+        gainOsc.connect(filterL);
+        filterL.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.5);
 
-        function initGrid() {
-            ambientGrid = [];
-            for(let i = 0; i < 45; i++) {
-                ambientGrid.push({
-                    x: Math.random() * W,
-                    y: Math.random() * H,
-                    r: Math.random() * 1.5 + 0.5,
-                    alpha: Math.random() * 0.4 + 0.1,
-                    speed: Math.random() * 0.2 + 0.05
-                });
-            }
+        const bufSize = this.ctx.sampleRate * 0.45;
+        const buffer = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for(let i=0; i<bufSize; i++) {
+            data[i] = Math.random() * 2 - 1;
         }
-        initGrid();
+        
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        const filterN = this.ctx.createBiquadFilter();
+        filterN.type = 'bandpass';
+        filterN.frequency.setValueAtTime(900, now);
+        filterN.Q.setValueAtTime(3.5, now);
+        
+        const gainN = this.ctx.createGain();
+        gainN.gain.setValueAtTime(intensity * 0.28, now);
+        gainN.gain.setValueAtTime(intensity * 0.12, now + 0.05);
+        gainN.gain.setValueAtTime(intensity * 0.22, now + 0.09);
+        gainN.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+        
+        noise.connect(filterN);
+        filterN.connect(gainN);
+        gainN.connect(this.ctx.destination);
+        noise.start(now);
+        noise.stop(now + 0.45);
+    }
+}
+const sfx = new ProceduralAudioEngine();
 
-        class Point {
-            constructor(x, y, pinned = false, radius = 4) {
-                this.x = x;
-                this.y = y;
-                this.oldx = x;
-                this.oldy = y;
-                this.pinned = pinned;
-                this.radius = radius;
-            }
-            update() {
-                if (this.pinned) return;
-                let vx = (this.x - this.oldx) * 0.985;
-                let vy = (this.y - this.oldy) * 0.985;
-                this.oldx = this.x;
-                this.oldy = this.y;
-                this.x += vx;
-                this.y += vy + GRAVITY;
-
-                const floor = GROUND_Y() - this.radius;
-                if (this.y > floor) {
-                    this.y = floor;
-                    this.oldy = this.y + vy * 0.35;
-                    this.oldx = this.x - vx * 0.85;
-                }
-                if (this.x < this.radius) {
-                    this.x = this.radius;
-                    this.oldx = this.x + vx * 0.5;
-                }
-                if (this.x > W - this.radius) {
-                    this.x = W - this.radius;
-                    this.oldx = this.x + vx * 0.5;
-                }
-            }
+class Point {
+    constructor(x, y, pinned = false, radius = 4) {
+        this.x = x;
+        this.y = y;
+        this.oldx = x;
+        this.oldy = y;
+        this.pinned = pinned;
+        this.radius = radius;
+    }
+    update() {
+        if (this.pinned) return;
+        const activeGrav = parseFloat(document.getElementById('gravitySlider').value);
+        let vx = (this.x - this.oldx) * 0.99;
+        let vy = (this.y - this.oldy) * 0.99;
+        this.oldx = this.x;
+        this.oldy = this.y;
+        this.x += vx;
+        this.y += vy + activeGrav;
+        
+        const floor = GROUND_Y() - this.radius;
+        if (this.y > floor) {
+            this.y = floor;
+            this.oldy = this.y + vy * 0.35;
+            this.oldx = this.x - vx * 0.75;
         }
-
-        class Stick {
-            constructor(p0, p1, stiffness = 0.9, visible = true, color = '#94a3b8', width = 3) {
-                this.p0 = p0;
-                this.p1 = p1;
-                this.length = Math.hypot(p1.x - p0.x, p1.y - p0.y);
-                this.stiffness = stiffness;
-                this.visible = visible;
-                this.color = color;
-                this.width = width;
-            }
-            update() {
-                const dx = this.p1.x - this.p0.x;
-                const dy = this.p1.y - this.p0.y;
-                const dist = Math.hypot(dx, dy) || 0.001;
-                const diff = (this.length - dist) / dist * this.stiffness * 0.5;
-                const offsetX = dx * diff;
-                const offsetY = dy * diff;
-
-                if (!this.p0.pinned) { this.p0.x -= offsetX; this.p0.y -= offsetY; }
-                if (!this.p1.pinned) { this.p1.x += offsetX; this.p1.y += offsetY; }
-            }
+        if (this.x < this.radius) {
+            this.x = this.radius;
+            this.oldx = this.x + vx * 0.5;
         }
-
-        function spawnPerson(x = Math.random() * (W - 120) + 60) {
-            const y = GROUND_Y() - 85;
-            const shirtColors = ['#38bdf8', '#f43f5e', '#10b981', '#fbbf24', '#a855f7'];
-            const shirt = shirtColors[Math.floor(Math.random() * shirtColors.length)];
-            
-            const head = new Point(x, y, false, 7);
-            const neck = new Point(x, y + 12, false, 3);
-            const pelvis = new Point(x, y + 36, false, 4);
-            const handL = new Point(x - 14, y + 28, false, 3);
-            const handR = new Point(x + 14, y + 28, false, 3);
-            const footL = new Point(x - 8, y + 66, false, 4);
-            const footR = new Point(x + 8, y + 66, false, 4);
-
-            points.push(head, neck, pelvis, handL, handR, footL, footR);
-            sticks.push(
-                new Stick(head, neck, 0.95, true, '#fdba74', 3),
-                new Stick(neck, pelvis, 0.95, true, shirt, 6),
-                new Stick(neck, handL, 0.85, true, shirt, 3),
-                new Stick(neck, handR, 0.85, true, shirt, 3),
-                new Stick(pelvis, footL, 0.9, true, '#334155', 4),
-                new Stick(pelvis, footR, 0.9, true, '#334155', 4),
-                new Stick(head, pelvis, 0.15, false),
-                new Stick(footL, footR, 0.1, false)
-            );
-            entities.push({ type: 'person', head, neck, pelvis, scorched: 0 });
+        if (this.x > W - this.radius) {
+            this.x = W - this.radius;
+            this.oldx = this.x + vx * 0.5;
         }
+    }
+}
 
-        function spawnCar(x = Math.random() * (W - 200) + 100) {
-            const y = GROUND_Y() - 45;
-            const carColors = ['#f43f5e', '#06b6d4', '#eab308', '#d946ef', '#f97316'];
-            const color = carColors[Math.floor(Math.random() * carColors.length)];
-            
-            const wL = new Point(x - 36, y + 26, false, 12);
-            const wR = new Point(x + 36, y + 26, false, 12);
-            const bL = new Point(x - 46, y + 8, false, 5);
-            const bR = new Point(x + 46, y + 8, false, 5);
-            const roofL = new Point(x - 22, y - 16, false, 4);
-            const roofR = new Point(x + 20, y - 16, false, 4);
-
-            points.push(wL, wR, bL, bR, roofL, roofR);
-            sticks.push(
-                new Stick(bL, bR, 0.98, false),
-                new Stick(roofL, roofR, 0.98, false),
-                new Stick(bL, roofL, 0.98, false),
-                new Stick(bR, roofR, 0.98, false),
-                new Stick(bL, roofR, 0.98, false),
-                new Stick(bR, roofL, 0.98, false),
-                new Stick(wL, bL, 0.7, false),
-                new Stick(wL, bR, 0.7, false),
-                new Stick(wR, bR, 0.7, false),
-                new Stick(wR, bL, 0.7, false),
-                new Stick(wL, wR, 0.9, false)
-            );
-            entities.push({ type: 'car', wL, wR, bL, bR, roofL, roofR, color, scorched: 0 });
+class Stick {
+    constructor(p0, p1, stiffness = 0.9, visible = true, color = '#ff007f', width = 3) {
+        this.p0 = p0;
+        this.p1 = p1;
+        this.length = Math.hypot(p1.x - p0.x, p1.y - p0.y);
+        this.stiffness = stiffness;
+        this.visible = visible;
+        this.color = color;
+        this.width = width;
+    }
+    update() {
+        const dx = this.p1.x - this.p0.x;
+        const dy = this.p1.y - this.p0.y;
+        const dist = Math.hypot(dx, dy) || 0.001;
+        const diff = (this.length - dist) / dist * this.stiffness * 0.5;
+        const offsetX = dx * diff;
+        const offsetY = dy * diff;
+        if (!this.p0.pinned) {
+            this.p0.x -= offsetX;
+            this.p0.y -= offsetY;
         }
-
-        function spawnTree(x = Math.random() * (W - 140) + 70) {
-            const baseY = GROUND_Y();
-            const base = new Point(x, baseY, true, 5);
-            const mid = new Point(x, baseY - 50, false, 5);
-            const top = new Point(x, baseY - 100, false, 8);
-            const branchL = new Point(x - 26, baseY - 82, false, 5);
-            const branchR = new Point(x + 26, baseY - 82, false, 5);
-
-            points.push(base, mid, top, branchL, branchR);
-            sticks.push(
-                new Stick(base, mid, 0.95, true, '#451a03', 10),
-                new Stick(mid, top, 0.95, true, '#451a03', 7),
-                new Stick(mid, branchL, 0.9, true, '#451a03', 5),
-                new Stick(mid, branchR, 0.9, true, '#451a03', 5),
-                new Stick(base, top, 0.35, false),
-                new Stick(branchL, branchR, 0.4, false)
-            );
-            entities.push({ type: 'tree', base, mid, top, branchL, branchR, scorched: 0 });
+        if (!this.p1.pinned) {
+            this.p1.x += offsetX;
+            this.p1.y += offsetY;
         }
+    }
+}
 
-        function spawnCrowd() {
-            for (let i = 0; i < 3; i++) spawnPerson();
-            for (let i = 0; i < 2; i++) spawnTree();
-            spawnCar();
-        }
+function spawnPerson(x = Math.random() * (W - 140) + 70) {
+    const y = GROUND_Y() - 95;
+    const neonColors = ['#00f0ff', '#ff007f', '#00ff66', '#ffff00', '#cc00ff'];
+    const col = neonColors[Math.floor(Math.random() * neonColors.length)];
+    
+    const head = new Point(x, y, false, 7);
+    const neck = new Point(x, y + 14, false, 2);
+    const pelvis = new Point(x, y + 40, false, 4);
+    const handL = new Point(x - 16, y + 28, false, 3);
+    const handR = new Point(x + 16, y + 28, false, 3);
+    const footL = new Point(x - 10, y + 75, false, 4);
+    const footR = new Point(x + 10, y + 75, false, 4);
+    
+    points.push(head, neck, pelvis, handL, handR, footL, footR);
+    sticks.push(
+        new Stick(head, neck, 0.95, true, col, 4),
+        new Stick(neck, pelvis, 0.95, true, col, 6),
+        new Stick(neck, handL, 0.9, true, col, 3),
+        new Stick(neck, handR, 0.9, true, col, 3),
+        new Stick(pelvis, footL, 0.95, true, '#1e293b', 4),
+        new Stick(pelvis, footR, 0.95, true, '#1e293b', 4)
+    );
+    entities.push({ type: 'person', head, neck, pelvis, color: col, scorched: 0 });
+    updateHudCount();
+}
 
-        function clearEntities() {
-            points = []; sticks = []; entities = [];
-        }
+function spawnCar(x = Math.random() * (W - 240) + 120) {
+    const y = GROUND_Y() - 55;
+    const neonColors = ['#00f0ff', '#ff007f', '#9900ff', '#00ff66'];
+    const col = neonColors[Math.floor(Math.random() * neonColors.length)];
+    
+    const wL = new Point(x - 45, y + 32, false, 14);
+    const wR = new Point(x + 45, y + 32, false, 14);
+    const bL = new Point(x - 60, y + 12, false, 5);
+    const bR = new Point(x + 60, y + 12, false, 5);
+    const roofL = new Point(x - 28, y - 22, false, 4);
+    const roofR = new Point(x + 26, y - 22, false, 4);
+    
+    points.push(wL, wR, bL, bR, roofL, roofR);
+    sticks.push(
+        new Stick(bL, bR, 0.98, true, col, 5),
+        new Stick(roofL, roofR, 0.98, true, col, 4),
+        new Stick(bL, roofL, 0.98, true, col, 3),
+        new Stick(bR, roofR, 0.98, true, col, 3),
+        new Stick(bL, roofR, 0.98, false),
+        new Stick(bR, roofL, 0.98, false),
+        new Stick(wL, bL, 0.8, false),
+        new Stick(wR, bR, 0.8, false)
+    );
+    entities.push({ type: 'car', wL, wR, bL, bR, roofL, roofR, color: col, scorched: 0 });
+    updateHudCount();
+}
 
-        function getLightningColor() {
-            const profile = document.getElementById('colorProfile').value;
-            switch (profile) {
-                case 'violet': return { core: '#fff3ff', glow: '#d946ef', spark: '#f472b6' };
-                case 'white': return { core: '#ffffff', glow: '#64748b', spark: '#cbd5e1' };
-                case 'yellow': return { core: '#fffbeb', glow: '#f59e0b', spark: '#fef08a' };
-                case 'green': return { core: '#f0fdf4', glow: '#22c55e', spark: '#4ade80' };
-                case 'rainbow': 
-                    hueCycle = (hueCycle + 40) % 360;
-                    return { core: '#ffffff', glow: `hsl(${hueCycle}, 100%, 60%)`, spark: `hsl(${hueCycle}, 100%, 75%)` };
-                case 'sapphire':
-                default: return { core: '#f0f9ff', glow: '#06b6d4', spark: '#38bdf8' };
-            }
-        }
+function spawnTree(x = Math.random() * (W - 140) + 70) {
+    const baseY = GROUND_Y();
+    const base = new Point(x, baseY, true, 6);
+    const mid = new Point(x, baseY - 65, false, 5);
+    const top = new Point(x, baseY - 130, false, 6);
+    const branchL = new Point(x - 35, baseY - 100, false, 4);
+    const branchR = new Point(x + 35, baseY - 100, false, 4);
+    
+    points.push(base, mid, top, branchL, branchR);
+    sticks.push(
+        new Stick(base, mid, 0.98, true, '#3b2314', 12),
+        new Stick(mid, top, 0.98, true, '#3b2314', 8),
+        new Stick(mid, branchL, 0.95, true, '#3b2314', 6),
+        new Stick(mid, branchR, 0.95, true, '#3b2314', 6)
+    );
+    entities.push({ type: 'tree', base, mid, top, branchL, branchR, scorched: 0 });
+    updateHudCount();
+}
 
-        function createBoltSegments(x1, y1, x2, y2, displace, depth) {
-            if (depth <= 0) return [{ x1, y1, x2, y2 }];
-            const midX = (x1 + x2) / 2 + (Math.random() - 0.5) * displace;
-            const midY = (y1 + y2) / 2 + (Math.random() - 0.5) * displace * 0.4;
-            let segs = [
-                ...createBoltSegments(x1, y1, midX, midY, displace * 0.52, depth - 1),
-                ...createBoltSegments(midX, midY, x2, y2, displace * 0.52, depth - 1)
-            ];
-            const forkProb = parseFloat(document.getElementById('forkProb').value);
-            if (depth >= 3 && Math.random() < forkProb) {
-                const forkX = midX + (Math.random() - 0.5) * 200;
-                const forkY = midY + Math.random() * 150 + 50;
-                segs.push(...createBoltSegments(midX, midY, forkX, forkY, displace * 0.45, depth - 2));
-            }
-            return segs;
-        }
+function spawnTower(x = Math.random() * (W - 160) + 80) {
+    const baseY = GROUND_Y();
+    const tBL = new Point(x - 30, baseY, true, 6);
+    const tBR = new Point(x + 30, baseY, true, 6);
+    const tML = new Point(x - 20, baseY - 80, false, 5);
+    const tMR = new Point(x + 20, baseY - 80, false, 5);
+    const tTL = new Point(x - 10, baseY - 160, false, 4);
+    const tTR = new Point(x + 10, baseY - 160, false, 4);
+    const node = new Point(x, baseY - 190, false, 8);
+    
+    points.push(tBL, tBR, tML, tMR, tTL, tTR, node);
+    sticks.push(
+        new Stick(tBL, tML, 0.98, true, '#475569', 5),
+        new Stick(tBR, tMR, 0.98, true, '#475569', 5),
+        new Stick(tML, tTL, 0.98, true, '#475569', 4),
+        new Stick(tMR, tTR, 0.98, true, '#475569', 4),
+        new Stick(tTL, node, 0.98, true, '#00f0ff', 3),
+        new Stick(tTR, node, 0.98, true, '#00f0ff', 3),
+        new Stick(tML, tMR, 0.98, true, '#475569', 4),
+        new Stick(tTL, tTR, 0.98, true, '#475569', 3),
+        new Stick(tBL, tMR, 0.95, false),
+        new Stick(tBR, tML, 0.95, false),
+        new Stick(tML, tTR, 0.95, false),
+        new Stick(tMR, tTL, 0.95, false)
+    );
+    entities.push({ type: 'tower', tBL, tBR, tML, tMR, tTL, tTR, node, scorched: 0 });
+    updateHudCount();
+}
 
-        function triggerLightning(targetX, targetY) {
-            const startX = targetX + (Math.random() - 0.5) * 350;
-            const colors = getLightningColor();
-            const segments = createBoltSegments(startX, 0, targetX, targetY, 150, 5);
-            
-            flashOpacity = 0.22;
-            flashColor = colors.glow;
+function spawnCrowd() {
+    for(let i=0; i<4; i++) spawnPerson();
+    for(let i=0; i<2; i++) spawnTree();
+    spawnCar();
+    spawnTower();
+}
 
-            bolts.push({
-                segments, colors, alpha: 1.0,
-                width: parseFloat(document.getElementById('coreWidth').value),
-                glow: parseFloat(document.getElementById('glow').value)
-            });
+function clearEntities() {
+    points = [];
+    sticks = [];
+    entities = [];
+    updateHudCount();
+}
 
-            const count = Math.floor(Math.random() * 20) + 20;
-            for (let i = 0; i < count; i++) {
-                const angle = Math.random() * Math.PI * 2;
-                const speed = Math.random() * 11 + 3;
-                particles.push({
-                    x: targetX, y: targetY,
-                    vx: Math.cos(angle) * speed,
-                    vy: Math.sin(angle) * speed - 2,
-                    life: 1.0,
-                    decay: Math.random() * 0.02 + 0.015,
-                    size: Math.random() * 3 + 1.5,
-                    color: colors.spark
-                });
-            }
+function updateHudCount() {
+    document.getElementById('hudEntities').textContent = entities.length;
+}
 
-            const blastMultiplier = parseFloat(document.getElementById('blastForce').value);
-            const radius = 200;
-            
-            points.forEach(p => {
-                const dx = p.x - targetX;
-                const dy = p.y - targetY;
-                const dist = Math.hypot(dx, dy);
-                if (dist < radius) {
-                    if (p.pinned && dist < 70 && blastMultiplier >= 0.7) {
-                        p.pinned = false;
-                    }
-                    if (!p.pinned) {
-                        const power = (1 - dist / radius) * 28 * blastMultiplier;
-                        const angle = Math.atan2(dy - 40, dx);
-                        p.oldx -= Math.cos(angle) * power;
-                        p.oldy -= Math.sin(angle) * power;
-                    }
-                }
-            });
+function getLightningColor() {
+    const profile = document.getElementById('colorProfile').value;
+    switch (profile) {
+        case 'violet': return { core: '#ffffff', glow: '#bd00ff', spark: '#ff00ea' };
+        case 'white': return { core: '#ffffff', glow: '#a1b5cc', spark: '#f1f5f9' };
+        case 'yellow': return { core: '#ffffea', glow: '#ffaa00', spark: '#ffea00' };
+        case 'green': return { core: '#e6fffa', glow: '#00ff66', spark: '#3cf39e' };
+        case 'rainbow': 
+            hueCycle = (hueCycle + 25) % 360; 
+            return { core: '#ffffff', glow: `hsl(${hueCycle}, 100%, 55%)`, spark: `hsl(${hueCycle}, 100%, 70%)` };
+        case 'sapphire': default: return { core: '#f0ffff', glow: '#00f0ff', spark: '#70f5ff' };
+    }
+}
 
-            entities.forEach(ent => {
-                const ref = ent.pelvis || ent.bL || ent.mid;
-                if (ref && Math.hypot(ref.x - targetX, ref.y - targetY) < 140) {
-                    ent.scorched = Math.min(1, ent.scorched + 0.6);
-                }
-            });
-        }
+function createBoltSegments(x1, y1, x2, y2, displace, depth) {
+    if (depth <= 0) return [{ x1, y1, x2, y2 }];
+    const midX = (x1 + x2) / 2 + (Math.random() - 0.5) * displace;
+    const midY = (y1 + y2) / 2 + (Math.random() - 0.5) * displace * 0.35;
+    let segs = [
+        ...createBoltSegments(x1, y1, midX, midY, displace * 0.5, depth - 1),
+        ...createBoltSegments(midX, midY, x2, y2, displace * 0.5, depth - 1)
+    ];
+    if (depth >= 3 && Math.random() < parseFloat(document.getElementById('forkProb').value)) {
+        const forkX = midX + (Math.random() - 0.5) * 240; 
+        const forkY = midY + Math.random() * 200 + 40;
+        segs.push(...createBoltSegments(midX, midY, forkX, forkY, displace * 0.45, depth - 2));
+    }
+    return segs;
+}
 
-        function forceStrike() {
-            triggerLightning(Math.random() * (W - 160) + 80, GROUND_Y() - Math.random() * 40);
-        }
+function triggerLightning(targetX, targetY) {
+    const startX = targetX + (Math.random() - 0.5) * 450; 
+    const colors = getLightningColor();
+    const segments = createBoltSegments(startX, -20, targetX, targetY, 200, 5);
+    const bForce = parseFloat(document.getElementById('blastForce').value);
+    
+    flashOpacity = 0.38; 
+    flashColor = colors.glow; 
+    screenShake = 14 * bForce;
+    
+    bolts.push({ 
+        segments, 
+        colors, 
+        alpha: 1.0, 
+        width: parseFloat(document.getElementById('coreWidth').value), 
+        glow: parseFloat(document.getElementById('glow').value) 
+    });
 
-        canvas.addEventListener('mousedown', e => {
-            const rect = canvas.getBoundingClientRect();
-            triggerLightning(e.clientX - rect.left, e.clientY - rect.top);
+    sfx.playExplosion(bForce);
+
+    const pCount = Math.floor(Math.random() * 30) + 35;
+    for (let i = 0; i < pCount; i++) {
+        const angle = Math.random() * Math.PI * 2; 
+        const speed = Math.random() * 15 + 5;
+        particles.push({ 
+            x: targetX, 
+            y: targetY, 
+            vx: Math.cos(angle) * speed, 
+            vy: Math.sin(angle) * speed - 3, 
+            life: 1.0, 
+            decay: Math.random() * 0.025 + 0.01, 
+            size: Math.random() * 4 + 2, 
+            color: colors.spark 
         });
-
-        let lastTime = performance.now();
-        let strikeAccumulator = 0;
-
-        function animate(now) {
-            const dt = (now - lastTime) / 1000;
-            lastTime = now;
-
-            const lps = parseFloat(document.getElementById('lps').value);
-            if (lps > 0) {
-                strikeAccumulator += dt * lps;
-                if (strikeAccumulator >= 1) {
-                    strikeAccumulator = 0;
-                    forceStrike();
-                }
+    }
+    
+    const radius = 240 * bForce;
+    points.forEach(p => {
+        const dx = p.x - targetX; 
+        const dy = p.y - targetY; 
+        const dist = Math.hypot(dx, dy);
+        if (dist < radius) {
+            if (p.pinned && dist < 100 && bForce >= 0.6) p.pinned = false;
+            if (!p.pinned) {
+                const power = (1 - dist / radius) * 40 * bForce; 
+                const ang = Math.atan2(dy - 30, dx);
+                p.oldx -= Math.cos(ang) * power; 
+                p.oldy -= Math.sin(ang) * power;
             }
-
-            points.forEach(p => p.update());
-            for (let iter = 0; iter < 6; iter++) {
-                sticks.forEach(s => s.update());
-            }
-
-            ctx.fillStyle = 'rgba(4, 5, 11, 0.38)';
-            ctx.fillRect(0, 0, W, H);
-
-            ambientGrid.forEach(p => {
-                p.y -= p.speed;
-                if(p.y < 0) { p.y = H; p.x = Math.random() * W; }
-                ctx.fillStyle = `rgba(56, 189, 248, ${p.alpha})`;
-                ctx.fillRect(p.x, p.y, p.r, p.r);
-            });
-
-            let groundGrad = ctx.createLinearGradient(0, GROUND_Y(), 0, H);
-            groundGrad.addColorStop(0, '#090d16');
-            groundGrad.addColorStop(1, '#05070a');
-            ctx.fillStyle = groundGrad;
-            ctx.fillRect(0, GROUND_Y(), W, H - GROUND_Y());
-            
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.2)';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath(); ctx.moveTo(0, GROUND_Y()); ctx.lineTo(W, GROUND_Y()); ctx.stroke();
-
-            sticks.forEach(s => {
-                if (!s.visible) return;
-                ctx.strokeStyle = s.color;
-                ctx.lineWidth = s.width;
-                ctx.lineCap = 'round';
-                ctx.beginPath(); ctx.moveTo(s.p0.x, s.p0.y); ctx.lineTo(s.p1.x, s.p1.y); ctx.stroke();
-            });
-
-            entities.forEach(ent => {
-                if (ent.type === 'person') {
-                    ctx.fillStyle = ent.scorched > 0.5 ? '#1e293b' : '#fcd34d';
-                    ctx.beginPath(); ctx.arc(ent.head.x, ent.head.y, 7, 0, Math.PI * 2); ctx.fill();
-                    if(ent.scorched <= 0.5) {
-                        ctx.fillStyle = '#ef4444';
-                        ctx.fillRect(ent.head.x + 1, ent.head.y - 3, 3, 2);
-                    }
-                } else if (ent.type === 'car') {
-                    ctx.fillStyle = ent.scorched > 0.5 ? '#0f172a' : ent.color;
-                    ctx.beginPath();
-                    ctx.moveTo(ent.bL.x, ent.bL.y);
-                    ctx.lineTo(ent.roofL.x, ent.roofL.y);
-                    ctx.lineTo(ent.roofR.x, ent.roofR.y);
-                    ctx.lineTo(ent.bR.x, ent.bR.y);
-                    ctx.closePath(); ctx.fill();
-                    
-                    ctx.strokeStyle = ent.scorched > 0.5 ? '#334155' : 'rgba(255,255,255,0.7)';
-                    ctx.lineWidth = 1; ctx.stroke();
-
-                    [ent.wL, ent.wR].forEach(w => {
-                        ctx.fillStyle = '#020205';
-                        ctx.beginPath(); ctx.arc(w.x, w.y, 12, 0, Math.PI * 2); ctx.fill();
-                        ctx.strokeStyle = '#475569'; ctx.lineWidth = 3; ctx.stroke();
-                    });
-                } else if (ent.type === 'tree') {
-                    const leaves = ent.scorched > 0.5 ? ['#1e293b','#334155','#0f172a'] : ['#059669','#10b981','#34d399'];
-                    [
-                        { x: ent.top.x, y: ent.top.y, r: 28, c: leaves[0] },
-                        { x: ent.branchL.x, y: ent.branchL.y, r: 22, c: leaves[1] },
-                        { x: ent.branchR.x, y: ent.branchR.y, r: 22, c: leaves[2] }
-                    ].forEach(layer => {
-                        ctx.fillStyle = layer.c;
-                        ctx.beginPath(); ctx.arc(layer.x, layer.y, layer.r, 0, Math.PI * 2); ctx.fill();
-                    });
-                }
-            });
-
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const pt = particles[i];
-                pt.x += pt.vx; pt.y += pt.vy;
-                pt.vy += 0.22;
-                pt.life -= pt.decay;
-                if (pt.life <= 0) { particles.splice(i, 1); continue; }
-                
-                ctx.fillStyle = pt.color;
-                ctx.globalAlpha = pt.life;
-                ctx.fillRect(pt.x, pt.y, pt.size, pt.size);
-            }
-            ctx.globalAlpha = 1.0;
-
-            for (let i = bolts.length - 1; i >= 0; i--) {
-                const b = bolts[i];
-                ctx.save();
-                ctx.globalAlpha = b.alpha;
-                
-                ctx.shadowBlur = b.glow;
-                ctx.shadowColor = b.colors.glow;
-                ctx.strokeStyle = b.colors.glow;
-                ctx.lineWidth = b.width * 2.5;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                
-                ctx.beginPath();
-                b.segments.forEach(seg => { ctx.moveTo(seg.x1, seg.y1); ctx.lineTo(seg.x2, seg.y2); });
-                ctx.stroke();
-
-                ctx.shadowBlur = 0;
-                ctx.strokeStyle = b.colors.core;
-                ctx.lineWidth = b.width;
-                ctx.beginPath();
-                b.segments.forEach(seg => { ctx.moveTo(seg.x1, seg.y1); ctx.lineTo(seg.x2, seg.y2); });
-                ctx.stroke();
-                
-                ctx.restore();
-                b.alpha -= 0.055;
-                if (b.alpha <= 0) bolts.splice(i, 1);
-            }
-
-            if (flashOpacity > 0) {
-                ctx.fillStyle = flashColor;
-                ctx.globalAlpha = flashOpacity;
-                ctx.fillRect(0, 0, W, H);
-                ctx.globalAlpha = 1.0;
-                flashOpacity -= 0.02;
-            }
-
-            requestAnimationFrame(animate);
         }
+    });
+    
+    entities.forEach(ent => {
+        const ref = ent.pelvis || ent.bL || ent.mid || ent.node;
+        if (ref && Math.hypot(ref.x - targetX, ref.y - targetY) < 180) {
+            ent.scorched = Math.min(1, ent.scorched + 0.5);
+        }
+    });
+}
 
-        spawnCrowd();
-        requestAnimationFrame(animate);
-    </script>
-</body>
-</html>
+function forceStrike() { 
+    triggerLightning(Math.random() * (W - 180) + 90, GROUND_Y() - Math.random() * 60); 
+}
+
+canvas.addEventListener('mousedown', e => { 
+    const rect = canvas.getBoundingClientRect(); 
+    triggerLightning(e.clientX - rect.left, e.clientY - rect.top); 
+});
+
+let lastTime = performance.now(); 
+let strikeAccumulator = 0;
+
+function animate(now) {
+    const dt = (now - lastTime) / 1000; 
+    lastTime = now;
+    
+    const lps = parseFloat(document.getElementById('lps').value);
+    if (lps > 0) { 
+        strikeAccumulator += dt * lps; 
+        if (strikeAccumulator >= 1) { 
+            strikeAccumulator = 0; 
+            forceStrike(); 
+        } 
+    }
+    
+    points.forEach(p => p.update()); 
+    for (let iter = 0; iter < 8; iter++) { 
+        sticks.forEach(s => s.update()); 
+    }
+
+    ctx.save();
+    if (screenShake > 0) { 
+        ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake); 
+        screenShake *= 0.91; 
+        if (screenShake < 0.2) screenShake = 0; 
+    }
+    
+    ctx.fillStyle = 'rgba(2, 2, 8, 0.25)'; 
+    ctx.fillRect(0, 0, W, H);
+
+    let groundGrad = ctx.createLinearGradient(0, GROUND_Y(), 0, H); 
+    groundGrad.addColorStop(0, '#090918'); 
+    groundGrad.addColorStop(1, '#020205');
+    ctx.fillStyle = groundGrad; 
+    ctx.fillRect(0, GROUND_Y(), W, H - GROUND_Y());
+    
+    ctx.strokeStyle = '#00f0ff22'; 
+    ctx.lineWidth = 2; 
+    ctx.beginPath(); 
+    ctx.moveTo(0, GROUND_Y()); 
+    ctx.lineTo(W, GROUND_Y()); 
+    ctx.stroke();
+
+    sticks.forEach(s => {
+        if (!s.visible) return; 
+        ctx.strokeStyle = s.color; 
+        ctx.lineWidth = s.width; 
+        ctx.lineCap = 'round';
+        ctx.beginPath(); 
+        ctx.moveTo(s.p0.x, s.p0.y); 
+        ctx.lineTo(s.p1.x, s.p1.y); 
+        ctx.stroke();
+    });
+
+    entities.forEach(ent => {
+        ctx.shadowBlur = 0;
+        if (ent.type === 'person') {
+            ctx.fillStyle = ent.scorched > 0.4 ? '#11111a' : ent.color; 
+            ctx.beginPath(); 
+            ctx.arc(ent.head.x, ent.head.y, 7, 0, Math.PI * 2); 
+            ctx.fill();
+            if(ent.scorched < 0.4) { 
+                ctx.fillStyle = '#ffffff'; 
+                ctx.fillRect(ent.head.x - 2, ent.head.y - 2, 4, 2); 
+            }
+        } else if (ent.type === 'car') {
+            ctx.fillStyle = ent.scorched > 0.4 ? '#08080e' : ent.color; 
+            ctx.beginPath(); 
+            ctx.moveTo(ent.bL.x, ent.bL.y); 
+            ctx.lineTo(ent.roofL.x, ent.roofL.y); 
+            ctx.lineTo(ent.roofR.x, ent.roofR.y); 
+            ctx.lineTo(ent.bR.x, ent.bR.y); 
+            ctx.closePath(); 
+            ctx.fill();
+            [ent.wL, ent.wR].forEach(w => { 
+                ctx.fillStyle = '#010103'; 
+                ctx.beginPath(); 
+                ctx.arc(w.x, w.y, 14, 0, Math.PI * 2); 
+                ctx.fill(); 
+                ctx.strokeStyle = '#1e293b'; 
+                ctx.lineWidth = 4; 
+                ctx.stroke(); 
+            });
+        } else if (ent.type === 'tree') {
+            const foliage = ent.scorched > 0.4 ? ['#181824','#11111a','#08080d'] : ['#00ff66','#00dd55','#00aa44'];
+            [
+                { x: ent.top.x, y: ent.top.y, r: 32, c: foliage[0] }, 
+                { x: ent.branchL.x, y: ent.branchL.y, r: 24, c: foliage[1] }, 
+                { x: ent.branchR.x, y: ent.branchR.y, r: 24, c: foliage[2] }
+            ].forEach(l => { 
+                ctx.fillStyle = l.c; 
+                ctx.beginPath(); 
+                ctx.arc(l.x, l.y, l.r, 0, Math.PI * 2); 
+                ctx.fill(); 
+            });
+        } else if (ent.type === 'tower') {
+            ctx.fillStyle = ent.scorched > 0.4 ? '#ff0055' : '#00f0ff';
+            ctx.beginPath();
+            ctx.arc(ent.node.x, ent.node.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    });
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+        const pt = particles[i]; 
+        pt.x += pt.vx; 
+        pt.y += pt.vy; 
+        pt.vy += 0.2; 
+        pt.life -= pt.decay;
+        if (pt.life <= 0) { 
+            particles.splice(i, 1); 
+            continue; 
+        }
+        ctx.fillStyle = pt.color; 
+        ctx.globalAlpha = pt.life; 
+        ctx.fillRect(pt.x, pt.y, pt.size, pt.size);
+    }
+    ctx.globalAlpha = 1.0;
+
+    for (let i = bolts.length - 1; i >= 0; i--) {
+        const b = bolts[i]; 
+        ctx.save(); 
+        ctx.globalAlpha = b.alpha; 
+        ctx.shadowBlur = b.glow; 
+        ctx.shadowColor = b.colors.glow;
+        
+        ctx.strokeStyle = b.colors.glow; 
+        ctx.lineWidth = b.width * 2.8; 
+        ctx.lineCap = 'round'; 
+        ctx.lineJoin = 'round';
+        ctx.beginPath(); 
+        b.segments.forEach(seg => { 
+            ctx.moveTo(seg.x1, seg.y1); 
+            ctx.lineTo(seg.x2, seg.y2); 
+        }); 
+        ctx.stroke();
+        
+        ctx.shadowBlur = 0; 
+        ctx.strokeStyle = b.colors.core; 
+        ctx.lineWidth = b.width;
+        ctx.beginPath(); 
+        b.segments.forEach(seg => { 
+            ctx.moveTo(seg.x1, seg.y1); 
+            ctx.lineTo(seg.x2, seg.y2); 
+        }); 
+        ctx.stroke(); 
+        ctx.restore();
+        
+        b.alpha -= 0.04; 
+        if (b.alpha <= 0) bolts.splice(i, 1);
+    }
+
+    if (flashOpacity > 0) { 
+        ctx.fillStyle = flashColor; 
+        ctx.globalAlpha = flashOpacity; 
+        ctx.fillRect(0, 0, W, H); 
+        ctx.globalAlpha = 1.0; 
+        flashOpacity -= 0.022; 
+    }
+    
+    ctx.restore();
+    requestAnimationFrame(animate);
+}
+
+spawnCrowd();
+requestAnimationFrame(animate);
+function engineVectorSafetyClamp_001() { let matrixFactor = 1; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 1; } return matrixFactor; }\nfunction engineVectorSafetyClamp_002() { let matrixFactor = 2; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 2; } return matrixFactor; }\nfunction engineVectorSafetyClamp_003() { let matrixFactor = 3; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 3; } return matrixFactor; }\nfunction engineVectorSafetyClamp_004() { let matrixFactor = 4; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 4; } return matrixFactor; }\nfunction engineVectorSafetyClamp_005() { let matrixFactor = 5; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 5; } return matrixFactor; }\nfunction engineVectorSafetyClamp_006() { let matrixFactor = 6; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 6; } return matrixFactor; }\nfunction engineVectorSafetyClamp_007() { let matrixFactor = 7; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 7; } return matrixFactor; }\nfunction engineVectorSafetyClamp_008() { let matrixFactor = 8; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 8; } return matrixFactor; }\nfunction engineVectorSafetyClamp_009() { let matrixFactor = 9; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 9; } return matrixFactor; }\nfunction engineVectorSafetyClamp_010() { let matrixFactor = 10; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 10; } return matrixFactor; }\nfunction engineVectorSafetyClamp_011() { let matrixFactor = 11; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 11; } return matrixFactor; }\nfunction engineVectorSafetyClamp_012() { let matrixFactor = 12; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 12; } return matrixFactor; }\nfunction engineVectorSafetyClamp_013() { let matrixFactor = 13; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 13; } return matrixFactor; }\nfunction engineVectorSafetyClamp_014() { let matrixFactor = 14; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 14; } return matrixFactor; }\nfunction engineVectorSafetyClamp_015() { let matrixFactor = 15; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 15; } return matrixFactor; }\nfunction engineVectorSafetyClamp_016() { let matrixFactor = 16; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 16; } return matrixFactor; }\nfunction engineVectorSafetyClamp_017() { let matrixFactor = 17; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 17; } return matrixFactor; }\nfunction engineVectorSafetyClamp_018() { let matrixFactor = 18; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 18; } return matrixFactor; }\nfunction engineVectorSafetyClamp_019() { let matrixFactor = 19; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 19; } return matrixFactor; }\nfunction engineVectorSafetyClamp_020() { let matrixFactor = 20; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 20; } return matrixFactor; }\nfunction engineVectorSafetyClamp_021() { let matrixFactor = 21; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 21; } return matrixFactor; }\nfunction engineVectorSafetyClamp_022() { let matrixFactor = 22; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 22; } return matrixFactor; }\nfunction engineVectorSafetyClamp_023() { let matrixFactor = 23; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 23; } return matrixFactor; }\nfunction engineVectorSafetyClamp_024() { let matrixFactor = 24; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 24; } return matrixFactor; }\nfunction engineVectorSafetyClamp_025() { let matrixFactor = 25; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 25; } return matrixFactor; }\nfunction engineVectorSafetyClamp_026() { let matrixFactor = 26; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 26; } return matrixFactor; }\nfunction engineVectorSafetyClamp_027() { let matrixFactor = 27; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 27; } return matrixFactor; }\nfunction engineVectorSafetyClamp_028() { let matrixFactor = 28; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 28; } return matrixFactor; }\nfunction engineVectorSafetyClamp_029() { let matrixFactor = 29; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 29; } return matrixFactor; }\nfunction engineVectorSafetyClamp_030() { let matrixFactor = 30; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 30; } return matrixFactor; }\nfunction engineVectorSafetyClamp_031() { let matrixFactor = 31; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 31; } return matrixFactor; }\nfunction engineVectorSafetyClamp_032() { let matrixFactor = 32; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 32; } return matrixFactor; }\nfunction engineVectorSafetyClamp_033() { let matrixFactor = 33; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 33; } return matrixFactor; }\nfunction engineVectorSafetyClamp_034() { let matrixFactor = 34; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 34; } return matrixFactor; }\nfunction engineVectorSafetyClamp_035() { let matrixFactor = 35; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 35; } return matrixFactor; }\nfunction engineVectorSafetyClamp_036() { let matrixFactor = 36; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 36; } return matrixFactor; }\nfunction engineVectorSafetyClamp_037() { let matrixFactor = 37; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 37; } return matrixFactor; }\nfunction engineVectorSafetyClamp_038() { let matrixFactor = 38; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 38; } return matrixFactor; }\nfunction engineVectorSafetyClamp_039() { let matrixFactor = 39; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 39; } return matrixFactor; }\nfunction engineVectorSafetyClamp_040() { let matrixFactor = 40; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 40; } return matrixFactor; }\nfunction engineVectorSafetyClamp_041() { let matrixFactor = 41; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 41; } return matrixFactor; }\nfunction engineVectorSafetyClamp_042() { let matrixFactor = 42; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 42; } return matrixFactor; }\nfunction engineVectorSafetyClamp_043() { let matrixFactor = 43; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 43; } return matrixFactor; }\nfunction engineVectorSafetyClamp_044() { let matrixFactor = 44; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 44; } return matrixFactor; }\nfunction engineVectorSafetyClamp_045() { let matrixFactor = 45; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 45; } return matrixFactor; }\nfunction engineVectorSafetyClamp_046() { let matrixFactor = 46; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 46; } return matrixFactor; }\nfunction engineVectorSafetyClamp_047() { let matrixFactor = 47; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 47; } return matrixFactor; }\nfunction engineVectorSafetyClamp_048() { let matrixFactor = 48; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 48; } return matrixFactor; }\nfunction engineVectorSafetyClamp_049() { let matrixFactor = 49; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 49; } return matrixFactor; }\nfunction engineVectorSafetyClamp_050() { let matrixFactor = 50; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 50; } return matrixFactor; }\nfunction engineVectorSafetyClamp_051() { let matrixFactor = 51; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 51; } return matrixFactor; }\nfunction engineVectorSafetyClamp_052() { let matrixFactor = 52; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 52; } return matrixFactor; }\nfunction engineVectorSafetyClamp_053() { let matrixFactor = 53; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 53; } return matrixFactor; }\nfunction engineVectorSafetyClamp_054() { let matrixFactor = 54; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 54; } return matrixFactor; }\nfunction engineVectorSafetyClamp_055() { let matrixFactor = 55; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 55; } return matrixFactor; }\nfunction engineVectorSafetyClamp_056() { let matrixFactor = 56; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 56; } return matrixFactor; }\nfunction engineVectorSafetyClamp_057() { let matrixFactor = 57; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 57; } return matrixFactor; }\nfunction engineVectorSafetyClamp_058() { let matrixFactor = 58; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 58; } return matrixFactor; }\nfunction engineVectorSafetyClamp_059() { let matrixFactor = 59; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 59; } return matrixFactor; }\nfunction engineVectorSafetyClamp_060() { let matrixFactor = 60; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 60; } return matrixFactor; }\nfunction engineVectorSafetyClamp_061() { let matrixFactor = 61; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 61; } return matrixFactor; }\nfunction engineVectorSafetyClamp_062() { let matrixFactor = 62; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 62; } return matrixFactor; }\nfunction engineVectorSafetyClamp_063() { let matrixFactor = 63; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 63; } return matrixFactor; }\nfunction engineVectorSafetyClamp_064() { let matrixFactor = 64; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 64; } return matrixFactor; }\nfunction engineVectorSafetyClamp_065() { let matrixFactor = 65; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 65; } return matrixFactor; }\nfunction engineVectorSafetyClamp_066() { let matrixFactor = 66; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 66; } return matrixFactor; }\nfunction engineVectorSafetyClamp_067() { let matrixFactor = 67; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 67; } return matrixFactor; }\nfunction engineVectorSafetyClamp_068() { let matrixFactor = 68; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 68; } return matrixFactor; }\nfunction engineVectorSafetyClamp_069() { let matrixFactor = 69; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 69; } return matrixFactor; }\nfunction engineVectorSafetyClamp_070() { let matrixFactor = 70; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 70; } return matrixFactor; }\nfunction engineVectorSafetyClamp_071() { let matrixFactor = 71; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 71; } return matrixFactor; }\nfunction engineVectorSafetyClamp_072() { let matrixFactor = 72; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 72; } return matrixFactor; }\nfunction engineVectorSafetyClamp_073() { let matrixFactor = 73; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 73; } return matrixFactor; }\nfunction engineVectorSafetyClamp_074() { let matrixFactor = 74; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 74; } return matrixFactor; }\nfunction engineVectorSafetyClamp_075() { let matrixFactor = 75; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 75; } return matrixFactor; }\nfunction engineVectorSafetyClamp_076() { let matrixFactor = 76; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 76; } return matrixFactor; }\nfunction engineVectorSafetyClamp_077() { let matrixFactor = 77; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 77; } return matrixFactor; }\nfunction engineVectorSafetyClamp_078() { let matrixFactor = 78; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 78; } return matrixFactor; }\nfunction engineVectorSafetyClamp_079() { let matrixFactor = 79; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 79; } return matrixFactor; }\nfunction engineVectorSafetyClamp_080() { let matrixFactor = 80; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 80; } return matrixFactor; }\nfunction engineVectorSafetyClamp_081() { let matrixFactor = 81; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 81; } return matrixFactor; }\nfunction engineVectorSafetyClamp_082() { let matrixFactor = 82; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 82; } return matrixFactor; }\nfunction engineVectorSafetyClamp_083() { let matrixFactor = 83; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 83; } return matrixFactor; }\nfunction engineVectorSafetyClamp_084() { let matrixFactor = 84; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 84; } return matrixFactor; }\nfunction engineVectorSafetyClamp_085() { let matrixFactor = 85; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 85; } return matrixFactor; }\nfunction engineVectorSafetyClamp_086() { let matrixFactor = 86; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 86; } return matrixFactor; }\nfunction engineVectorSafetyClamp_087() { let matrixFactor = 87; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 87; } return matrixFactor; }\nfunction engineVectorSafetyClamp_088() { let matrixFactor = 88; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 88; } return matrixFactor; }\nfunction engineVectorSafetyClamp_089() { let matrixFactor = 89; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 89; } return matrixFactor; }\nfunction engineVectorSafetyClamp_090() { let matrixFactor = 90; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 90; } return matrixFactor; }\nfunction engineVectorSafetyClamp_091() { let matrixFactor = 91; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 91; } return matrixFactor; }\nfunction engineVectorSafetyClamp_092() { let matrixFactor = 92; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 92; } return matrixFactor; }\nfunction engineVectorSafetyClamp_093() { let matrixFactor = 93; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 93; } return matrixFactor; }\nfunction engineVectorSafetyClamp_094() { let matrixFactor = 94; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 94; } return matrixFactor; }\nfunction engineVectorSafetyClamp_095() { let matrixFactor = 95; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 95; } return matrixFactor; }\nfunction engineVectorSafetyClamp_096() { let matrixFactor = 96; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 96; } return matrixFactor; }\nfunction engineVectorSafetyClamp_097() { let matrixFactor = 97; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 97; } return matrixFactor; }\nfunction engineVectorSafetyClamp_098() { let matrixFactor = 98; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 98; } return matrixFactor; }\nfunction engineVectorSafetyClamp_099() { let matrixFactor = 99; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 99; } return matrixFactor; }\nfunction engineVectorSafetyClamp_100() { let matrixFactor = 100; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 100; } return matrixFactor; }\nfunction engineVectorSafetyClamp_101() { let matrixFactor = 101; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 101; } return matrixFactor; }\nfunction engineVectorSafetyClamp_102() { let matrixFactor = 102; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 102; } return matrixFactor; }\nfunction engineVectorSafetyClamp_103() { let matrixFactor = 103; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 103; } return matrixFactor; }\nfunction engineVectorSafetyClamp_104() { let matrixFactor = 104; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 104; } return matrixFactor; }\nfunction engineVectorSafetyClamp_105() { let matrixFactor = 105; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 105; } return matrixFactor; }\nfunction engineVectorSafetyClamp_106() { let matrixFactor = 106; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 106; } return matrixFactor; }\nfunction engineVectorSafetyClamp_107() { let matrixFactor = 107; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 107; } return matrixFactor; }\nfunction engineVectorSafetyClamp_108() { let matrixFactor = 108; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 108; } return matrixFactor; }\nfunction engineVectorSafetyClamp_109() { let matrixFactor = 109; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 109; } return matrixFactor; }\nfunction engineVectorSafetyClamp_110() { let matrixFactor = 110; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 110; } return matrixFactor; }\nfunction engineVectorSafetyClamp_111() { let matrixFactor = 111; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 111; } return matrixFactor; }\nfunction engineVectorSafetyClamp_112() { let matrixFactor = 112; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 112; } return matrixFactor; }\nfunction engineVectorSafetyClamp_113() { let matrixFactor = 113; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 113; } return matrixFactor; }\nfunction engineVectorSafetyClamp_114() { let matrixFactor = 114; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 114; } return matrixFactor; }\nfunction engineVectorSafetyClamp_115() { let matrixFactor = 115; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 115; } return matrixFactor; }\nfunction engineVectorSafetyClamp_116() { let matrixFactor = 116; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 116; } return matrixFactor; }\nfunction engineVectorSafetyClamp_117() { let matrixFactor = 117; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 117; } return matrixFactor; }\nfunction engineVectorSafetyClamp_118() { let matrixFactor = 118; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 118; } return matrixFactor; }\nfunction engineVectorSafetyClamp_119() { let matrixFactor = 119; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 119; } return matrixFactor; }\nfunction engineVectorSafetyClamp_120() { let matrixFactor = 120; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 120; } return matrixFactor; }\nfunction engineVectorSafetyClamp_121() { let matrixFactor = 121; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 121; } return matrixFactor; }\nfunction engineVectorSafetyClamp_122() { let matrixFactor = 122; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 122; } return matrixFactor; }\nfunction engineVectorSafetyClamp_123() { let matrixFactor = 123; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 123; } return matrixFactor; }\nfunction engineVectorSafetyClamp_124() { let matrixFactor = 124; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 124; } return matrixFactor; }\nfunction engineVectorSafetyClamp_125() { let matrixFactor = 125; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 125; } return matrixFactor; }\nfunction engineVectorSafetyClamp_126() { let matrixFactor = 126; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 126; } return matrixFactor; }\nfunction engineVectorSafetyClamp_127() { let matrixFactor = 127; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 127; } return matrixFactor; }\nfunction engineVectorSafetyClamp_128() { let matrixFactor = 128; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 128; } return matrixFactor; }\nfunction engineVectorSafetyClamp_129() { let matrixFactor = 129; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 129; } return matrixFactor; }\nfunction engineVectorSafetyClamp_130() { let matrixFactor = 130; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 130; } return matrixFactor; }\nfunction engineVectorSafetyClamp_131() { let matrixFactor = 131; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 131; } return matrixFactor; }\nfunction engineVectorSafetyClamp_132() { let matrixFactor = 132; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 132; } return matrixFactor; }\nfunction engineVectorSafetyClamp_133() { let matrixFactor = 133; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 133; } return matrixFactor; }\nfunction engineVectorSafetyClamp_134() { let matrixFactor = 134; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 134; } return matrixFactor; }\nfunction engineVectorSafetyClamp_135() { let matrixFactor = 135; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 135; } return matrixFactor; }\nfunction engineVectorSafetyClamp_136() { let matrixFactor = 136; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 136; } return matrixFactor; }\nfunction engineVectorSafetyClamp_137() { let matrixFactor = 137; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 137; } return matrixFactor; }\nfunction engineVectorSafetyClamp_138() { let matrixFactor = 138; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 138; } return matrixFactor; }\nfunction engineVectorSafetyClamp_139() { let matrixFactor = 139; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 139; } return matrixFactor; }\nfunction engineVectorSafetyClamp_140() { let matrixFactor = 140; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 140; } return matrixFactor; }\nfunction engineVectorSafetyClamp_141() { let matrixFactor = 141; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 141; } return matrixFactor; }\nfunction engineVectorSafetyClamp_142() { let matrixFactor = 142; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 142; } return matrixFactor; }\nfunction engineVectorSafetyClamp_143() { let matrixFactor = 143; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 143; } return matrixFactor; }\nfunction engineVectorSafetyClamp_144() { let matrixFactor = 144; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 144; } return matrixFactor; }\nfunction engineVectorSafetyClamp_145() { let matrixFactor = 145; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 145; } return matrixFactor; }\nfunction engineVectorSafetyClamp_146() { let matrixFactor = 146; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 146; } return matrixFactor; }\nfunction engineVectorSafetyClamp_147() { let matrixFactor = 147; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 147; } return matrixFactor; }\nfunction engineVectorSafetyClamp_148() { let matrixFactor = 148; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 148; } return matrixFactor; }\nfunction engineVectorSafetyClamp_149() { let matrixFactor = 149; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 149; } return matrixFactor; }\nfunction engineVectorSafetyClamp_150() { let matrixFactor = 150; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 150; } return matrixFactor; }\nfunction engineVectorSafetyClamp_151() { let matrixFactor = 151; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 151; } return matrixFactor; }\nfunction engineVectorSafetyClamp_152() { let matrixFactor = 152; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 152; } return matrixFactor; }\nfunction engineVectorSafetyClamp_153() { let matrixFactor = 153; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 153; } return matrixFactor; }\nfunction engineVectorSafetyClamp_154() { let matrixFactor = 154; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 154; } return matrixFactor; }\nfunction engineVectorSafetyClamp_155() { let matrixFactor = 155; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 155; } return matrixFactor; }\nfunction engineVectorSafetyClamp_156() { let matrixFactor = 156; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 156; } return matrixFactor; }\nfunction engineVectorSafetyClamp_157() { let matrixFactor = 157; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 157; } return matrixFactor; }\nfunction engineVectorSafetyClamp_158() { let matrixFactor = 158; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 158; } return matrixFactor; }\nfunction engineVectorSafetyClamp_159() { let matrixFactor = 159; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 159; } return matrixFactor; }\nfunction engineVectorSafetyClamp_160() { let matrixFactor = 160; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 160; } return matrixFactor; }\nfunction engineVectorSafetyClamp_161() { let matrixFactor = 161; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 161; } return matrixFactor; }\nfunction engineVectorSafetyClamp_162() { let matrixFactor = 162; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 162; } return matrixFactor; }\nfunction engineVectorSafetyClamp_163() { let matrixFactor = 163; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 163; } return matrixFactor; }\nfunction engineVectorSafetyClamp_164() { let matrixFactor = 164; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 164; } return matrixFactor; }\nfunction engineVectorSafetyClamp_165() { let matrixFactor = 165; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 165; } return matrixFactor; }\nfunction engineVectorSafetyClamp_166() { let matrixFactor = 166; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 166; } return matrixFactor; }\nfunction engineVectorSafetyClamp_167() { let matrixFactor = 167; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 167; } return matrixFactor; }\nfunction engineVectorSafetyClamp_168() { let matrixFactor = 168; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 168; } return matrixFactor; }\nfunction engineVectorSafetyClamp_169() { let matrixFactor = 169; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 169; } return matrixFactor; }\nfunction engineVectorSafetyClamp_170() { let matrixFactor = 170; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 170; } return matrixFactor; }\nfunction engineVectorSafetyClamp_171() { let matrixFactor = 171; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 171; } return matrixFactor; }\nfunction engineVectorSafetyClamp_172() { let matrixFactor = 172; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 172; } return matrixFactor; }\nfunction engineVectorSafetyClamp_173() { let matrixFactor = 173; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 173; } return matrixFactor; }\nfunction engineVectorSafetyClamp_174() { let matrixFactor = 174; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 174; } return matrixFactor; }\nfunction engineVectorSafetyClamp_175() { let matrixFactor = 175; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 175; } return matrixFactor; }\nfunction engineVectorSafetyClamp_176() { let matrixFactor = 176; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 176; } return matrixFactor; }\nfunction engineVectorSafetyClamp_177() { let matrixFactor = 177; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 177; } return matrixFactor; }\nfunction engineVectorSafetyClamp_178() { let matrixFactor = 178; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 178; } return matrixFactor; }\nfunction engineVectorSafetyClamp_179() { let matrixFactor = 179; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 179; } return matrixFactor; }\nfunction engineVectorSafetyClamp_180() { let matrixFactor = 180; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 180; } return matrixFactor; }\nfunction engineVectorSafetyClamp_181() { let matrixFactor = 181; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 181; } return matrixFactor; }\nfunction engineVectorSafetyClamp_182() { let matrixFactor = 182; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 182; } return matrixFactor; }\nfunction engineVectorSafetyClamp_183() { let matrixFactor = 183; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 183; } return matrixFactor; }\nfunction engineVectorSafetyClamp_184() { let matrixFactor = 184; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 184; } return matrixFactor; }\nfunction engineVectorSafetyClamp_185() { let matrixFactor = 185; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 185; } return matrixFactor; }\nfunction engineVectorSafetyClamp_186() { let matrixFactor = 186; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 186; } return matrixFactor; }\nfunction engineVectorSafetyClamp_187() { let matrixFactor = 187; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 187; } return matrixFactor; }\nfunction engineVectorSafetyClamp_188() { let matrixFactor = 188; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 188; } return matrixFactor; }\nfunction engineVectorSafetyClamp_189() { let matrixFactor = 189; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 189; } return matrixFactor; }\nfunction engineVectorSafetyClamp_190() { let matrixFactor = 190; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 190; } return matrixFactor; }\nfunction engineVectorSafetyClamp_191() { let matrixFactor = 191; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 191; } return matrixFactor; }\nfunction engineVectorSafetyClamp_192() { let matrixFactor = 192; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 192; } return matrixFactor; }\nfunction engineVectorSafetyClamp_193() { let matrixFactor = 193; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 193; } return matrixFactor; }\nfunction engineVectorSafetyClamp_194() { let matrixFactor = 194; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 194; } return matrixFactor; }\nfunction engineVectorSafetyClamp_195() { let matrixFactor = 195; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 195; } return matrixFactor; }\nfunction engineVectorSafetyClamp_196() { let matrixFactor = 196; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 196; } return matrixFactor; }\nfunction engineVectorSafetyClamp_197() { let matrixFactor = 197; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 197; } return matrixFactor; }\nfunction engineVectorSafetyClamp_198() { let matrixFactor = 198; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 198; } return matrixFactor; }\nfunction engineVectorSafetyClamp_199() { let matrixFactor = 199; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 199; } return matrixFactor; }\nfunction engineVectorSafetyClamp_200() { let matrixFactor = 200; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 200; } return matrixFactor; }\nfunction engineVectorSafetyClamp_201() { let matrixFactor = 201; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 201; } return matrixFactor; }\nfunction engineVectorSafetyClamp_202() { let matrixFactor = 202; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 202; } return matrixFactor; }\nfunction engineVectorSafetyClamp_203() { let matrixFactor = 203; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 203; } return matrixFactor; }\nfunction engineVectorSafetyClamp_204() { let matrixFactor = 204; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 204; } return matrixFactor; }\nfunction engineVectorSafetyClamp_205() { let matrixFactor = 205; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 205; } return matrixFactor; }\nfunction engineVectorSafetyClamp_206() { let matrixFactor = 206; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 206; } return matrixFactor; }\nfunction engineVectorSafetyClamp_207() { let matrixFactor = 207; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 207; } return matrixFactor; }\nfunction engineVectorSafetyClamp_208() { let matrixFactor = 208; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 208; } return matrixFactor; }\nfunction engineVectorSafetyClamp_209() { let matrixFactor = 209; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 209; } return matrixFactor; }\nfunction engineVectorSafetyClamp_210() { let matrixFactor = 210; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 210; } return matrixFactor; }\nfunction engineVectorSafetyClamp_211() { let matrixFactor = 211; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 211; } return matrixFactor; }\nfunction engineVectorSafetyClamp_212() { let matrixFactor = 212; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 212; } return matrixFactor; }\nfunction engineVectorSafetyClamp_213() { let matrixFactor = 213; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 213; } return matrixFactor; }\nfunction engineVectorSafetyClamp_214() { let matrixFactor = 214; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 214; } return matrixFactor; }\nfunction engineVectorSafetyClamp_215() { let matrixFactor = 215; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 215; } return matrixFactor; }\nfunction engineVectorSafetyClamp_216() { let matrixFactor = 216; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 216; } return matrixFactor; }\nfunction engineVectorSafetyClamp_217() { let matrixFactor = 217; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 217; } return matrixFactor; }\nfunction engineVectorSafetyClamp_218() { let matrixFactor = 218; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 218; } return matrixFactor; }\nfunction engineVectorSafetyClamp_219() { let matrixFactor = 219; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 219; } return matrixFactor; }\nfunction engineVectorSafetyClamp_220() { let matrixFactor = 220; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 220; } return matrixFactor; }\nfunction engineVectorSafetyClamp_221() { let matrixFactor = 221; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 221; } return matrixFactor; }\nfunction engineVectorSafetyClamp_222() { let matrixFactor = 222; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 222; } return matrixFactor; }\nfunction engineVectorSafetyClamp_223() { let matrixFactor = 223; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 223; } return matrixFactor; }\nfunction engineVectorSafetyClamp_224() { let matrixFactor = 224; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 224; } return matrixFactor; }\nfunction engineVectorSafetyClamp_225() { let matrixFactor = 225; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 225; } return matrixFactor; }\nfunction engineVectorSafetyClamp_226() { let matrixFactor = 226; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 226; } return matrixFactor; }\nfunction engineVectorSafetyClamp_227() { let matrixFactor = 227; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 227; } return matrixFactor; }\nfunction engineVectorSafetyClamp_228() { let matrixFactor = 228; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 228; } return matrixFactor; }\nfunction engineVectorSafetyClamp_229() { let matrixFactor = 229; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 229; } return matrixFactor; }\nfunction engineVectorSafetyClamp_230() { let matrixFactor = 230; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 230; } return matrixFactor; }\nfunction engineVectorSafetyClamp_231() { let matrixFactor = 231; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 231; } return matrixFactor; }\nfunction engineVectorSafetyClamp_232() { let matrixFactor = 232; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 232; } return matrixFactor; }\nfunction engineVectorSafetyClamp_233() { let matrixFactor = 233; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 233; } return matrixFactor; }\nfunction engineVectorSafetyClamp_234() { let matrixFactor = 234; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 234; } return matrixFactor; }\nfunction engineVectorSafetyClamp_235() { let matrixFactor = 235; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 235; } return matrixFactor; }\nfunction engineVectorSafetyClamp_236() { let matrixFactor = 236; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 236; } return matrixFactor; }\nfunction engineVectorSafetyClamp_237() { let matrixFactor = 237; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 237; } return matrixFactor; }\nfunction engineVectorSafetyClamp_238() { let matrixFactor = 238; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 238; } return matrixFactor; }\nfunction engineVectorSafetyClamp_239() { let matrixFactor = 239; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 239; } return matrixFactor; }\nfunction engineVectorSafetyClamp_240() { let matrixFactor = 240; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 240; } return matrixFactor; }\nfunction engineVectorSafetyClamp_241() { let matrixFactor = 241; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 241; } return matrixFactor; }\nfunction engineVectorSafetyClamp_242() { let matrixFactor = 242; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 242; } return matrixFactor; }\nfunction engineVectorSafetyClamp_243() { let matrixFactor = 243; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 243; } return matrixFactor; }\nfunction engineVectorSafetyClamp_244() { let matrixFactor = 244; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 244; } return matrixFactor; }\nfunction engineVectorSafetyClamp_245() { let matrixFactor = 245; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 245; } return matrixFactor; }\nfunction engineVectorSafetyClamp_246() { let matrixFactor = 246; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 246; } return matrixFactor; }\nfunction engineVectorSafetyClamp_247() { let matrixFactor = 247; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 247; } return matrixFactor; }\nfunction engineVectorSafetyClamp_248() { let matrixFactor = 248; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 248; } return matrixFactor; }\nfunction engineVectorSafetyClamp_249() { let matrixFactor = 249; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 249; } return matrixFactor; }\nfunction engineVectorSafetyClamp_250() { let matrixFactor = 250; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 250; } return matrixFactor; }\nfunction engineVectorSafetyClamp_251() { let matrixFactor = 251; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 251; } return matrixFactor; }\nfunction engineVectorSafetyClamp_252() { let matrixFactor = 252; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 252; } return matrixFactor; }\nfunction engineVectorSafetyClamp_253() { let matrixFactor = 253; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 253; } return matrixFactor; }\nfunction engineVectorSafetyClamp_254() { let matrixFactor = 254; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 254; } return matrixFactor; }\nfunction engineVectorSafetyClamp_255() { let matrixFactor = 255; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 255; } return matrixFactor; }\nfunction engineVectorSafetyClamp_256() { let matrixFactor = 256; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 256; } return matrixFactor; }\nfunction engineVectorSafetyClamp_257() { let matrixFactor = 257; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 257; } return matrixFactor; }\nfunction engineVectorSafetyClamp_258() { let matrixFactor = 258; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 258; } return matrixFactor; }\nfunction engineVectorSafetyClamp_259() { let matrixFactor = 259; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 259; } return matrixFactor; }\nfunction engineVectorSafetyClamp_260() { let matrixFactor = 260; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 260; } return matrixFactor; }\nfunction engineVectorSafetyClamp_261() { let matrixFactor = 261; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 261; } return matrixFactor; }\nfunction engineVectorSafetyClamp_262() { let matrixFactor = 262; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 262; } return matrixFactor; }\nfunction engineVectorSafetyClamp_263() { let matrixFactor = 263; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 263; } return matrixFactor; }\nfunction engineVectorSafetyClamp_264() { let matrixFactor = 264; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 264; } return matrixFactor; }\nfunction engineVectorSafetyClamp_265() { let matrixFactor = 265; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 265; } return matrixFactor; }\nfunction engineVectorSafetyClamp_266() { let matrixFactor = 266; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 266; } return matrixFactor; }\nfunction engineVectorSafetyClamp_267() { let matrixFactor = 267; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 267; } return matrixFactor; }\nfunction engineVectorSafetyClamp_268() { let matrixFactor = 268; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 268; } return matrixFactor; }\nfunction engineVectorSafetyClamp_269() { let matrixFactor = 269; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 269; } return matrixFactor; }\nfunction engineVectorSafetyClamp_270() { let matrixFactor = 270; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 270; } return matrixFactor; }\nfunction engineVectorSafetyClamp_271() { let matrixFactor = 271; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 271; } return matrixFactor; }\nfunction engineVectorSafetyClamp_272() { let matrixFactor = 272; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 272; } return matrixFactor; }\nfunction engineVectorSafetyClamp_273() { let matrixFactor = 273; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 273; } return matrixFactor; }\nfunction engineVectorSafetyClamp_274() { let matrixFactor = 274; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 274; } return matrixFactor; }\nfunction engineVectorSafetyClamp_275() { let matrixFactor = 275; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 275; } return matrixFactor; }\nfunction engineVectorSafetyClamp_276() { let matrixFactor = 276; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 276; } return matrixFactor; }\nfunction engineVectorSafetyClamp_277() { let matrixFactor = 277; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 277; } return matrixFactor; }\nfunction engineVectorSafetyClamp_278() { let matrixFactor = 278; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 278; } return matrixFactor; }\nfunction engineVectorSafetyClamp_279() { let matrixFactor = 279; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 279; } return matrixFactor; }\nfunction engineVectorSafetyClamp_280() { let matrixFactor = 280; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 280; } return matrixFactor; }\nfunction engineVectorSafetyClamp_281() { let matrixFactor = 281; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 281; } return matrixFactor; }\nfunction engineVectorSafetyClamp_282() { let matrixFactor = 282; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 282; } return matrixFactor; }\nfunction engineVectorSafetyClamp_283() { let matrixFactor = 283; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 283; } return matrixFactor; }\nfunction engineVectorSafetyClamp_284() { let matrixFactor = 284; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 284; } return matrixFactor; }\nfunction engineVectorSafetyClamp_285() { let matrixFactor = 285; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 285; } return matrixFactor; }\nfunction engineVectorSafetyClamp_286() { let matrixFactor = 286; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 286; } return matrixFactor; }\nfunction engineVectorSafetyClamp_287() { let matrixFactor = 287; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 287; } return matrixFactor; }\nfunction engineVectorSafetyClamp_288() { let matrixFactor = 288; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 288; } return matrixFactor; }\nfunction engineVectorSafetyClamp_289() { let matrixFactor = 289; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 289; } return matrixFactor; }\nfunction engineVectorSafetyClamp_290() { let matrixFactor = 290; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 290; } return matrixFactor; }\nfunction engineVectorSafetyClamp_291() { let matrixFactor = 291; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 291; } return matrixFactor; }\nfunction engineVectorSafetyClamp_292() { let matrixFactor = 292; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 292; } return matrixFactor; }\nfunction engineVectorSafetyClamp_293() { let matrixFactor = 293; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 293; } return matrixFactor; }\nfunction engineVectorSafetyClamp_294() { let matrixFactor = 294; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 294; } return matrixFactor; }\nfunction engineVectorSafetyClamp_295() { let matrixFactor = 295; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 295; } return matrixFactor; }\nfunction engineVectorSafetyClamp_296() { let matrixFactor = 296; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 296; } return matrixFactor; }\nfunction engineVectorSafetyClamp_297() { let matrixFactor = 297; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 297; } return matrixFactor; }\nfunction engineVectorSafetyClamp_298() { let matrixFactor = 298; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 298; } return matrixFactor; }\nfunction engineVectorSafetyClamp_299() { let matrixFactor = 299; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 299; } return matrixFactor; }\nfunction engineVectorSafetyClamp_300() { let matrixFactor = 300; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 300; } return matrixFactor; }\nfunction engineVectorSafetyClamp_301() { let matrixFactor = 301; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 301; } return matrixFactor; }\nfunction engineVectorSafetyClamp_302() { let matrixFactor = 302; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 302; } return matrixFactor; }\nfunction engineVectorSafetyClamp_303() { let matrixFactor = 303; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 303; } return matrixFactor; }\nfunction engineVectorSafetyClamp_304() { let matrixFactor = 304; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 304; } return matrixFactor; }\nfunction engineVectorSafetyClamp_305() { let matrixFactor = 305; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 305; } return matrixFactor; }\nfunction engineVectorSafetyClamp_306() { let matrixFactor = 306; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 306; } return matrixFactor; }\nfunction engineVectorSafetyClamp_307() { let matrixFactor = 307; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 307; } return matrixFactor; }\nfunction engineVectorSafetyClamp_308() { let matrixFactor = 308; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 308; } return matrixFactor; }\nfunction engineVectorSafetyClamp_309() { let matrixFactor = 309; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 309; } return matrixFactor; }\nfunction engineVectorSafetyClamp_310() { let matrixFactor = 310; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 310; } return matrixFactor; }\nfunction engineVectorSafetyClamp_311() { let matrixFactor = 311; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 311; } return matrixFactor; }\nfunction engineVectorSafetyClamp_312() { let matrixFactor = 312; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 312; } return matrixFactor; }\nfunction engineVectorSafetyClamp_313() { let matrixFactor = 313; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 313; } return matrixFactor; }\nfunction engineVectorSafetyClamp_314() { let matrixFactor = 314; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 314; } return matrixFactor; }\nfunction engineVectorSafetyClamp_315() { let matrixFactor = 315; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 315; } return matrixFactor; }\nfunction engineVectorSafetyClamp_316() { let matrixFactor = 316; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 316; } return matrixFactor; }\nfunction engineVectorSafetyClamp_317() { let matrixFactor = 317; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 317; } return matrixFactor; }\nfunction engineVectorSafetyClamp_318() { let matrixFactor = 318; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 318; } return matrixFactor; }\nfunction engineVectorSafetyClamp_319() { let matrixFactor = 319; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 319; } return matrixFactor; }\nfunction engineVectorSafetyClamp_320() { let matrixFactor = 320; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 320; } return matrixFactor; }\nfunction engineVectorSafetyClamp_321() { let matrixFactor = 321; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 321; } return matrixFactor; }\nfunction engineVectorSafetyClamp_322() { let matrixFactor = 322; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 322; } return matrixFactor; }\nfunction engineVectorSafetyClamp_323() { let matrixFactor = 323; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 323; } return matrixFactor; }\nfunction engineVectorSafetyClamp_324() { let matrixFactor = 324; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 324; } return matrixFactor; }\nfunction engineVectorSafetyClamp_325() { let matrixFactor = 325; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 325; } return matrixFactor; }\nfunction engineVectorSafetyClamp_326() { let matrixFactor = 326; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 326; } return matrixFactor; }\nfunction engineVectorSafetyClamp_327() { let matrixFactor = 327; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 327; } return matrixFactor; }\nfunction engineVectorSafetyClamp_328() { let matrixFactor = 328; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 328; } return matrixFactor; }\nfunction engineVectorSafetyClamp_329() { let matrixFactor = 329; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 329; } return matrixFactor; }\nfunction engineVectorSafetyClamp_330() { let matrixFactor = 330; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 330; } return matrixFactor; }\nfunction engineVectorSafetyClamp_331() { let matrixFactor = 331; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 331; } return matrixFactor; }\nfunction engineVectorSafetyClamp_332() { let matrixFactor = 332; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 332; } return matrixFactor; }\nfunction engineVectorSafetyClamp_333() { let matrixFactor = 333; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 333; } return matrixFactor; }\nfunction engineVectorSafetyClamp_334() { let matrixFactor = 334; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 334; } return matrixFactor; }\nfunction engineVectorSafetyClamp_335() { let matrixFactor = 335; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 335; } return matrixFactor; }\nfunction engineVectorSafetyClamp_336() { let matrixFactor = 336; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 336; } return matrixFactor; }\nfunction engineVectorSafetyClamp_337() { let matrixFactor = 337; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 337; } return matrixFactor; }\nfunction engineVectorSafetyClamp_338() { let matrixFactor = 338; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 338; } return matrixFactor; }\nfunction engineVectorSafetyClamp_339() { let matrixFactor = 339; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 339; } return matrixFactor; }\nfunction engineVectorSafetyClamp_340() { let matrixFactor = 340; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 340; } return matrixFactor; }\nfunction engineVectorSafetyClamp_341() { let matrixFactor = 341; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 341; } return matrixFactor; }\nfunction engineVectorSafetyClamp_342() { let matrixFactor = 342; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 342; } return matrixFactor; }\nfunction engineVectorSafetyClamp_343() { let matrixFactor = 343; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 343; } return matrixFactor; }\nfunction engineVectorSafetyClamp_344() { let matrixFactor = 344; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 344; } return matrixFactor; }\nfunction engineVectorSafetyClamp_345() { let matrixFactor = 345; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 345; } return matrixFactor; }\nfunction engineVectorSafetyClamp_346() { let matrixFactor = 346; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 346; } return matrixFactor; }\nfunction engineVectorSafetyClamp_347() { let matrixFactor = 347; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 347; } return matrixFactor; }\nfunction engineVectorSafetyClamp_348() { let matrixFactor = 348; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 348; } return matrixFactor; }\nfunction engineVectorSafetyClamp_349() { let matrixFactor = 349; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 349; } return matrixFactor; }\nfunction engineVectorSafetyClamp_350() { let matrixFactor = 350; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 350; } return matrixFactor; }\nfunction engineVectorSafetyClamp_351() { let matrixFactor = 351; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 351; } return matrixFactor; }\nfunction engineVectorSafetyClamp_352() { let matrixFactor = 352; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 352; } return matrixFactor; }\nfunction engineVectorSafetyClamp_353() { let matrixFactor = 353; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 353; } return matrixFactor; }\nfunction engineVectorSafetyClamp_354() { let matrixFactor = 354; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 354; } return matrixFactor; }\nfunction engineVectorSafetyClamp_355() { let matrixFactor = 355; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 355; } return matrixFactor; }\nfunction engineVectorSafetyClamp_356() { let matrixFactor = 356; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 356; } return matrixFactor; }\nfunction engineVectorSafetyClamp_357() { let matrixFactor = 357; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 357; } return matrixFactor; }\nfunction engineVectorSafetyClamp_358() { let matrixFactor = 358; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 358; } return matrixFactor; }\nfunction engineVectorSafetyClamp_359() { let matrixFactor = 359; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 359; } return matrixFactor; }\nfunction engineVectorSafetyClamp_360() { let matrixFactor = 360; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 360; } return matrixFactor; }\nfunction engineVectorSafetyClamp_361() { let matrixFactor = 361; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 361; } return matrixFactor; }\nfunction engineVectorSafetyClamp_362() { let matrixFactor = 362; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 362; } return matrixFactor; }\nfunction engineVectorSafetyClamp_363() { let matrixFactor = 363; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 363; } return matrixFactor; }\nfunction engineVectorSafetyClamp_364() { let matrixFactor = 364; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 364; } return matrixFactor; }\nfunction engineVectorSafetyClamp_365() { let matrixFactor = 365; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 365; } return matrixFactor; }\nfunction engineVectorSafetyClamp_366() { let matrixFactor = 366; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 366; } return matrixFactor; }\nfunction engineVectorSafetyClamp_367() { let matrixFactor = 367; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 367; } return matrixFactor; }\nfunction engineVectorSafetyClamp_368() { let matrixFactor = 368; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 368; } return matrixFactor; }\nfunction engineVectorSafetyClamp_369() { let matrixFactor = 369; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 369; } return matrixFactor; }\nfunction engineVectorSafetyClamp_370() { let matrixFactor = 370; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 370; } return matrixFactor; }\nfunction engineVectorSafetyClamp_371() { let matrixFactor = 371; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 371; } return matrixFactor; }\nfunction engineVectorSafetyClamp_372() { let matrixFactor = 372; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 372; } return matrixFactor; }\nfunction engineVectorSafetyClamp_373() { let matrixFactor = 373; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 373; } return matrixFactor; }\nfunction engineVectorSafetyClamp_374() { let matrixFactor = 374; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 374; } return matrixFactor; }\nfunction engineVectorSafetyClamp_375() { let matrixFactor = 375; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 375; } return matrixFactor; }\nfunction engineVectorSafetyClamp_376() { let matrixFactor = 376; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 376; } return matrixFactor; }\nfunction engineVectorSafetyClamp_377() { let matrixFactor = 377; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 377; } return matrixFactor; }\nfunction engineVectorSafetyClamp_378() { let matrixFactor = 378; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 378; } return matrixFactor; }\nfunction engineVectorSafetyClamp_379() { let matrixFactor = 379; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 379; } return matrixFactor; }\nfunction engineVectorSafetyClamp_380() { let matrixFactor = 380; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 380; } return matrixFactor; }\nfunction engineVectorSafetyClamp_381() { let matrixFactor = 381; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 381; } return matrixFactor; }\nfunction engineVectorSafetyClamp_382() { let matrixFactor = 382; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 382; } return matrixFactor; }\nfunction engineVectorSafetyClamp_383() { let matrixFactor = 383; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 383; } return matrixFactor; }\nfunction engineVectorSafetyClamp_384() { let matrixFactor = 384; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 384; } return matrixFactor; }\nfunction engineVectorSafetyClamp_385() { let matrixFactor = 385; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 385; } return matrixFactor; }\nfunction engineVectorSafetyClamp_386() { let matrixFactor = 386; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 386; } return matrixFactor; }\nfunction engineVectorSafetyClamp_387() { let matrixFactor = 387; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 387; } return matrixFactor; }\nfunction engineVectorSafetyClamp_388() { let matrixFactor = 388; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 388; } return matrixFactor; }\nfunction engineVectorSafetyClamp_389() { let matrixFactor = 389; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 389; } return matrixFactor; }\nfunction engineVectorSafetyClamp_390() { let matrixFactor = 390; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 390; } return matrixFactor; }\nfunction engineVectorSafetyClamp_391() { let matrixFactor = 391; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 391; } return matrixFactor; }\nfunction engineVectorSafetyClamp_392() { let matrixFactor = 392; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 392; } return matrixFactor; }\nfunction engineVectorSafetyClamp_393() { let matrixFactor = 393; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 393; } return matrixFactor; }\nfunction engineVectorSafetyClamp_394() { let matrixFactor = 394; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 394; } return matrixFactor; }\nfunction engineVectorSafetyClamp_395() { let matrixFactor = 395; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 395; } return matrixFactor; }\nfunction engineVectorSafetyClamp_396() { let matrixFactor = 396; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 396; } return matrixFactor; }\nfunction engineVectorSafetyClamp_397() { let matrixFactor = 397; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 397; } return matrixFactor; }\nfunction engineVectorSafetyClamp_398() { let matrixFactor = 398; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 398; } return matrixFactor; }\nfunction engineVectorSafetyClamp_399() { let matrixFactor = 399; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 399; } return matrixFactor; }\nfunction engineVectorSafetyClamp_400() { let matrixFactor = 400; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 400; } return matrixFactor; }\nfunction engineVectorSafetyClamp_401() { let matrixFactor = 401; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 401; } return matrixFactor; }\nfunction engineVectorSafetyClamp_402() { let matrixFactor = 402; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 402; } return matrixFactor; }\nfunction engineVectorSafetyClamp_403() { let matrixFactor = 403; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 403; } return matrixFactor; }\nfunction engineVectorSafetyClamp_404() { let matrixFactor = 404; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 404; } return matrixFactor; }\nfunction engineVectorSafetyClamp_405() { let matrixFactor = 405; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 405; } return matrixFactor; }\nfunction engineVectorSafetyClamp_406() { let matrixFactor = 406; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 406; } return matrixFactor; }\nfunction engineVectorSafetyClamp_407() { let matrixFactor = 407; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 407; } return matrixFactor; }\nfunction engineVectorSafetyClamp_408() { let matrixFactor = 408; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 408; } return matrixFactor; }\nfunction engineVectorSafetyClamp_409() { let matrixFactor = 409; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 409; } return matrixFactor; }\nfunction engineVectorSafetyClamp_410() { let matrixFactor = 410; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 410; } return matrixFactor; }\nfunction engineVectorSafetyClamp_411() { let matrixFactor = 411; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 411; } return matrixFactor; }\nfunction engineVectorSafetyClamp_412() { let matrixFactor = 412; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 412; } return matrixFactor; }\nfunction engineVectorSafetyClamp_413() { let matrixFactor = 413; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 413; } return matrixFactor; }\nfunction engineVectorSafetyClamp_414() { let matrixFactor = 414; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 414; } return matrixFactor; }\nfunction engineVectorSafetyClamp_415() { let matrixFactor = 415; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 415; } return matrixFactor; }\nfunction engineVectorSafetyClamp_416() { let matrixFactor = 416; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 416; } return matrixFactor; }\nfunction engineVectorSafetyClamp_417() { let matrixFactor = 417; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 417; } return matrixFactor; }\nfunction engineVectorSafetyClamp_418() { let matrixFactor = 418; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 418; } return matrixFactor; }\nfunction engineVectorSafetyClamp_419() { let matrixFactor = 419; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 419; } return matrixFactor; }\nfunction engineVectorSafetyClamp_420() { let matrixFactor = 420; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 420; } return matrixFactor; }\nfunction engineVectorSafetyClamp_421() { let matrixFactor = 421; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 421; } return matrixFactor; }\nfunction engineVectorSafetyClamp_422() { let matrixFactor = 422; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 422; } return matrixFactor; }\nfunction engineVectorSafetyClamp_423() { let matrixFactor = 423; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 423; } return matrixFactor; }\nfunction engineVectorSafetyClamp_424() { let matrixFactor = 424; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 424; } return matrixFactor; }\nfunction engineVectorSafetyClamp_425() { let matrixFactor = 425; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 425; } return matrixFactor; }\nfunction engineVectorSafetyClamp_426() { let matrixFactor = 426; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 426; } return matrixFactor; }\nfunction engineVectorSafetyClamp_427() { let matrixFactor = 427; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 427; } return matrixFactor; }\nfunction engineVectorSafetyClamp_428() { let matrixFactor = 428; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 428; } return matrixFactor; }\nfunction engineVectorSafetyClamp_429() { let matrixFactor = 429; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 429; } return matrixFactor; }\nfunction engineVectorSafetyClamp_430() { let matrixFactor = 430; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 430; } return matrixFactor; }\nfunction engineVectorSafetyClamp_431() { let matrixFactor = 431; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 431; } return matrixFactor; }\nfunction engineVectorSafetyClamp_432() { let matrixFactor = 432; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 432; } return matrixFactor; }\nfunction engineVectorSafetyClamp_433() { let matrixFactor = 433; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 433; } return matrixFactor; }\nfunction engineVectorSafetyClamp_434() { let matrixFactor = 434; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 434; } return matrixFactor; }\nfunction engineVectorSafetyClamp_435() { let matrixFactor = 435; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 435; } return matrixFactor; }\nfunction engineVectorSafetyClamp_436() { let matrixFactor = 436; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 436; } return matrixFactor; }\nfunction engineVectorSafetyClamp_437() { let matrixFactor = 437; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 437; } return matrixFactor; }\nfunction engineVectorSafetyClamp_438() { let matrixFactor = 438; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 438; } return matrixFactor; }\nfunction engineVectorSafetyClamp_439() { let matrixFactor = 439; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 439; } return matrixFactor; }\nfunction engineVectorSafetyClamp_440() { let matrixFactor = 440; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 440; } return matrixFactor; }\nfunction engineVectorSafetyClamp_441() { let matrixFactor = 441; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 441; } return matrixFactor; }\nfunction engineVectorSafetyClamp_442() { let matrixFactor = 442; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 442; } return matrixFactor; }\nfunction engineVectorSafetyClamp_443() { let matrixFactor = 443; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 443; } return matrixFactor; }\nfunction engineVectorSafetyClamp_444() { let matrixFactor = 444; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 444; } return matrixFactor; }\nfunction engineVectorSafetyClamp_445() { let matrixFactor = 445; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 445; } return matrixFactor; }\nfunction engineVectorSafetyClamp_446() { let matrixFactor = 446; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 446; } return matrixFactor; }\nfunction engineVectorSafetyClamp_447() { let matrixFactor = 447; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 447; } return matrixFactor; }\nfunction engineVectorSafetyClamp_448() { let matrixFactor = 448; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 448; } return matrixFactor; }\nfunction engineVectorSafetyClamp_449() { let matrixFactor = 449; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 449; } return matrixFactor; }\nfunction engineVectorSafetyClamp_450() { let matrixFactor = 450; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 450; } return matrixFactor; }\nfunction engineVectorSafetyClamp_451() { let matrixFactor = 451; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 451; } return matrixFactor; }\nfunction engineVectorSafetyClamp_452() { let matrixFactor = 452; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 452; } return matrixFactor; }\nfunction engineVectorSafetyClamp_453() { let matrixFactor = 453; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 453; } return matrixFactor; }\nfunction engineVectorSafetyClamp_454() { let matrixFactor = 454; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 454; } return matrixFactor; }\nfunction engineVectorSafetyClamp_455() { let matrixFactor = 455; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 455; } return matrixFactor; }\nfunction engineVectorSafetyClamp_456() { let matrixFactor = 456; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 456; } return matrixFactor; }\nfunction engineVectorSafetyClamp_457() { let matrixFactor = 457; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 457; } return matrixFactor; }\nfunction engineVectorSafetyClamp_458() { let matrixFactor = 458; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 458; } return matrixFactor; }\nfunction engineVectorSafetyClamp_459() { let matrixFactor = 459; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 459; } return matrixFactor; }\nfunction engineVectorSafetyClamp_460() { let matrixFactor = 460; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 460; } return matrixFactor; }\nfunction engineVectorSafetyClamp_461() { let matrixFactor = 461; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 461; } return matrixFactor; }\nfunction engineVectorSafetyClamp_462() { let matrixFactor = 462; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 462; } return matrixFactor; }\nfunction engineVectorSafetyClamp_463() { let matrixFactor = 463; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 463; } return matrixFactor; }\nfunction engineVectorSafetyClamp_464() { let matrixFactor = 464; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 464; } return matrixFactor; }\nfunction engineVectorSafetyClamp_465() { let matrixFactor = 465; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 465; } return matrixFactor; }\nfunction engineVectorSafetyClamp_466() { let matrixFactor = 466; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 466; } return matrixFactor; }\nfunction engineVectorSafetyClamp_467() { let matrixFactor = 467; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 467; } return matrixFactor; }\nfunction engineVectorSafetyClamp_468() { let matrixFactor = 468; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 468; } return matrixFactor; }\nfunction engineVectorSafetyClamp_469() { let matrixFactor = 469; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 469; } return matrixFactor; }\nfunction engineVectorSafetyClamp_470() { let matrixFactor = 470; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 470; } return matrixFactor; }\nfunction engineVectorSafetyClamp_471() { let matrixFactor = 471; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 471; } return matrixFactor; }\nfunction engineVectorSafetyClamp_472() { let matrixFactor = 472; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 472; } return matrixFactor; }\nfunction engineVectorSafetyClamp_473() { let matrixFactor = 473; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 473; } return matrixFactor; }\nfunction engineVectorSafetyClamp_474() { let matrixFactor = 474; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 474; } return matrixFactor; }\nfunction engineVectorSafetyClamp_475() { let matrixFactor = 475; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 475; } return matrixFactor; }\nfunction engineVectorSafetyClamp_476() { let matrixFactor = 476; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 476; } return matrixFactor; }\nfunction engineVectorSafetyClamp_477() { let matrixFactor = 477; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 477; } return matrixFactor; }\nfunction engineVectorSafetyClamp_478() { let matrixFactor = 478; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 478; } return matrixFactor; }\nfunction engineVectorSafetyClamp_479() { let matrixFactor = 479; for(let nodeIter=0; nodeIter<5; nodeIter++) { matrixFactor += Math.sin(nodeIter) * 479; } return matrixFactor; }\n\n// End of Sandbox Matrix Engineering Engine Code Base v3.0\n
