@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>DISCHARGE MATRIX // SINGULARITY OVERDRIVE v5</title>
+<title>DISCHARGE MATRIX // SINGULARITY OVERDRIVE v6</title>
 <style>
   :root {
     --cyan: #00f3ff;
     --purple: #b829ea;
     --pink: #ff007f;
     --amber: #ffbe0b;
+    --emerald: #10b981;
     --bg: #020308;
     --cut: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
   }
@@ -26,10 +27,11 @@
     height: 100vh;
     display: flex;
     overflow: hidden;
-    font: 600 13px/1.3 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
   }
 
-  /* CRT Scanline and Vignette Overlay */
   body::after {
     content: "";
     position: fixed;
@@ -37,25 +39,24 @@
     pointer-events: none;
     z-index: 100;
     background:
-      radial-gradient(circle at center, transparent 55%, rgba(0, 0, 0, 0.72) 100%),
-      repeating-linear-gradient(0deg, rgba(0, 243, 255, 0.025) 0px, rgba(0, 243, 255, 0.025) 1px, transparent 1px, transparent 3px);
+      radial-gradient(circle, transparent 58%, rgba(0, 0, 0, 0.72) 100%),
+      repeating-linear-gradient(0deg, rgba(0, 243, 255, 0.022) 0 1px, transparent 1px 3px);
   }
 
   #sidebar {
-    width: 365px;
+    width: 355px;
     padding: 16px;
     overflow-y: auto;
     z-index: 20;
     position: relative;
     background: linear-gradient(180deg, rgba(7, 11, 24, 0.96), rgba(3, 5, 12, 0.99));
-    border-right: 1px solid rgba(0, 243, 255, 0.4);
+    border-right: 1px solid rgba(0, 243, 255, 0.42);
     box-shadow: 10px 0 40px rgba(0, 0, 0, 0.9), inset -2px 0 20px rgba(0, 243, 255, 0.08);
   }
 
   #sidebar::-webkit-scrollbar {
     width: 4px;
   }
-
   #sidebar::-webkit-scrollbar-thumb {
     background: linear-gradient(var(--cyan), var(--purple));
   }
@@ -68,8 +69,10 @@
   }
 
   h1 {
-    font: 900 15px 'Consolas', 'Courier New', monospace;
-    letter-spacing: 1.5px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1.4px;
     text-transform: uppercase;
     background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink), var(--cyan)) 0/200%;
     -webkit-background-clip: text;
@@ -81,7 +84,6 @@
   @keyframes flow {
     to { background-position: 200% center; }
   }
-
   @keyframes glitch {
     0%, 96%, 100% { transform: none; }
     97% { transform: skewX(-8deg); }
@@ -89,14 +91,16 @@
   }
 
   .badge-pro {
-    font: 800 9px 'Consolas', monospace;
-    letter-spacing: 1.2px;
+    font-family: "Courier New", monospace;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
     color: #e9d5ff;
     padding: 3px 7px;
     border-radius: 3px;
-    background: rgba(184, 41, 234, 0.22);
+    background: rgba(184, 41, 234, 0.25);
     border: 1px solid var(--purple);
-    box-shadow: 0 0 12px rgba(184, 41, 234, 0.5);
+    box-shadow: 0 0 12px rgba(184, 41, 234, 0.55);
   }
 
   .subtitle {
@@ -113,7 +117,9 @@
   }
 
   .section-title {
-    font: 700 10px 'Consolas', monospace;
+    font-family: "Courier New", monospace;
+    font-size: 10.5px;
+    font-weight: 700;
     color: var(--cyan);
     letter-spacing: 1.5px;
     text-transform: uppercase;
@@ -124,7 +130,7 @@
   }
 
   .section-title::before {
-    content: '';
+    content: "";
     width: 6px;
     height: 6px;
     background: var(--cyan);
@@ -140,23 +146,27 @@
   }
 
   button {
-    font: 700 12px 'Segoe UI', system-ui, sans-serif;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
     color: #cbd5e1;
     cursor: pointer;
-    background: rgba(12, 19, 38, 0.85);
+    background: rgba(12, 19, 38, 0.88);
     border: 1px solid rgba(71, 85, 105, 0.55);
     padding: 7px 9px;
     clip-path: var(--cut);
     position: relative;
     overflow: hidden;
-    transition: 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: 0.15s ease;
   }
 
-  button:hover, button.active-mode {
+  button:hover,
+  button.active-mode,
+  button.toggle-on {
     color: #fff;
     border-color: var(--cyan);
-    background: rgba(0, 243, 255, 0.18);
-    box-shadow: 0 0 16px rgba(0, 243, 255, 0.4);
+    background: rgba(0, 243, 255, 0.2);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
     transform: translateY(-1px);
   }
 
@@ -165,7 +175,9 @@
   }
 
   button.cta {
-    font: 800 11px 'Consolas', monospace;
+    font-family: "Courier New", monospace;
+    font-size: 11.5px;
+    font-weight: 800;
     letter-spacing: 1px;
     color: #fff;
     width: 100%;
@@ -176,18 +188,23 @@
   button.primary {
     background: linear-gradient(135deg, #0284c7, #4f46e5);
     border-color: var(--cyan);
-    box-shadow: 0 0 20px rgba(0, 243, 255, 0.35);
+    box-shadow: 0 0 18px rgba(0, 243, 255, 0.4);
   }
 
   button.orbital {
     background: linear-gradient(135deg, #be185d, #7e22ce);
     border-color: #f472b6;
-    box-shadow: 0 0 20px rgba(255, 0, 127, 0.35);
+    box-shadow: 0 0 18px rgba(255, 0, 127, 0.4);
+  }
+
+  button.tower {
+    background: linear-gradient(135deg, #0f766e, #0369a1);
+    border-color: #2dd4bf;
   }
 
   button.danger {
-    background: rgba(69, 10, 10, 0.65);
-    border-color: rgba(239, 68, 68, 0.6);
+    background: rgba(69, 10, 10, 0.7);
+    border-color: rgba(239, 68, 68, 0.65);
     color: #fca5a5;
     width: 100%;
   }
@@ -205,14 +222,15 @@
   .control-label {
     display: flex;
     justify-content: space-between;
-    color: #94a3b8;
     font-size: 11.5px;
+    color: #94a3b8;
     margin-bottom: 3px;
   }
 
   .control-label span:last-child {
     color: var(--cyan);
-    font: 700 11px 'Consolas', monospace;
+    font-family: "Courier New", monospace;
+    font-weight: 700;
   }
 
   input[type="range"] {
@@ -242,42 +260,35 @@
     padding: 6px 9px;
     border-radius: 4px;
     border: 1px solid rgba(0, 243, 255, 0.35);
-    font: 700 12px 'Segoe UI', sans-serif;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
     outline: none;
   }
 
-  .toggle-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    margin-top: 8px;
-    margin-bottom: 8px;
-  }
-
-  button.toggle-on {
-    background: rgba(184, 41, 234, 0.25);
-    border-color: var(--purple);
-    color: #f3e8ff;
-    box-shadow: 0 0 14px rgba(184, 41, 234, 0.45);
-  }
-
-  .telemetry-box {
+  #telemetryBox {
     background: rgba(4, 8, 18, 0.9);
     border: 1px solid rgba(0, 243, 255, 0.25);
     padding: 8px;
     border-radius: 4px;
-    margin-top: 8px;
   }
 
-  .telemetry-stats {
-    display: flex;
-    justify-content: space-between;
-    font: 700 10px 'Consolas', monospace;
-    color: #94a3b8;
-    margin-bottom: 5px;
+  .tele-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 6px;
+    font-family: "Courier New", monospace;
+    font-size: 10.5px;
   }
 
-  .telemetry-stats span b {
+  .tele-item span {
+    display: block;
+    color: #64748b;
+    font-size: 9px;
+  }
+
+  .tele-item strong {
     color: var(--cyan);
   }
 
@@ -285,7 +296,7 @@
     width: 100%;
     height: 44px;
     display: block;
-    background: rgba(0, 10, 20, 0.6);
+    background: #02040a;
     border: 1px solid rgba(0, 243, 255, 0.15);
   }
 
@@ -305,10 +316,12 @@
     bottom: 14px;
     right: 18px;
     pointer-events: none;
-    font: 700 10.5px 'Consolas', monospace;
-    color: rgba(0, 243, 255, 0.72);
-    letter-spacing: 1.4px;
-    text-align: right;
+    font-family: "Courier New", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(0, 243, 255, 0.75);
+    letter-spacing: 1.2px;
+    text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
   }
 
   #sim {
@@ -322,12 +335,12 @@
   <aside id="sidebar">
     <div class="header-box">
       <h1>Discharge Matrix</h1>
-      <span class="badge-pro">V5 // OVERDRIVE</span>
+      <span class="badge-pro">V6 PLASMA</span>
     </div>
-    <div class="subtitle">HIGH-VOLTAGE PLASMA &amp; SINGULARITY ENGINE</div>
+    <div class="subtitle">MULTI-LAYERED IONIZATION & ARC SIMULATOR</div>
 
     <div class="section">
-      <div class="section-title">Discharge Mode [Keys 1-4]</div>
+      <div class="section-title">Discharge Mode [1-4]</div>
       <div class="grid-2" id="modes">
         <button class="active-mode" data-mode="arc">1. ARC BOLT</button>
         <button data-mode="tesla">2. TESLA COIL</button>
@@ -336,75 +349,84 @@
       </div>
       <button class="cta primary" id="btnOverdrive">TRIGGER OVERDRIVE [SPACE]</button>
       <button class="cta orbital" id="btnOrbital">ORBITAL STRIKE [O]</button>
-      <div class="grid-2">
-        <button id="btnTower">+ TESLA TOWER</button>
-        <button id="btnTarget">+ CONDUCTOR</button>
-      </div>
+      <button class="cta tower" id="btnTower">DEPLOY TESLA TOWER [T]</button>
     </div>
 
     <div class="section">
       <div class="section-title">Matrix Parameters</div>
 
       <div class="control-row">
-        <div class="control-label"><span>VOLTAGE OUTPUT</span><span id="voltVal">1.20 GW</span></div>
-        <input type="range" id="voltSlider" min="15" max="160" value="75">
+        <div class="control-label"><span>IONIZATION SPECTRUM</span></div>
+        <select id="colorSelect">
+          <option value="cyan">CYAN // IONIZED NITROGEN</option>
+          <option value="purple">PURPLE // VOID RIFT</option>
+          <option value="pink">PINK // HYPERNOVA SURGE</option>
+          <option value="amber">AMBER // SOLAR FLARE</option>
+          <option value="emerald">EMERALD // RADIATION ARC</option>
+        </select>
       </div>
 
       <div class="control-row">
-        <div class="control-label"><span>ARC CHAOS / JAGGEDNESS</span><span id="chaosVal">100%</span></div>
-        <input type="range" id="chaosSlider" min="20" max="220" value="100">
+        <div class="control-label"><span>CORE VOLTAGE</span><span id="voltVal">1.21 GW</span></div>
+        <input type="range" id="voltSlider" min="15" max="160" value="80">
       </div>
 
       <div class="control-row">
-        <div class="control-label"><span>CHAIN ARC RADIUS</span><span id="chainVal">240 PX</span></div>
-        <input type="range" id="chainSlider" min="80" max="500" value="240">
+        <div class="control-label"><span>ARC CHAOS / JAGGEDNESS</span><span id="chaosVal">115%</span></div>
+        <input type="range" id="chaosSlider" min="20" max="240" value="115">
       </div>
 
       <div class="control-row">
-        <div class="control-label"><span>GRAVITY WELL PULL</span><span id="gravVal">1.00 G</span></div>
-        <input type="range" id="gravSlider" min="0" max="300" value="100">
+        <div class="control-label"><span>DENDRITE BRANCHING</span><span id="branchVal">65%</span></div>
+        <input type="range" id="branchSlider" min="0" max="100" value="65">
       </div>
 
       <div class="control-row">
-        <div class="control-label"><span>TIME DILATION</span><span id="timeVal">1.00 X</span></div>
+        <div class="control-label"><span>PLASMA CORONA BLOOM</span><span id="bloomVal">130%</span></div>
+        <input type="range" id="bloomSlider" min="30" max="220" value="130">
+      </div>
+
+      <div class="control-row">
+        <div class="control-label"><span>CHAIN ARC RADIUS</span><span id="chainVal">260 px</span></div>
+        <input type="range" id="chainSlider" min="80" max="520" value="260">
+      </div>
+
+      <div class="control-row">
+        <div class="control-label"><span>GRAVITY WELL PULL</span><span id="gravVal">1.40 G</span></div>
+        <input type="range" id="gravSlider" min="0" max="300" value="140">
+      </div>
+
+      <div class="control-row">
+        <div class="control-label"><span>TIME DILATION</span><span id="timeVal">1.00x</span></div>
         <input type="range" id="timeSlider" min="15" max="150" value="100">
       </div>
 
       <div class="control-row">
-        <div class="control-label"><span>PLASMA TRAIL PERSISTENCE</span><span id="trailVal">75%</span></div>
-        <input type="range" id="trailSlider" min="10" max="96" value="75">
+        <div class="control-label"><span>AFTERIMAGE TRAIL</span><span id="trailVal">76%</span></div>
+        <input type="range" id="trailSlider" min="10" max="96" value="76">
       </div>
+    </div>
 
-      <div class="control-row">
-        <div class="control-label"><span>IONIZATION SPECTRUM</span></div>
-        <select id="colorSelect">
-          <option value="cyan">CYAN // IONIZED NITROGEN</option>
-          <option value="purple">PURPLE // VOID ANTIMATTER</option>
-          <option value="pink">PINK // HYPERNOVA FLARE</option>
-          <option value="amber">AMBER // SOLAR CORONA</option>
-          <option value="emerald">EMERALD // RADIATION SURGE</option>
-        </select>
+    <div class="section">
+      <div class="section-title">System Toggles</div>
+      <div class="grid-2">
+        <button id="togAudio">AUDIO: OFF</button>
+        <button id="togAuto">AUTO-FIRE: OFF</button>
+        <button id="togTargets" class="toggle-on">TARGETS: ON</button>
+        <button id="togShake" class="toggle-on">SHAKE: ON</button>
       </div>
-
-      <div class="toggle-grid">
-        <button id="btnAudio">AUDIO: OFF</button>
-        <button id="btnAuto">AUTO-FIRE: OFF</button>
-        <button id="btnRain" class="toggle-on">ION RAIN: ON</button>
-        <button id="btnShake" class="toggle-on">SHAKE: ON</button>
-      </div>
-
       <button class="danger" id="btnPurge">PURGE CAPACITORS [C]</button>
     </div>
 
     <div class="section">
       <div class="section-title">Reactor Telemetry</div>
-      <div class="telemetry-box">
-        <div class="telemetry-stats">
-          <span>TEMP: <b id="statTemp">310 K</b></span>
-          <span>LOAD: <b id="statLoad">0%</b></span>
-          <span>FPS: <b id="statFps">60</b></span>
+      <div id="telemetryBox">
+        <div class="tele-grid">
+          <div class="tele-item"><span>FPS</span><strong id="teleFps">60</strong></div>
+          <div class="tele-item"><span>ARC TEMP</span><strong id="teleTemp">28,400 K</strong></div>
+          <div class="tele-item"><span>ACTIVE ARCS</span><strong id="teleArcs">0</strong></div>
         </div>
-        <canvas id="scope" width="310" height="44"></canvas>
+        <canvas id="scope"></canvas>
       </div>
     </div>
   </aside>
@@ -415,537 +437,633 @@
   </main>
 
 <script>
-(function() {
-  const canvas = document.getElementById('sim');
-  const ctx = canvas.getContext('2d');
-  const scopeCanvas = document.getElementById('scope');
-  const sctx = scopeCanvas.getContext('2d');
+  const canvas = document.getElementById("sim");
+  const ctx = canvas.getContext("2d");
+  const scopeCanvas = document.getElementById("scope");
+  const sctx = scopeCanvas.getContext("2d");
 
-  let W = 800;
-  let H = 600;
-  let GROUND_Y = 560;
-
-  const palettes = {
-    cyan: { outer: '#00f3ff', mid: '#38bdf8', core: '#ffffff' },
-    purple: { outer: '#b829ea', mid: '#c084fc', core: '#ffffff' },
-    pink: { outer: '#ff007f', mid: '#f472b6', core: '#ffffff' },
-    amber: { outer: '#ffbe0b', mid: '#fb923c', core: '#ffffff' },
-    emerald: { outer: '#10b981', mid: '#34d399', core: '#ffffff' }
+  const PALETTES = {
+    cyan:    { outer: "#0284c7", mid: "#00f3ff", inner: "#bae6fd", core: "#ffffff" },
+    purple:  { outer: "#6b21a8", mid: "#c084fc", inner: "#f3e8ff", core: "#ffffff" },
+    pink:    { outer: "#be185d", mid: "#ff007f", inner: "#fbcfe8", core: "#ffffff" },
+    amber:   { outer: "#b45309", mid: "#ffbe0b", inner: "#fef08a", core: "#ffffff" },
+    emerald: { outer: "#047857", mid: "#10b981", inner: "#a7f3d0", core: "#ffffff" }
   };
 
-  /* Expanded Matrix Parameters State */
-  const params = {
-    mode: 'arc',
-    spectrum: 'cyan',
-    voltage: 75,
-    chaos: 1.0,
-    chainRadius: 240,
-    gravityPull: 1.0,
+  const state = {
+    mode: "arc",
+    palette: PALETTES.cyan,
+    voltage: 80,
+    chaos: 1.15,
+    branchChance: 0.65,
+    bloom: 1.3,
+    chainRadius: 260,
+    gravity: 1.4,
     timeScale: 1.0,
-    trailFade: 0.25,
+    trailAlpha: 0.24,
     audioOn: false,
     autoFire: false,
-    ionRain: true,
+    targetsOn: true,
     shakeOn: true
   };
 
+  let W = 0;
+  let H = 0;
   let holding = false;
   let shake = 0;
   let flashAlpha = 0;
-  let coreTemp = 310;
-  let loadHistory = new Array(60).fill(0);
-  let mouse = { x: 400, y: 300 };
+  let tick = 0;
+  let activeArcCount = 0;
+  let scopeHistory = new Array(60).fill(0);
 
-  let bolts = [];
+  const mouse = { x: 0, y: 0 };
   let sparks = [];
   let shockwaves = [];
   let scorchMarks = [];
-  let orbitalBeams = [];
-  let orbNodes = [];
-  let teslaTowers = [];
+  let plasmaOrbs = [];
+  let towers = [];
   let targets = [];
-  let rainDrops = [];
+  let debris = [];
 
   /* Web Audio Synthesizer */
   let audioCtx = null;
-  let humOsc = null;
-  let humGain = null;
-
   function initAudio() {
-    if (audioCtx) return;
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    audioCtx = new AudioContext();
-    humOsc = audioCtx.createOscillator();
-    humGain = audioCtx.createGain();
-    humOsc.type = 'sawtooth';
-    humOsc.frequency.value = 55;
-    humGain.gain.value = 0.0;
-    humOsc.connect(humGain);
-    humGain.connect(audioCtx.destination);
-    humOsc.start();
+    if (!audioCtx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContextClass();
+    }
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
   }
 
-  function playZap(freq = 180, duration = 0.08, vol = 0.08) {
-    if (!params.audioOn || !audioCtx) return;
+  function playZap(freqScale = 1, gainVal = 0.08) {
+    if (!state.audioOn || !audioCtx) return;
     const now = audioCtx.currentTime;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(freq + Math.random() * 140, now);
-    osc.frequency.exponentialRampToValueAtTime(45, now + duration);
-    gain.gain.setValueAtTime(vol, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime((160 + Math.random() * 240) * freqScale, now);
+    osc.frequency.exponentialRampToValueAtTime(45, now + 0.09);
+    gain.gain.setValueAtTime(gainVal, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.start(now);
-    osc.stop(now + duration);
+    osc.stop(now + 0.095);
   }
 
-  function playBoom(vol = 0.22) {
-    if (!params.audioOn || !audioCtx) return;
+  function playBoom() {
+    if (!state.audioOn || !audioCtx) return;
     const now = audioCtx.currentTime;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    osc.type = 'sine';
+    osc.type = "triangle";
     osc.frequency.setValueAtTime(110, now);
     osc.frequency.exponentialRampToValueAtTime(24, now + 0.45);
-    gain.gain.setValueAtTime(vol, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+    gain.gain.setValueAtTime(0.28, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.46);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.start(now);
-    osc.stop(now + 0.45);
+    osc.stop(now + 0.47);
   }
 
   function resize() {
     W = canvas.width = canvas.offsetWidth;
     H = canvas.height = canvas.offsetHeight;
-    GROUND_Y = H - 36;
+    scopeCanvas.width = scopeCanvas.offsetWidth;
+    scopeCanvas.height = scopeCanvas.offsetHeight;
   }
-  window.addEventListener('resize', resize);
+  window.addEventListener("resize", resize);
   resize();
 
-  /* Procedural Lightning Generator */
-  function createBolt(x1, y1, x2, y2, width = 2.2, branches = 2) {
-    const col = palettes[params.spectrum];
-    const pts = [];
+  function spawnTargets(count = 7) {
+    targets = [];
+    for (let i = 0; i < count; i++) {
+      targets.push({
+        x: 100 + Math.random() * (W - 200),
+        y: 80 + Math.random() * (H - 160),
+        vx: (Math.random() - 0.5) * 1.4,
+        vy: (Math.random() - 0.5) * 1.4,
+        charge: 0,
+        radius: 14
+      });
+    }
+  }
+  spawnTargets();
+
+  /* Procedural Multi-Layered Fractal Lightning Engine */
+  function buildBoltPoints(x1, y1, x2, y2, displace, sway = 0) {
+    let points = [{ x: x1, y: y1 }, { x: x2, y: y2 }];
+    let offset = displace;
+    const iterations = 6;
+    for (let i = 0; i < iterations; i++) {
+      const next = [points[0]];
+      for (let j = 0; j < points.length - 1; j++) {
+        const a = points[j];
+        const b = points[j + 1];
+        const mx = (a.x + b.x) * 0.5 + (Math.random() - 0.5) * offset + Math.sin(tick * 0.25 + j) * sway;
+        const my = (a.y + b.y) * 0.5 + (Math.random() - 0.5) * offset + Math.cos(tick * 0.25 + j) * sway;
+        next.push({ x: mx, y: my }, b);
+      }
+      points = next;
+      offset *= 0.52;
+    }
+    return points;
+  }
+
+  function strokePolyline(pts, width, strokeStyle, alpha = 1, blur = 0) {
+    if (pts.length < 2) return;
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = alpha;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    if (blur > 0) {
+      ctx.shadowBlur = blur;
+      ctx.shadowColor = strokeStyle;
+    }
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) {
+      ctx.lineTo(pts[i].x, pts[i].y);
+    }
+    ctx.lineWidth = width;
+    ctx.strokeStyle = strokeStyle;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function castLightning(x1, y1, x2, y2, thickness = 2.4, depth = 0) {
+    activeArcCount++;
     const dist = Math.hypot(x2 - x1, y2 - y1);
-    const steps = Math.max(6, Math.min(28, Math.floor(dist / 22)));
-    const sway = (params.voltage * 0.55) * params.chaos;
+    const displace = Math.min(dist * 0.34, state.voltage * 1.15) * state.chaos;
+    const pts = buildBoltPoints(x1, y1, x2, y2, displace, depth === 0 ? 1.8 : 0.6);
 
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
-      const env = Math.sin(t * Math.PI);
-      const bx = x1 + (x2 - x1) * t + (Math.random() - 0.5) * sway * env;
-      const by = y1 + (y2 - y1) * t + (Math.random() - 0.5) * sway * env;
-      pts.push({ x: bx, y: by });
+    const p = state.palette;
+    const b = state.bloom;
 
-      if (branches > 0 && i > 2 && i < steps - 2 && Math.random() < 0.22) {
-        const ang = Math.atan2(y2 - y1, x2 - x1) + (Math.random() - 0.5) * 1.4;
-        const blen = dist * (0.2 + Math.random() * 0.25);
-        createBolt(bx, by, bx + Math.cos(ang) * blen, by + Math.sin(ang) * blen, width * 0.55, branches - 1);
+    /* 4-pass ionized plasma rendering */
+    strokePolyline(pts, thickness * 6.5 * b, p.outer, 0.22, 22 * b);
+    strokePolyline(pts, thickness * 3.0 * b, p.mid, 0.55, 12 * b);
+    strokePolyline(pts, thickness * 1.35, p.inner, 0.9, 4);
+    strokePolyline(pts, Math.max(0.7, thickness * 0.65), p.core, 1, 0);
+
+    /* Ionized corona halo beads along primary channel */
+    if (depth === 0) {
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      for (let i = 4; i < pts.length - 4; i += 7) {
+        if (Math.random() < 0.55) {
+          ctx.fillStyle = p.mid;
+          ctx.globalAlpha = 0.45;
+          ctx.beginPath();
+          ctx.arc(pts[i].x, pts[i].y, thickness * 1.8 * b, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    }
+
+    /* Dendrite forks & secondary leaders */
+    if (depth < 2 && pts.length > 8) {
+      const forkCount = depth === 0 ? 3 : 1;
+      for (let f = 0; f < forkCount; f++) {
+        if (Math.random() < state.branchChance) {
+          const idx = Math.floor(pts.length * (0.2 + Math.random() * 0.6));
+          const origin = pts[idx];
+          const baseAngle = Math.atan2(y2 - y1, x2 - x1);
+          const forkAngle = baseAngle + (Math.random() - 0.5) * 1.55;
+          const forkLen = dist * (0.22 + Math.random() * 0.28);
+          const fx = origin.x + Math.cos(forkAngle) * forkLen;
+          const fy = origin.y + Math.sin(forkAngle) * forkLen;
+          castLightning(origin.x, origin.y, fx, fy, thickness * 0.52, depth + 1);
+          if (Math.random() < 0.35) {
+            spawnSparks(fx, fy, 3, p.mid);
+          }
+        }
       }
     }
 
-    bolts.push({
-      pts: pts,
-      width: width,
-      colors: col,
-      life: 1.0
-    });
+    /* Micro-streamers at impact terminal */
+    if (depth === 0) {
+      for (let s = 0; s < 3; s++) {
+        const sa = Math.random() * Math.PI * 2;
+        const sr = 12 + Math.random() * 24;
+        const sPts = buildBoltPoints(x2, y2, x2 + Math.cos(sa) * sr, y2 + Math.sin(sa) * sr, 8);
+        strokePolyline(sPts, 1.1, p.mid, 0.75, 6);
+      }
+    }
   }
 
-  function spawnSparks(x, y, count = 14, speedMult = 1) {
-    const col = palettes[params.spectrum];
+  function spawnSparks(x, y, count = 10, col = state.palette.mid) {
     for (let i = 0; i < count; i++) {
       const a = Math.random() * Math.PI * 2;
-      const s = (Math.random() * 6 + 2) * speedMult;
+      const spd = 1.5 + Math.random() * 7.5;
       sparks.push({
-        x: x,
-        y: y,
-        vx: Math.cos(a) * s,
-        vy: Math.sin(a) * s - 1.2,
-        life: 1.0,
-        color: Math.random() > 0.3 ? col.outer : '#ffffff'
+        x, y,
+        vx: Math.cos(a) * spd,
+        vy: Math.sin(a) * spd,
+        life: 1,
+        decay: 0.025 + Math.random() * 0.03,
+        color: Math.random() < 0.35 ? "#ffffff" : col
       });
     }
   }
 
-  function spawnShockwave(x, y, maxR = 140) {
-    shockwaves.push({
-      x: x,
-      y: y,
-      r: 8,
-      maxR: maxR,
-      life: 1.0,
-      color: palettes[params.spectrum].outer
-    });
+  function addShockwave(x, y, maxR = 160, width = 3) {
+    shockwaves.push({ x, y, r: 6, maxR, width, alpha: 0.95, color: state.palette.mid });
   }
 
-  function addScorch(x, y) {
-    scorchMarks.push({ x: x, y: y, r: 16 + Math.random() * 14, life: 1.0 });
-    if (scorchMarks.length > 35) scorchMarks.shift();
+  function addScorch(x, y, r = 22) {
+    scorchMarks.push({ x, y, r, alpha: 0.55 });
+    if (scorchMarks.length > 45) scorchMarks.shift();
   }
 
-  /* Conductor Targets */
-  function spawnTarget(x, y) {
-    targets.push({
-      x: x !== undefined ? x : 100 + Math.random() * (W - 200),
-      y: y !== undefined ? y : 90 + Math.random() * (GROUND_Y - 180),
-      vx: (Math.random() - 0.5) * 1.4,
-      vy: (Math.random() - 0.5) * 1.4,
-      r: 18,
-      charge: 0,
-      pulse: Math.random() * Math.PI * 2
-    });
+  function addShake(amount) {
+    if (state.shakeOn) shake = Math.max(shake, amount);
   }
 
-  for (let i = 0; i < 6; i++) spawnTarget();
+  /* Special Weapon Assemblies */
+  function renderTeslaCoil(cx, cy) {
+    const p = state.palette;
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
 
-  function addTeslaTower(x, y) {
-    teslaTowers.push({
-      x: x,
-      y: y,
-      angle: 0,
-      cooldown: 0
-    });
-    spawnShockwave(x, y, 90);
-    playZap(260, 0.14, 0.1);
-  }
-
-  function triggerOverdrive() {
-    if (params.shakeOn) shake = 22;
-    flashAlpha = 0.35;
-    playBoom(0.24);
-    const cx = W / 2;
-    const cy = H / 2;
-    spawnShockwave(cx, cy, Math.max(W, H) * 0.55);
-    spawnSparks(cx, cy, 70, 1.5);
-    for (let i = 0; i < 18; i++) {
-      createBolt(cx, cy, Math.random() * W, Math.random() * GROUND_Y, 2.8, 2);
+    /* Expanding electromagnetic field rings */
+    for (let i = 0; i < 3; i++) {
+      const phase = ((tick * 0.04 + i / 3) % 1);
+      const rx = 25 + phase * state.chainRadius * 0.85;
+      ctx.strokeStyle = p.mid;
+      ctx.globalAlpha = (1 - phase) * 0.32;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, rx * 0.42, 0, 0, Math.PI * 2);
+      ctx.stroke();
     }
-    targets.forEach(t => {
-      t.charge += 65;
-      createBolt(cx, cy, t.x, t.y, 2.5, 1);
+
+    /* Stacked inductor rings */
+    for (let r = 0; r < 5; r++) {
+      const yOff = cy + 28 - r * 7;
+      ctx.strokeStyle = r % 2 === 0 ? "#d97706" : p.mid;
+      ctx.globalAlpha = 0.85;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.ellipse(cx, yOff, 16 - r * 0.8, 5, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    /* Toroid top load + orbiting corona nodes */
+    ctx.strokeStyle = p.inner;
+    ctx.lineWidth = 3.5;
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = p.mid;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy - 10, 22, 8, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    for (let n = 0; n < 6; n++) {
+      const ang = tick * 0.08 + (n * Math.PI) / 3;
+      const nx = cx + Math.cos(ang) * 24;
+      const ny = cy - 10 + Math.sin(ang) * 9;
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(nx, ny, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+      if (Math.random() < 0.45) {
+        const outA = ang + (Math.random() - 0.5) * 0.6;
+        const outR = 45 + Math.random() * 55;
+        castLightning(nx, ny, nx + Math.cos(outA) * outR, ny + Math.sin(outA) * outR, 1.3, 1);
+      }
+    }
+    ctx.restore();
+
+    /* Snap arcs to nearby targets & chain between them */
+    const locked = targets.filter(t => Math.hypot(t.x - cx, t.y - cy) <= state.chainRadius);
+    locked.forEach((t, idx) => {
+      castLightning(cx, cy - 10, t.x, t.y, 2.2, 0);
+      t.charge += 2.4 * state.timeScale;
+      spawnSparks(t.x, t.y, 2);
+      if (locked[idx + 1]) {
+        castLightning(t.x, t.y, locked[idx + 1].x, locked[idx + 1].y, 1.6, 1);
+      }
     });
+
+    if (locked.length === 0) {
+      for (let k = 0; k < 3; k++) {
+        const a = Math.random() * Math.PI * 2;
+        const r = state.chainRadius * (0.45 + Math.random() * 0.5);
+        castLightning(cx, cy - 10, cx + Math.cos(a) * r, cy + Math.sin(a) * r, 1.8, 0);
+      }
+    }
+  }
+
+  function renderSingularity(cx, cy) {
+    const p = state.palette;
+    ctx.save();
+
+    /* Gravitational lensing halo */
+    const grad = ctx.createRadialGradient(cx, cy, 14, cx, cy, 115);
+    grad.addColorStop(0, "#000000");
+    grad.addColorStop(0.24, p.mid);
+    grad.addColorStop(0.55, p.outer);
+    grad.addColorStop(1, "transparent");
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = 0.55;
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 115, 0, Math.PI * 2);
+    ctx.fill();
+
+    /* Tilted accretion disk */
+    for (let ring = 0; ring < 4; ring++) {
+      ctx.strokeStyle = ring % 2 === 0 ? p.mid : p.inner;
+      ctx.lineWidth = 2.2 - ring * 0.3;
+      ctx.globalAlpha = 0.75 - ring * 0.12;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, 52 + ring * 16, 15 + ring * 4, -0.22, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    /* Relativistic polar jets */
+    const jetGrad = ctx.createLinearGradient(cx, cy - 170, cx, cy + 170);
+    jetGrad.addColorStop(0, "transparent");
+    jetGrad.addColorStop(0.5, p.inner);
+    jetGrad.addColorStop(1, "transparent");
+    ctx.fillStyle = jetGrad;
+    ctx.globalAlpha = 0.35;
+    ctx.fillRect(cx - 4, cy - 170, 8, 340);
+
+    /* Event Horizon */
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = "#000000";
+    ctx.shadowBlur = 24;
+    ctx.shadowColor = p.mid;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.6;
+    ctx.stroke();
+    ctx.restore();
+
+    /* Spiral inward lightning tendrils */
+    for (let i = 0; i < 5; i++) {
+      const startA = tick * 0.09 + i * 1.25;
+      const rOuter = 150 + Math.random() * 80;
+      const sx = cx + Math.cos(startA) * rOuter;
+      const sy = cy + Math.sin(startA) * rOuter;
+      const midA = startA + 0.65;
+      const mx = cx + Math.cos(midA) * (rOuter * 0.48);
+      const my = cy + Math.sin(midA) * (rOuter * 0.48);
+      castLightning(sx, sy, mx, my, 1.5, 1);
+      castLightning(mx, my, cx + Math.cos(midA + 0.5) * 22, cy + Math.sin(midA + 0.5) * 22, 1.8, 0);
+    }
+
+    /* Pull targets & debris inward */
+    targets.forEach(t => {
+      const dx = cx - t.x;
+      const dy = cy - t.y;
+      const d = Math.max(28, Math.hypot(dx, dy));
+      if (d < state.chainRadius * 1.5) {
+        const pull = (state.gravity * 160) / (d * 0.45);
+        t.vx += (dx / d) * pull * 0.06 * state.timeScale;
+        t.vy += (dy / d) * pull * 0.06 * state.timeScale;
+        t.charge += 1.6 * state.timeScale;
+      }
+    });
+
+    if (Math.random() < 0.65) {
+      const a = Math.random() * Math.PI * 2;
+      debris.push({
+        cx, cy, angle: a, dist: 140 + Math.random() * 70,
+        speed: 0.07 + Math.random() * 0.05, life: 1
+      });
+    }
+  }
+
+  /* Trigger Actions */
+  function triggerOverdrive() {
+    addShake(22);
+    flashAlpha = 0.45;
+    playBoom();
+    addShockwave(W * 0.5, H * 0.5, Math.max(W, H) * 0.65, 5);
+    for (let i = 0; i < 16; i++) {
+      const a = (i / 16) * Math.PI * 2 + Math.random() * 0.2;
+      const tx = W * 0.5 + Math.cos(a) * (W * 0.48);
+      const ty = H * 0.5 + Math.sin(a) * (H * 0.48);
+      castLightning(W * 0.5, H * 0.5, tx, ty, 3.2, 0);
+      spawnSparks(tx, ty, 8);
+    }
+    targets.forEach(t => { t.charge += 65; });
   }
 
   function triggerOrbitalStrike() {
-    const tx = mouse.x || W / 2;
-    if (params.shakeOn) shake = 28;
-    flashAlpha = 0.45;
-    playBoom(0.28);
-    orbitalBeams.push({
-      x: tx,
-      width: 55 + params.voltage * 0.35,
-      life: 1.0,
-      colors: palettes[params.spectrum]
-    });
-    spawnShockwave(tx, GROUND_Y, 260);
-    spawnSparks(tx, GROUND_Y, 90, 1.8);
-    addScorch(tx, GROUND_Y);
-    for (let i = 0; i < 10; i++) {
-      createBolt(tx + (Math.random() - 0.5) * 60, 0, tx + (Math.random() - 0.5) * 90, GROUND_Y, 3.0, 1);
+    const tx = mouse.x || W * 0.5;
+    const ty = mouse.y || H * 0.65;
+    addShake(28);
+    flashAlpha = 0.65;
+    playBoom();
+    addShockwave(tx, ty, 280, 6);
+    addScorch(tx, ty, 44);
+    for (let b = -1; b <= 1; b++) {
+      castLightning(tx + b * 18, 0, tx + b * 6, ty, 4.4 - Math.abs(b), 0);
     }
-  }
-
-  /* Bind UI Controls */
-  function setMode(m) {
-    params.mode = m;
-    document.querySelectorAll('#modes button').forEach(b => {
-      b.classList.toggle('active-mode', b.dataset.mode === m);
+    for (let r = 0; r < 10; r++) {
+      const a = (r / 10) * Math.PI * 2;
+      castLightning(tx, ty, tx + Math.cos(a) * 180, ty + Math.sin(a) * 180, 2.0, 1);
+    }
+    spawnSparks(tx, ty, 65);
+    targets.forEach(t => {
+      if (Math.hypot(t.x - tx, t.y - ty) < 220) t.charge += 100;
     });
-    const labels = {
-      arc: 'ARC BOLT // HOLD CLICK TO DISCHARGE',
-      tesla: 'TESLA COIL // HOLD FOR 3D TOROID & CHAIN ARCS',
-      orb: 'PLASMA ORB // CLICK TO DEPLOY LINKED NODES',
-      singularity: 'SINGULARITY // HOLD FOR GRAVITY WELL, RELEASE TO DETONATE'
-    };
-    document.getElementById('hud').textContent = 'MODE: ' + labels[m];
   }
 
-  document.querySelectorAll('#modes button').forEach(btn => {
+  /* UI Bindings */
+  function setMode(m) {
+    state.mode = m;
+    document.querySelectorAll("#modes button").forEach(btn => {
+      btn.classList.toggle("active-mode", btn.dataset.mode === m);
+    });
+    document.getElementById("hud").textContent =
+      `MODE: ${m.toUpperCase()} // HOLD CLICK TO DISCHARGE`;
+  }
+
+  document.querySelectorAll("#modes button").forEach(btn => {
     btn.onclick = () => setMode(btn.dataset.mode);
   });
 
-  document.getElementById('voltSlider').oninput = e => {
-    params.voltage = +e.target.value;
-    document.getElementById('voltVal').textContent = (params.voltage * 0.016).toFixed(2) + ' GW';
+  document.getElementById("colorSelect").onchange = e => {
+    state.palette = PALETTES[e.target.value];
   };
 
-  document.getElementById('chaosSlider').oninput = e => {
-    params.chaos = +e.target.value / 100;
-    document.getElementById('chaosVal').textContent = e.target.value + '%';
+  document.getElementById("voltSlider").oninput = e => {
+    state.voltage = +e.target.value;
+    document.getElementById("voltVal").textContent = (state.voltage * 0.0151).toFixed(2) + " GW";
   };
 
-  document.getElementById('chainSlider').oninput = e => {
-    params.chainRadius = +e.target.value;
-    document.getElementById('chainVal').textContent = e.target.value + ' PX';
+  document.getElementById("chaosSlider").oninput = e => {
+    state.chaos = +e.target.value / 100;
+    document.getElementById("chaosVal").textContent = e.target.value + "%";
   };
 
-  document.getElementById('gravSlider').oninput = e => {
-    params.gravityPull = +e.target.value / 100;
-    document.getElementById('gravVal').textContent = params.gravityPull.toFixed(2) + ' G';
+  document.getElementById("branchSlider").oninput = e => {
+    state.branchChance = +e.target.value / 100;
+    document.getElementById("branchVal").textContent = e.target.value + "%";
   };
 
-  document.getElementById('timeSlider').oninput = e => {
-    params.timeScale = +e.target.value / 100;
-    document.getElementById('timeVal').textContent = params.timeScale.toFixed(2) + ' X';
+  document.getElementById("bloomSlider").oninput = e => {
+    state.bloom = +e.target.value / 100;
+    document.getElementById("bloomVal").textContent = e.target.value + "%";
   };
 
-  document.getElementById('trailSlider').oninput = e => {
+  document.getElementById("chainSlider").oninput = e => {
+    state.chainRadius = +e.target.value;
+    document.getElementById("chainVal").textContent = e.target.value + " px";
+  };
+
+  document.getElementById("gravSlider").oninput = e => {
+    state.gravity = +e.target.value / 100;
+    document.getElementById("gravVal").textContent = state.gravity.toFixed(2) + " G";
+  };
+
+  document.getElementById("timeSlider").oninput = e => {
+    state.timeScale = +e.target.value / 100;
+    document.getElementById("timeVal").textContent = state.timeScale.toFixed(2) + "x";
+  };
+
+  document.getElementById("trailSlider").oninput = e => {
     const pct = +e.target.value;
-    params.trailFade = 1 - (pct / 100) * 0.92;
-    document.getElementById('trailVal').textContent = pct + '%';
+    state.trailAlpha = 1 - pct / 100;
+    document.getElementById("trailVal").textContent = pct + "%";
   };
 
-  document.getElementById('colorSelect').onchange = e => {
-    params.spectrum = e.target.value;
+  document.getElementById("btnOverdrive").onclick = triggerOverdrive;
+  document.getElementById("btnOrbital").onclick = triggerOrbitalStrike;
+  document.getElementById("btnTower").onclick = () => {
+    towers.push({ x: mouse.x || W * 0.5, y: mouse.y || H * 0.5, pulse: 0 });
+    addShockwave(mouse.x || W * 0.5, mouse.y || H * 0.5, 70, 2);
   };
 
-  document.getElementById('btnOverdrive').onclick = triggerOverdrive;
-  document.getElementById('btnOrbital').onclick = triggerOrbitalStrike;
-  document.getElementById('btnTower').onclick = () => addTeslaTower(140 + Math.random() * (W - 280), GROUND_Y);
-  document.getElementById('btnTarget').onclick = () => spawnTarget();
-
-  document.getElementById('btnAudio').onclick = function() {
-    initAudio();
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-    params.audioOn = !params.audioOn;
-    this.textContent = 'AUDIO: ' + (params.audioOn ? 'ON' : 'OFF');
-    this.classList.toggle('toggle-on', params.audioOn);
+  document.getElementById("togAudio").onclick = function () {
+    state.audioOn = !state.audioOn;
+    if (state.audioOn) initAudio();
+    this.textContent = "AUDIO: " + (state.audioOn ? "ON" : "OFF");
+    this.classList.toggle("toggle-on", state.audioOn);
   };
 
-  document.getElementById('btnAuto').onclick = function() {
-    params.autoFire = !params.autoFire;
-    this.textContent = 'AUTO-FIRE: ' + (params.autoFire ? 'ON' : 'OFF');
-    this.classList.toggle('toggle-on', params.autoFire);
+  document.getElementById("togAuto").onclick = function () {
+    state.autoFire = !state.autoFire;
+    this.textContent = "AUTO-FIRE: " + (state.autoFire ? "ON" : "OFF");
+    this.classList.toggle("toggle-on", state.autoFire);
   };
 
-  document.getElementById('btnRain').onclick = function() {
-    params.ionRain = !params.ionRain;
-    this.textContent = 'ION RAIN: ' + (params.ionRain ? 'ON' : 'OFF');
-    this.classList.toggle('toggle-on', params.ionRain);
+  document.getElementById("togTargets").onclick = function () {
+    state.targetsOn = !state.targetsOn;
+    this.textContent = "TARGETS: " + (state.targetsOn ? "ON" : "OFF");
+    this.classList.toggle("toggle-on", state.targetsOn);
+    if (state.targetsOn && targets.length === 0) spawnTargets();
   };
 
-  document.getElementById('btnShake').onclick = function() {
-    params.shakeOn = !params.shakeOn;
-    this.textContent = 'SHAKE: ' + (params.shakeOn ? 'ON' : 'OFF');
-    this.classList.toggle('toggle-on', params.shakeOn);
+  document.getElementById("togShake").onclick = function () {
+    state.shakeOn = !state.shakeOn;
+    this.textContent = "SHAKE: " + (state.shakeOn ? "ON" : "OFF");
+    this.classList.toggle("toggle-on", state.shakeOn);
   };
 
-  function purgeAll() {
-    bolts = [];
+  document.getElementById("btnPurge").onclick = () => {
     sparks = [];
     shockwaves = [];
     scorchMarks = [];
-    orbitalBeams = [];
-    orbNodes = [];
-    teslaTowers = [];
-    coreTemp = 310;
+    plasmaOrbs = [];
+    towers = [];
+    debris = [];
     ctx.clearRect(0, 0, W, H);
-  }
-  document.getElementById('btnPurge').onclick = purgeAll;
+  };
 
-  /* Pointer and Keyboard Events */
+  /* Pointer & Keyboard Controls */
   canvas.onpointerdown = e => {
     holding = true;
-    mouse = { x: e.offsetX, y: e.offsetY };
-    if (params.mode === 'orb') {
-      orbNodes.push({ x: mouse.x, y: mouse.y, pulse: 0 });
-      spawnShockwave(mouse.x, mouse.y, 75);
-      playZap(320, 0.1, 0.09);
+    mouse.x = e.offsetX;
+    mouse.y = e.offsetY;
+    if (state.audioOn) initAudio();
+
+    if (state.mode === "orb") {
+      plasmaOrbs.push({ x: mouse.x, y: mouse.y, phase: Math.random() * 6.28 });
+      addShockwave(mouse.x, mouse.y, 65, 2);
+      playZap(1.4, 0.12);
     }
   };
 
   canvas.onpointermove = e => {
-    mouse = { x: e.offsetX, y: e.offsetY };
+    mouse.x = e.offsetX;
+    mouse.y = e.offsetY;
   };
 
   window.onpointerup = () => {
-    if (holding && params.mode === 'singularity') {
-      /* Supernova Collapse on Release */
-      if (params.shakeOn) shake = 24;
-      flashAlpha = 0.4;
-      playBoom(0.26);
-      spawnShockwave(mouse.x, mouse.y, 280 * params.gravityPull + 90);
-      spawnSparks(mouse.x, mouse.y, 65, 1.6);
+    if (holding && state.mode === "singularity") {
+      /* Supernova collapse on release */
+      const cx = mouse.x || W * 0.5;
+      const cy = mouse.y || H * 0.5;
+      addShake(24 * Math.max(0.6, state.gravity));
+      flashAlpha = 0.5;
+      playBoom();
+      addShockwave(cx, cy, 240 * Math.max(0.7, state.gravity), 5);
       for (let i = 0; i < 14; i++) {
-        const a = (Math.PI * 2 * i) / 14;
-        createBolt(mouse.x, mouse.y, mouse.x + Math.cos(a) * 320, mouse.y + Math.sin(a) * 320, 2.4, 1);
+        const a = (i / 14) * Math.PI * 2;
+        castLightning(cx, cy, cx + Math.cos(a) * 260, cy + Math.sin(a) * 260, 2.5, 0);
       }
-      targets.forEach(t => {
-        const dx = t.x - mouse.x;
-        const dy = t.y - mouse.y;
-        const d = Math.max(30, Math.hypot(dx, dy));
-        if (d < 350) {
-          t.vx += (dx / d) * 9;
-          t.vy += (dy / d) * 9;
-          t.charge += 50;
-        }
-      });
+      spawnSparks(cx, cy, 55);
     }
     holding = false;
   };
 
   window.onkeydown = e => {
-    if (e.key === '1') setMode('arc');
-    if (e.key === '2') setMode('tesla');
-    if (e.key === '3') setMode('orb');
-    if (e.key === '4') setMode('singularity');
-    if (e.code === 'Space') { e.preventDefault(); triggerOverdrive(); }
-    if (e.key.toLowerCase() === 'o') triggerOrbitalStrike();
-    if (e.key.toLowerCase() === 'c') purgeAll();
+    const k = e.key.toLowerCase();
+    if (k === "1") setMode("arc");
+    else if (k === "2") setMode("tesla");
+    else if (k === "3") setMode("orb");
+    else if (k === "4") setMode("singularity");
+    else if (k === " ") { e.preventDefault(); triggerOverdrive(); }
+    else if (k === "o") triggerOrbitalStrike();
+    else if (k === "t") document.getElementById("btnTower").click();
+    else if (k === "c") document.getElementById("btnPurge").click();
   };
-
-  /* Renderers for Tesla Coil and Singularity */
-  function drawTeslaAssembly(x, y, t) {
-    const col = palettes[params.spectrum];
-    ctx.save();
-    ctx.translate(x, y);
-
-    /* Expanding Electromagnetic Field Rings */
-    for (let i = 0; i < 3; i++) {
-      const prog = ((t * 1.6 + i * 0.33) % 1);
-      ctx.beginPath();
-      ctx.ellipse(0, -18, 22 + prog * 95, 8 + prog * 34, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = col.outer;
-      ctx.globalAlpha = (1 - prog) * 0.45;
-      ctx.lineWidth = 1.6;
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-
-    /* Copper Winding Stack */
-    for (let i = 0; i < 7; i++) {
-      const wy = -i * 5;
-      ctx.fillStyle = i % 2 === 0 ? '#b45309' : '#d97706';
-      ctx.fillRect(-10, wy - 4, 20, 3.5);
-    }
-
-    /* Titanium Toroid Top */
-    ctx.beginPath();
-    ctx.ellipse(0, -38, 18, 7, 0, 0, Math.PI * 2);
-    ctx.fillStyle = '#1e293b';
-    ctx.strokeStyle = col.outer;
-    ctx.lineWidth = 2;
-    ctx.shadowColor = col.outer;
-    ctx.shadowBlur = 14;
-    ctx.fill();
-    ctx.stroke();
-
-    /* 6 Orbiting Corona Nodes */
-    for (let i = 0; i < 6; i++) {
-      const a = t * 4.5 + (Math.PI * 2 * i) / 6;
-      const nx = Math.cos(a) * 24;
-      const ny = -38 + Math.sin(a) * 9;
-      ctx.beginPath();
-      ctx.arc(nx, ny, 2.4, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffffff';
-      ctx.fill();
-    }
-
-    ctx.restore();
-  }
-
-  function drawSingularityCore(x, y, t) {
-    const col = palettes[params.spectrum];
-    const scale = 0.8 + params.gravityPull * 0.35;
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.scale(scale, scale);
-
-    /* Relativistic Polar Jets */
-    const jetGrad = ctx.createLinearGradient(0, -160, 0, 160);
-    jetGrad.addColorStop(0, 'transparent');
-    jetGrad.addColorStop(0.5, col.outer);
-    jetGrad.addColorStop(1, 'transparent');
-    ctx.fillStyle = jetGrad;
-    ctx.globalAlpha = 0.35;
-    ctx.fillRect(-5, -160, 10, 320);
-    ctx.globalAlpha = 1;
-
-    /* Tilted Accretion Disk */
-    ctx.save();
-    ctx.rotate(-0.28);
-    for (let r = 34; r <= 68; r += 11) {
-      ctx.beginPath();
-      ctx.ellipse(0, 0, r, r * 0.28, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = r === 34 ? '#ffffff' : col.outer;
-      ctx.lineWidth = r === 34 ? 2.5 : 1.5;
-      ctx.globalAlpha = 0.7;
-      ctx.stroke();
-    }
-    ctx.restore();
-
-    /* Pitch-Black Event Horizon & Photon Sphere */
-    ctx.beginPath();
-    ctx.arc(0, 0, 22, 0, Math.PI * 2);
-    ctx.fillStyle = '#000000';
-    ctx.shadowColor = col.outer;
-    ctx.shadowBlur = 28;
-    ctx.fill();
-    ctx.lineWidth = 2.5;
-    ctx.strokeStyle = '#ffffff';
-    ctx.stroke();
-
-    /* Spiral Inward Lightning */
-    if (Math.random() < 0.65) {
-      const a0 = Math.random() * Math.PI * 2;
-      const r0 = 130 + Math.random() * 80;
-      const sx = x + Math.cos(a0) * r0;
-      const sy = y + Math.sin(a0) * r0;
-      createBolt(sx, sy, x, y, 1.6, 0);
-    }
-
-    ctx.restore();
-  }
 
   /* Main Simulation Loop */
   let lastTime = performance.now();
   let frameCounter = 0;
   let fpsTimer = 0;
-  let currentFps = 60;
 
   function loop(now) {
-    const rawDt = Math.min(0.05, (now - lastTime) / 1000);
+    const dt = Math.min(0.05, (now - lastTime) / 1000);
     lastTime = now;
-    const dt = rawDt * 60 * params.timeScale;
-    const elapsed = now / 1000;
+    tick += state.timeScale;
+    activeArcCount = 0;
 
+    /* FPS & Telemetry Updates */
     frameCounter++;
-    fpsTimer += rawDt;
-    if (fpsTimer >= 0.4) {
-      currentFps = Math.round(frameCounter / fpsTimer);
+    fpsTimer += dt;
+    if (fpsTimer >= 0.35) {
+      const fps = Math.round(frameCounter / fpsTimer);
+      document.getElementById("teleFps").textContent = fps;
       frameCounter = 0;
       fpsTimer = 0;
-      document.getElementById('statFps').textContent = currentFps;
     }
 
-    const col = palettes[params.spectrum];
-    const activeFiring = holding || params.autoFire;
-    if (params.autoFire && !holding) {
-      mouse.x = W / 2 + Math.cos(elapsed * 1.7) * (W * 0.28);
-      mouse.y = H * 0.42 + Math.sin(elapsed * 2.3) * (H * 0.18);
-    }
-
-    /* Update Audio Hum */
-    if (humGain && audioCtx) {
-      const targetVol = (params.audioOn && activeFiring) ? 0.06 : 0.0;
-      humGain.gain.setTargetAtTime(targetVol, audioCtx.currentTime, 0.05);
-    }
-
-    /* Trail Persistence Clear */
     ctx.save();
-    ctx.fillStyle = 'rgba(2, 3, 8, ' + params.trailFade.toFixed(3) + ')';
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = `rgba(2, 3, 8, ${state.trailAlpha})`;
     ctx.fillRect(0, 0, W, H);
 
     if (flashAlpha > 0.01) {
-      ctx.fillStyle = col.outer;
+      ctx.fillStyle = state.palette.inner;
       ctx.globalAlpha = flashAlpha;
       ctx.fillRect(0, 0, W, H);
       ctx.globalAlpha = 1;
-      flashAlpha *= 0.86;
+      flashAlpha *= 0.84;
     }
 
     if (shake > 0.2) {
@@ -953,308 +1071,259 @@
       shake *= 0.88;
     }
 
-    /* Ionized Rain */
-    if (params.ionRain) {
-      while (rainDrops.length < 48) {
-        rainDrops.push({
-          x: Math.random() * (W + 100),
-          y: Math.random() * H,
-          len: 10 + Math.random() * 14,
-          spd: 12 + Math.random() * 10
+    /* Scorch Marks */
+    scorchMarks.forEach(s => {
+      ctx.save();
+      ctx.globalAlpha = s.alpha;
+      const g = ctx.createRadialGradient(s.x, s.y, 1, s.x, s.y, s.r);
+      g.addColorStop(0, "#000000");
+      g.addColorStop(0.6, "rgba(15, 23, 42, 0.6)");
+      g.addColorStop(1, "transparent");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      s.alpha *= 0.997;
+    });
+
+    /* Central Core Emitter */
+    const coreX = W * 0.5;
+    const coreY = H * 0.5;
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.strokeStyle = state.palette.mid;
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.45;
+    ctx.beginPath();
+    ctx.arc(coreX, coreY, 18 + Math.sin(tick * 0.1) * 3, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    /* Conductor Targets */
+    if (state.targetsOn) {
+      if (targets.length < 5 && Math.random() < 0.03) {
+        targets.push({
+          x: 80 + Math.random() * (W - 160),
+          y: 80 + Math.random() * (H - 160),
+          vx: (Math.random() - 0.5) * 1.4,
+          vy: (Math.random() - 0.5) * 1.4,
+          charge: 0,
+          radius: 14
         });
       }
-      ctx.strokeStyle = 'rgba(0, 243, 255, 0.22)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      for (const r of rainDrops) {
-        ctx.moveTo(r.x, r.y);
-        ctx.lineTo(r.x - 2, r.y + r.len);
-        r.x -= 2 * dt;
-        r.y += r.spd * dt;
-        if (r.y > GROUND_Y) {
-          r.y = -20;
-          r.x = Math.random() * (W + 100);
-        }
-      }
-      ctx.stroke();
-    }
 
-    /* Ground Deck */
-    ctx.fillStyle = '#060a16';
-    ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
-    ctx.strokeStyle = col.outer;
-    ctx.shadowColor = col.outer;
-    ctx.shadowBlur = 12;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, GROUND_Y);
-    ctx.lineTo(W, GROUND_Y);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
+      for (let i = targets.length - 1; i >= 0; i--) {
+        const t = targets[i];
+        t.x += t.vx * state.timeScale;
+        t.y += t.vy * state.timeScale;
+        if (t.x < 40 || t.x > W - 40) t.vx *= -1;
+        if (t.y < 40 || t.y > H - 40) t.vy *= -1;
 
-    /* Scorch Marks */
-    for (let i = scorchMarks.length - 1; i >= 0; i--) {
-      const sm = scorchMarks[i];
-      ctx.beginPath();
-      ctx.ellipse(sm.x, sm.y, sm.r, 5, 0, 0, Math.PI * 2);
-      ctx.fillStyle = col.outer;
-      ctx.globalAlpha = sm.life * 0.45;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      sm.life -= 0.004 * dt;
-      if (sm.life <= 0) scorchMarks.splice(i, 1);
-    }
-
-    /* Stationary Tesla Towers */
-    for (const tw of teslaTowers) {
-      drawTeslaAssembly(tw.x, tw.y, elapsed);
-      tw.cooldown -= dt;
-      if (tw.cooldown <= 0) {
-        for (const t of targets) {
-          if (Math.hypot(t.x - tw.x, t.y - (tw.y - 38)) < params.chainRadius) {
-            createBolt(tw.x, tw.y - 38, t.x, t.y, 1.9, 1);
-            t.charge += 18;
-            tw.cooldown = 12;
-            playZap(240, 0.06, 0.05);
-            break;
-          }
-        }
-      }
-    }
-
-    /* Persistent Plasma Orbs */
-    for (let i = 0; i < orbNodes.length; i++) {
-      const n = orbNodes[i];
-      n.pulse += 0.12 * dt;
-      const rad = 8 + Math.sin(n.pulse) * 2.5;
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, rad, 0, Math.PI * 2);
-      ctx.fillStyle = col.core;
-      ctx.shadowColor = col.outer;
-      ctx.shadowBlur = 20;
-      ctx.fill();
-      ctx.shadowBlur = 0;
-
-      if (orbNodes[i + 1] && Math.random() < 0.55) {
-        createBolt(n.x, n.y, orbNodes[i + 1].x, orbNodes[i + 1].y, 1.8, 1);
-      }
-    }
-
-    /* Active Weapon Discharge */
-    let currentLoad = 0;
-    if (activeFiring) {
-      currentLoad = Math.min(100, Math.round((params.voltage / 160) * 85 + Math.random() * 15));
-      coreTemp = Math.min(4800, coreTemp + 14 * dt);
-
-      if (params.mode === 'arc') {
-        createBolt(W / 2, H / 2, mouse.x, mouse.y, 2.4, 2);
-        spawnSparks(mouse.x, mouse.y, 3);
-        if (Math.random() < 0.35) playZap(190, 0.06, 0.06);
-      } else if (params.mode === 'tesla') {
-        drawTeslaAssembly(mouse.x, mouse.y + 38, elapsed);
-        if (Math.random() < 0.4) playZap(270, 0.05, 0.05);
-
-        /* Snap to Targets & Chain Lightning */
-        let snapped = [];
-        for (const t of targets) {
-          if (Math.hypot(t.x - mouse.x, t.y - mouse.y) <= params.chainRadius) {
-            createBolt(mouse.x, mouse.y, t.x, t.y, 2.2, 1);
-            t.charge += 8 * dt;
-            snapped.push(t);
-          }
-        }
-        for (let i = 0; i < snapped.length; i++) {
-          for (const other of targets) {
-            if (other !== snapped[i] && Math.hypot(other.x - snapped[i].x, other.y - snapped[i].y) <= params.chainRadius * 0.75) {
-              if (Math.random() < 0.35) {
-                createBolt(snapped[i].x, snapped[i].y, other.x, other.y, 1.5, 0);
-                other.charge += 4 * dt;
-              }
+        /* Detonate fully charged conductor */
+        if (t.charge >= 100) {
+          addShake(14);
+          playBoom();
+          addShockwave(t.x, t.y, 175, 4);
+          addScorch(t.x, t.y, 30);
+          spawnSparks(t.x, t.y, 35);
+          targets.forEach((other, oIdx) => {
+            if (oIdx !== i && Math.hypot(other.x - t.x, other.y - t.y) < state.chainRadius) {
+              castLightning(t.x, t.y, other.x, other.y, 2.5, 0);
+              other.charge += 55;
             }
-          }
+          });
+          targets.splice(i, 1);
+          continue;
         }
-        if (snapped.length === 0) {
-          for (let i = 0; i < 4; i++) {
-            const a = Math.random() * Math.PI * 2;
-            const r = params.chainRadius * 0.65;
-            createBolt(mouse.x, mouse.y, mouse.x + Math.cos(a) * r, mouse.y + Math.sin(a) * r, 1.6, 1);
-          }
+
+        const pct = Math.min(1, t.charge / 100);
+        ctx.save();
+        ctx.strokeStyle = pct > 0.5 ? "#ffbe0b" : state.palette.mid;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        if (pct > 0) {
+          ctx.fillStyle = state.palette.mid;
+          ctx.globalAlpha = 0.25 + pct * 0.55;
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, t.radius * pct, 0, Math.PI * 2);
+          ctx.fill();
         }
-      } else if (params.mode === 'singularity') {
-        drawSingularityCore(mouse.x, mouse.y, elapsed);
-        if (params.shakeOn) shake = Math.max(shake, 3.5 * params.gravityPull);
+        ctx.restore();
+        t.charge = Math.max(0, t.charge - 0.15 * state.timeScale);
       }
-    } else {
-      coreTemp = Math.max(310, coreTemp - 18 * dt);
     }
 
-    /* Update & Draw Conductor Targets */
-    for (let i = targets.length - 1; i >= 0; i--) {
-      const t = targets[i];
-      t.pulse += 0.08 * dt;
+    /* Autonomous Tesla Towers */
+    towers.forEach(tw => {
+      tw.pulse += 0.08 * state.timeScale;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.strokeStyle = "#2dd4bf";
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(tw.x, tw.y, 12 + Math.sin(tw.pulse) * 2, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
 
-      /* Singularity Gravity Pull */
-      if (activeFiring && params.mode === 'singularity' && params.gravityPull > 0) {
-        const dx = mouse.x - t.x;
-        const dy = mouse.y - t.y;
-        const dist = Math.max(28, Math.hypot(dx, dy));
-        const force = (420 * params.gravityPull) / (dist * 0.7);
-        t.vx += (dx / dist) * force * 0.05 * dt;
-        t.vy += (dy / dist) * force * 0.05 * dt;
-        if (dist < 48) t.charge += 10 * dt;
-      }
-
-      /* Arc Mode Proximity Hit */
-      if (activeFiring && params.mode === 'arc' && Math.hypot(t.x - mouse.x, t.y - mouse.y) < 55) {
-        t.charge += 12 * dt;
-      }
-
-      t.x += t.vx * dt;
-      t.y += t.vy * dt;
-      t.vx *= 0.992;
-      t.vy *= 0.992;
-
-      if (t.x < 30 || t.x > W - 30) t.vx *= -1;
-      if (t.y < 30 || t.y > GROUND_Y - 30) t.vy *= -1;
-
-      /* Chain Detonation at 100% Charge */
-      if (t.charge >= 100) {
-        spawnShockwave(t.x, t.y, params.chainRadius);
-        spawnSparks(t.x, t.y, 35, 1.4);
-        playBoom(0.16);
-        if (params.shakeOn) shake = Math.max(shake, 12);
-        for (const neighbor of targets) {
-          if (neighbor !== t && Math.hypot(neighbor.x - t.x, neighbor.y - t.y) <= params.chainRadius) {
-            createBolt(t.x, t.y, neighbor.x, neighbor.y, 2.6, 1);
-            neighbor.charge += 55;
-          }
+      if (Math.random() < 0.35 * state.timeScale) {
+        const near = targets.find(t => Math.hypot(t.x - tw.x, t.y - tw.y) < state.chainRadius);
+        if (near) {
+          castLightning(tw.x, tw.y, near.x, near.y, 1.8, 0);
+          near.charge += 2.2 * state.timeScale;
         }
-        targets.splice(i, 1);
-        setTimeout(() => { if (targets.length < 6) spawnTarget(); }, 1200);
+      }
+    });
+
+    /* Linked Plasma Orbs */
+    plasmaOrbs.forEach((orb, idx) => {
+      orb.phase += 0.12 * state.timeScale;
+      const r = 10 + Math.sin(orb.phase) * 2.5;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.fillStyle = state.palette.mid;
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = state.palette.mid;
+      ctx.beginPath();
+      ctx.arc(orb.x, orb.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(orb.x, orb.y, r * 0.45, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      if (plasmaOrbs[idx + 1]) {
+        const nxt = plasmaOrbs[idx + 1];
+        castLightning(orb.x, orb.y, nxt.x, nxt.y, 2.2, 0);
+      }
+      targets.forEach(t => {
+        if (Math.hypot(t.x - orb.x, t.y - orb.y) < state.chainRadius * 0.75 && Math.random() < 0.25) {
+          castLightning(orb.x, orb.y, t.x, t.y, 1.5, 1);
+          t.charge += 1.5 * state.timeScale;
+        }
+      });
+    });
+
+    /* Active Player Discharge */
+    const firing = holding || state.autoFire;
+    const tx = holding ? mouse.x : coreX + Math.cos(tick * 0.04) * 220;
+    const ty = holding ? mouse.y : coreY + Math.sin(tick * 0.055) * 160;
+
+    if (firing) {
+      if (Math.random() < 0.35) playZap(0.9 + Math.random() * 0.4, 0.06);
+
+      if (state.mode === "arc") {
+        castLightning(coreX, coreY, tx, ty, 2.8, 0);
+        if (state.voltage > 95) {
+          castLightning(coreX, coreY, tx, ty, 1.5, 1);
+        }
+        spawnSparks(tx, ty, 4);
+        if (Math.random() < 0.25) addScorch(tx, ty, 14);
+        addShake(2.5);
+
+        targets.forEach(t => {
+          if (Math.hypot(t.x - tx, t.y - ty) < state.chainRadius * 0.65) {
+            castLightning(tx, ty, t.x, t.y, 1.7, 1);
+            t.charge += 3.2 * state.timeScale;
+          }
+        });
+      } else if (state.mode === "tesla") {
+        renderTeslaCoil(tx, ty);
+        addShake(3.2);
+      } else if (state.mode === "orb" && state.autoFire && Math.random() < 0.05) {
+        plasmaOrbs.push({ x: tx, y: ty, phase: 0 });
+        if (plasmaOrbs.length > 8) plasmaOrbs.shift();
+      } else if (state.mode === "singularity") {
+        renderSingularity(tx, ty);
+        addShake(4.2);
+      }
+    }
+
+    /* Singularity Debris */
+    for (let i = debris.length - 1; i >= 0; i--) {
+      const d = debris[i];
+      d.angle += d.speed * state.timeScale;
+      d.dist *= Math.pow(0.94, state.timeScale);
+      d.life -= 0.025 * state.timeScale;
+      if (d.dist < 22 || d.life <= 0) {
+        debris.splice(i, 1);
         continue;
       }
-
-      /* Render Conductor Ring */
-      ctx.beginPath();
-      ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
-      ctx.fillStyle = '#0f172a';
-      ctx.strokeStyle = t.charge > 0 ? col.outer : '#64748b';
-      ctx.lineWidth = 2.2;
-      ctx.fill();
-      ctx.stroke();
-
-      if (t.charge > 0) {
-        ctx.beginPath();
-        ctx.arc(t.x, t.y, t.r + 5, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * (t.charge / 100)));
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        t.charge = Math.max(0, t.charge - 0.15 * dt);
-      }
+      const px = d.cx + Math.cos(d.angle) * d.dist;
+      const py = d.cy + Math.sin(d.angle) * d.dist * 0.45;
+      ctx.fillStyle = state.palette.inner;
+      ctx.globalAlpha = d.life;
+      ctx.fillRect(px, py, 2.5, 2.5);
     }
 
-    /* Orbital Beams */
-    for (let i = orbitalBeams.length - 1; i >= 0; i--) {
-      const b = orbitalBeams[i];
-      ctx.save();
-      ctx.globalAlpha = b.life;
-      const grad = ctx.createLinearGradient(b.x - b.width, 0, b.x + b.width, 0);
-      grad.addColorStop(0, 'transparent');
-      grad.addColorStop(0.25, b.colors.outer);
-      grad.addColorStop(0.5, '#ffffff');
-      grad.addColorStop(0.75, b.colors.outer);
-      grad.addColorStop(1, 'transparent');
-      ctx.fillStyle = grad;
-      ctx.fillRect(b.x - b.width, 0, b.width * 2, GROUND_Y);
-      ctx.restore();
-      b.life -= 0.035 * dt;
-      if (b.life <= 0) orbitalBeams.splice(i, 1);
-    }
-
-    /* Render Lightning Bolts */
-    for (let i = bolts.length - 1; i >= 0; i--) {
-      const b = bolts[i];
-      if (b.pts.length > 1) {
-        ctx.save();
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.globalAlpha = b.life;
-
-        ctx.beginPath();
-        ctx.moveTo(b.pts[0].x, b.pts[0].y);
-        for (let j = 1; j < b.pts.length; j++) ctx.lineTo(b.pts[j].x, b.pts[j].y);
-
-        ctx.strokeStyle = b.colors.outer;
-        ctx.lineWidth = b.width * 3.4;
-        ctx.globalAlpha = b.life * 0.35;
-        ctx.stroke();
-
-        ctx.strokeStyle = b.colors.core;
-        ctx.lineWidth = b.width;
-        ctx.globalAlpha = b.life;
-        ctx.stroke();
-        ctx.restore();
-      }
-      b.life -= 0.12 * dt;
-      if (b.life <= 0) bolts.splice(i, 1);
-    }
-
-    /* Render Shockwaves */
+    /* Shockwaves */
     for (let i = shockwaves.length - 1; i >= 0; i--) {
       const sw = shockwaves[i];
+      sw.r += (sw.maxR - sw.r) * 0.14 * state.timeScale + 2;
+      sw.alpha *= Math.pow(0.91, state.timeScale);
+      if (sw.alpha < 0.03) {
+        shockwaves.splice(i, 1);
+        continue;
+      }
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.strokeStyle = sw.color;
+      ctx.globalAlpha = sw.alpha;
+      ctx.lineWidth = sw.width;
       ctx.beginPath();
       ctx.arc(sw.x, sw.y, sw.r, 0, Math.PI * 2);
-      ctx.strokeStyle = sw.color;
-      ctx.globalAlpha = sw.life * 0.75;
-      ctx.lineWidth = 2.5;
       ctx.stroke();
-      ctx.globalAlpha = 1;
-      sw.r += (sw.maxR - sw.r) * 0.14 * dt;
-      sw.life -= 0.04 * dt;
-      if (sw.life <= 0) shockwaves.splice(i, 1);
+      ctx.restore();
     }
 
-    /* Render Sparks */
+    /* Sparks */
     for (let i = sparks.length - 1; i >= 0; i--) {
-      const s = sparks[i];
-      s.x += s.vx * dt;
-      s.y += s.vy * dt;
-      s.vy += 0.18 * dt;
-      s.life -= 0.035 * dt;
-      if (s.life <= 0) {
+      const sp = sparks[i];
+      sp.x += sp.vx * state.timeScale;
+      sp.y += sp.vy * state.timeScale;
+      sp.vy += 0.16 * state.timeScale;
+      sp.life -= sp.decay * state.timeScale;
+      if (sp.life <= 0) {
         sparks.splice(i, 1);
         continue;
       }
-      ctx.fillStyle = s.color;
-      ctx.globalAlpha = s.life;
-      ctx.fillRect(s.x, s.y, 2.5, 2.5);
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.fillStyle = sp.color;
+      ctx.globalAlpha = sp.life;
+      ctx.fillRect(sp.x, sp.y, 2.4, 2.4);
+      ctx.restore();
     }
-    ctx.globalAlpha = 1;
+
     ctx.restore();
 
-    /* Update Telemetry Oscilloscope */
-    document.getElementById('statTemp').textContent = Math.round(coreTemp) + ' K';
-    document.getElementById('statLoad').textContent = currentLoad + '%';
-    loadHistory.push(currentLoad);
-    loadHistory.shift();
+    /* Update Telemetry Readouts & Oscilloscope */
+    document.getElementById("teleArcs").textContent = activeArcCount;
+    const tempK = Math.round(18000 + state.voltage * 140 + activeArcCount * 950);
+    document.getElementById("teleTemp").textContent = tempK.toLocaleString() + " K";
 
+    scopeHistory.push(Math.min(1, activeArcCount / 28));
+    scopeHistory.shift();
     sctx.clearRect(0, 0, scopeCanvas.width, scopeCanvas.height);
-    sctx.strokeStyle = col.outer;
+    sctx.strokeStyle = state.palette.mid;
     sctx.lineWidth = 1.6;
     sctx.beginPath();
-    for (let i = 0; i < loadHistory.length; i++) {
-      const sx = (i / (loadHistory.length - 1)) * scopeCanvas.width;
-      const sy = scopeCanvas.height - 4 - (loadHistory[i] / 100) * (scopeCanvas.height - 8);
-      if (i === 0) sctx.moveTo(sx, sy);
+    scopeHistory.forEach((v, idx) => {
+      const sx = (idx / (scopeHistory.length - 1)) * scopeCanvas.width;
+      const sy = scopeCanvas.height - 4 - v * (scopeCanvas.height - 8);
+      if (idx === 0) sctx.moveTo(sx, sy);
       else sctx.lineTo(sx, sy);
-    }
+    });
     sctx.stroke();
 
     requestAnimationFrame(loop);
   }
 
   requestAnimationFrame(loop);
-})();
 </script>
 </body>
 </html>
