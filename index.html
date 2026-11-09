@@ -2,227 +2,155 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>DISCHARGE MATRIX // X10 WEAPON & HUD OVERDRIVE</title>
+<title>DISCHARGE MATRIX // X10 OVERDRIVE</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap');
   :root {
-    --c: #00f3ff; --p: #b829ea; --m: #ff007f; --a: #ffbe0b; --bg: #020308;
-    --cut: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-    --cut-sm: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+    --c: #00f3ff; --p: #b829ea; --pk: #ff007f; --g: #ffbe0b; --bg: #020308;
+    --cut: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
   }
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
   body {
     background: var(--bg); color: #e2e8f0; height: 100vh; display: flex; overflow: hidden;
-    font: 700 13px/1.25 'Rajdhani', system-ui, sans-serif;
+    font: 600 12.5px/1.3 'Segoe UI', system-ui, sans-serif;
   }
-
-  /* Cyber-Tactical HUD Sidebar */
   #sidebar {
-    width: 365px; padding: 16px; overflow-y: auto; z-index: 20; position: relative;
-    background:
-      linear-gradient(180deg, rgba(6, 11, 26, 0.97) 0%, rgba(2, 4, 10, 0.99) 100%),
-      repeating-linear-gradient(90deg, rgba(0,243,255,0.03) 0 1px, transparent 1px 18px);
-    border-right: 1px solid rgba(0, 243, 255, 0.45);
-    box-shadow: 12px 0 45px rgba(0,0,0,0.95), inset -1px 0 24px rgba(0,243,255,0.12);
+    width: 345px; padding: 14px 16px; overflow-y: auto; z-index: 20; position: relative;
+    background: linear-gradient(180deg, rgba(6,10,24,.97), rgba(2,4,10,.99));
+    border-right: 1px solid rgba(0,243,255,.45);
+    box-shadow: 10px 0 40px rgba(0,0,0,.95), inset -2px 0 22px rgba(0,243,255,.12);
   }
-  #sidebar::before {
-    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, var(--c), var(--p), var(--m), var(--c));
-    background-size: 200% 100%; animation: scanBar 3s linear infinite;
-  }
-  @keyframes scanBar { to { background-position: 200% 0; } }
   #sidebar::-webkit-scrollbar { width: 4px; }
   #sidebar::-webkit-scrollbar-thumb { background: linear-gradient(var(--c), var(--p)); }
-
-  /* Header & Glitch Title */
-  .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+  .hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
   h1 {
-    font: 900 16px 'Orbitron', sans-serif; letter-spacing: 1.8px;
-    background: linear-gradient(90deg, #fff, var(--c), var(--p), var(--m), var(--c)) 0/250%;
+    font: 900 15px/1.1 'Segoe UI', sans-serif; letter-spacing: 1.8px; text-transform: uppercase;
+    background: linear-gradient(90deg, var(--c), var(--p), var(--pk), var(--c)) 0/200%;
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-    animation: flow 3.5s linear infinite, glitch 5s infinite;
-    filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.45));
+    animation: flow 3.5s linear infinite; filter: drop-shadow(0 0 8px rgba(0,243,255,.4));
   }
-  @keyframes flow { to { background-position: 250% center; } }
-  @keyframes glitch {
-    0%, 94%, 100% { transform: none; }
-    95% { transform: skewX(-10deg) translateX(2px); }
-    97% { transform: skewX(8deg) translateX(-2px); }
+  @keyframes flow { to { background-position: 200% center; } }
+  .badge {
+    font: 800 9px monospace; letter-spacing: 1.2px; color: #f3e8ff; padding: 3px 7px;
+    border-radius: 3px; background: rgba(184,41,234,.25); border: 1px solid var(--p);
+    box-shadow: 0 0 12px rgba(184,41,234,.6);
   }
-  .sys-tag {
-    font: 800 8.5px 'Orbitron', monospace; color: var(--c); letter-spacing: 1px;
-    padding: 3px 7px; background: rgba(0, 243, 255, 0.12); clip-path: var(--cut-sm);
-    border: 1px solid rgba(0, 243, 255, 0.55); box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
+  .sub { font-size: 10.5px; color: #64748b; letter-spacing: .8px; margin-bottom: 10px; }
+  .sec { border-top: 1px solid rgba(0,243,255,.2); padding-top: 10px; margin-top: 10px; }
+  .stitle {
+    font: 800 9.5px monospace; color: var(--c); letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 7px;
   }
-  .sub { font: 700 10.5px 'Orbitron', monospace; color: #64748b; letter-spacing: 1.2px; margin-bottom: 12px; }
-
-  /* Modular HUD Panels */
-  .hud-card {
-    background: rgba(8, 14, 30, 0.72); border: 1px solid rgba(0, 243, 255, 0.22);
-    padding: 11px 12px; margin-bottom: 11px; clip-path: var(--cut); position: relative;
-    box-shadow: inset 0 0 18px rgba(0, 243, 255, 0.04);
+  .stitle::before {
+    content: ''; width: 6px; height: 6px; background: var(--c);
+    transform: rotate(45deg); box-shadow: 0 0 10px var(--c);
   }
-  .hud-card::after {
-    content: ""; position: absolute; top: 0; left: 0; width: 22px; height: 2px;
-    background: var(--c); box-shadow: 0 0 8px var(--c);
-  }
-  .sec-head {
-    font: 800 9.5px 'Orbitron', sans-serif; color: var(--c); letter-spacing: 1.6px;
-    margin-bottom: 9px; display: flex; justify-content: space-between; align-items: center;
-  }
-  .sec-head span:first-child::before {
-    content: "◆ "; color: var(--m); text-shadow: 0 0 8px var(--m);
-  }
-  .sec-code { color: #475569; font-size: 8.5px; }
-
-  /* Tactical Weapon Grid Buttons */
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 8px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 7px; }
   button {
-    font: 700 12.5px 'Rajdhani', sans-serif; color: #cbd5e1; cursor: pointer;
-    background: linear-gradient(145deg, rgba(15, 24, 48, 0.92), rgba(7, 12, 24, 0.95));
-    border: 1px solid rgba(71, 85, 105, 0.65); padding: 8px 9px; clip-path: var(--cut-sm);
-    position: relative; overflow: hidden; transition: 0.14s cubic-bezier(0.2, 0.8, 0.2, 1);
-    text-transform: uppercase; letter-spacing: 0.6px;
+    font: 700 11.5px 'Segoe UI', sans-serif; color: #cbd5e1; cursor: pointer; letter-spacing: .5px;
+    background: linear-gradient(145deg, rgba(14,22,44,.92), rgba(8,13,28,.95));
+    border: 1px solid rgba(71,85,105,.6); padding: 7px 9px; clip-path: var(--cut);
+    position: relative; overflow: hidden; transition: .15s;
   }
-  button::before {
-    content: ""; position: absolute; top: 0; left: -120%; width: 70%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-    transform: skewX(-25deg); transition: 0.35s;
+  button::after {
+    content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+    transform: skewX(-25deg); transition: .35s;
   }
-  button:hover::before { left: 150%; }
-  button:hover {
-    color: #fff; border-color: var(--c); transform: translateY(-1px);
-    box-shadow: 0 0 16px rgba(0, 243, 255, 0.45), inset 0 0 10px rgba(0, 243, 255, 0.18);
+  button:hover::after { left: 140%; }
+  button:hover, button.active {
+    color: #fff; border-color: var(--c); background: rgba(0,243,255,.2);
+    box-shadow: 0 0 16px rgba(0,243,255,.45), inset 0 0 10px rgba(0,243,255,.25);
+    transform: translateY(-1px);
   }
-  button:active { transform: scale(0.96); }
-
-  button.wpn-btn { text-align: left; padding: 9px 10px; display: flex; flex-direction: column; gap: 2px; }
-  button.wpn-btn small { font: 700 8.5px 'Orbitron', monospace; color: #64748b; letter-spacing: 0.8px; }
-  button.wpn-btn.active {
-    background: linear-gradient(135deg, rgba(0, 243, 255, 0.25), rgba(184, 41, 234, 0.25));
-    border-color: var(--c); color: #fff;
-    box-shadow: 0 0 20px rgba(0, 243, 255, 0.5), inset 0 0 14px rgba(0, 243, 255, 0.25);
+  button:active { transform: scale(.97); }
+  button.omega-btn {
+    grid-column: span 2; border-color: var(--g); color: #fef08a;
+    background: linear-gradient(90deg, rgba(255,0,127,.25), rgba(184,41,234,.3), rgba(0,243,255,.25));
+    box-shadow: 0 0 18px rgba(255,190,11,.35); font-weight: 800; letter-spacing: 1px;
   }
-  button.wpn-btn.active small { color: var(--c); text-shadow: 0 0 6px var(--c); }
-
-  /* Super-Weapon Trigger Buttons */
-  .cta {
-    font: 800 10.5px 'Orbitron', sans-serif; letter-spacing: 1.2px; color: #fff;
-    width: 100%; padding: 10px; margin-bottom: 7px; clip-path: var(--cut);
+  button.omega-btn.active, button.omega-btn:hover {
+    border-color: #fff; color: #fff; box-shadow: 0 0 25px rgba(255,190,11,.8);
   }
-  .btn-overdrive {
-    background: linear-gradient(135deg, #0284c7, #4f46e5, #7e22ce);
-    border: 1px solid var(--c); box-shadow: 0 0 22px rgba(0, 243, 255, 0.45);
-  }
-  .btn-overdrive:hover { box-shadow: 0 0 32px rgba(0, 243, 255, 0.85); }
-  .btn-orbital {
-    background: linear-gradient(135deg, #be185d, #9333ea);
-    border: 1px solid #f472b6; box-shadow: 0 0 22px rgba(255, 0, 127, 0.45);
-  }
-  .btn-orbital:hover { box-shadow: 0 0 32px rgba(255, 0, 127, 0.85); }
-  .btn-danger {
-    background: rgba(80, 12, 18, 0.75); border-color: rgba(239, 68, 68, 0.65); color: #fca5a5;
-  }
-  .btn-danger:hover { background: #dc2626; color: #fff; box-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
-
-  /* Custom Neon Segmented Sliders */
-  .ctrl { margin-bottom: 10px; }
-  .ctrl-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-  .ctrl-top label { font: 700 11.5px 'Rajdhani', sans-serif; color: #94a3b8; letter-spacing: 0.7px; text-transform: uppercase; }
-  .val-pill {
-    font: 800 10px 'Orbitron', monospace; color: var(--c); background: rgba(0, 243, 255, 0.1);
-    border: 1px solid rgba(0, 243, 255, 0.35); padding: 1px 6px; clip-path: var(--cut-sm);
-    text-shadow: 0 0 6px rgba(0, 243, 255, 0.6);
-  }
+  button.cta { font: 800 10.5px monospace; letter-spacing: 1.1px; color: #fff; width: 100%; padding: 9px; margin-bottom: 6px; }
+  button.pri { background: linear-gradient(135deg, #0284c7, #4f46e5); border-color: var(--c); box-shadow: 0 0 18px rgba(0,243,255,.4); }
+  button.orb { background: linear-gradient(135deg, #be185d, #7e22ce); border-color: #f472b6; box-shadow: 0 0 18px rgba(255,0,127,.4); }
+  button.dng { background: rgba(69,10,10,.7); border-color: rgba(239,68,68,.65); color: #fca5a5; }
+  button.dng:hover { background: #dc2626; color: #fff; box-shadow: 0 0 18px rgba(239,68,68,.8); }
+  .crow { margin-bottom: 9px; }
+  .clbl { display: flex; justify-content: space-between; color: #94a3b8; font-size: 11px; margin-bottom: 3px; }
+  .clbl span:last-child { color: var(--c); font: 700 10.5px monospace; text-shadow: 0 0 6px rgba(0,243,255,.5); }
   input[type="range"] {
-    -webkit-appearance: none; width: 100%; height: 6px; border-radius: 1px; outline: none; cursor: pointer;
-    background: linear-gradient(90deg, var(--c) var(--fill, 50%), rgba(15, 23, 42, 0.95) var(--fill, 50%));
-    border: 1px solid rgba(0, 243, 255, 0.35); box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
+    -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; outline: none;
+    background: linear-gradient(90deg, rgba(0,243,255,.45), rgba(184,41,234,.45));
   }
   input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 14px; height: 14px; background: #fff;
-    border: 2px solid var(--c); transform: rotate(45deg); cursor: pointer;
-    box-shadow: 0 0 12px var(--c), 0 0 4px #fff; transition: 0.1s;
+    -webkit-appearance: none; width: 13px; height: 13px; background: var(--c);
+    transform: rotate(45deg); cursor: pointer; border: 1.5px solid #fff; box-shadow: 0 0 12px var(--c);
   }
-  input[type="range"]::-webkit-slider-thumb:hover { transform: rotate(45deg) scale(1.2); background: var(--c); }
-
-  /* Spectrum Select & Code Input */
   select, input[type="text"] {
-    width: 100%; background: #060b19; color: #fff; padding: 7px 10px; clip-path: var(--cut-sm);
-    border: 1px solid rgba(0, 243, 255, 0.45); font: 700 12px 'Orbitron', monospace; outline: none;
+    width: 100%; background: #070c1a; color: #e2e8f0; padding: 6px 9px; border-radius: 4px;
+    border: 1px solid rgba(0,243,255,.4); font: 700 12px monospace; outline: none;
   }
-  select:focus, input[type="text"]:focus { border-color: var(--c); box-shadow: 0 0 14px rgba(0, 243, 255, 0.4); }
-  .code-row { display: flex; gap: 6px; }
-  .code-row button { padding: 7px 12px; font: 800 10px 'Orbitron', sans-serif; border-color: var(--p); color: #f3e8ff; }
-  #codeMsg { font: 700 10px 'Orbitron', monospace; color: #64748b; margin-top: 5px; letter-spacing: 0.6px; }
-
-  /* Viewport & Corner Tactical Brackets */
-  #viewport {
+  select:focus, input[type="text"]:focus { border-color: var(--c); box-shadow: 0 0 12px rgba(0,243,255,.35); }
+  .code-box { display: flex; gap: 6px; }
+  .code-msg { font: 700 10px monospace; margin-top: 4px; min-height: 13px; color: #94a3b8; }
+  #vp {
     flex: 1; position: relative; cursor: crosshair; overflow: hidden;
-    background:
-      radial-gradient(circle at 50% 45%, #09122b 0%, #020308 82%),
-      linear-gradient(rgba(0, 243, 255, 0.035) 1px, transparent 1px) 0 0 / 48px 48px,
-      linear-gradient(90deg, rgba(0, 243, 255, 0.035) 1px, transparent 1px) 0 0 / 48px 48px;
+    background: radial-gradient(circle at 50% 35%, #0b132e 0%, var(--bg) 85%),
+                linear-gradient(rgba(0,243,255,.035) 1px, transparent 1px) 0 0/42px 42px,
+                linear-gradient(90deg, rgba(0,243,255,.035) 1px, transparent 1px) 0 0/42px 42px;
   }
-  .bracket {
-    position: absolute; width: 26px; height: 26px; pointer-events: none; z-index: 10;
-    border-color: rgba(0, 243, 255, 0.55); border-style: solid;
+  #hud {
+    position: absolute; top: 14px; left: 18px; right: 18px; display: flex; justify-content: space-between;
+    pointer-events: none; font: 700 10.5px monospace; color: rgba(0,243,255,.8); letter-spacing: 1.2px;
+    text-shadow: 0 0 8px rgba(0,243,255,.5);
   }
-  .b-tl { top: 14px; left: 14px; border-width: 2px 0 0 2px; }
-  .b-tr { top: 14px; right: 14px; border-width: 2px 2px 0 0; }
-  .b-bl { bottom: 14px; left: 14px; border-width: 0 0 2px 2px; }
-  .b-br { bottom: 14px; right: 14px; border-width: 0 2px 2px 0; }
-
-  #hudTop {
-    position: absolute; top: 16px; left: 50%; transform: translateX(-50%); pointer-events: none;
-    font: 800 10.5px 'Orbitron', monospace; color: var(--c); letter-spacing: 2px;
-    background: rgba(5, 10, 22, 0.78); border: 1px solid rgba(0, 243, 255, 0.35);
-    padding: 5px 16px; clip-path: var(--cut-sm); text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
-  }
-  #hudBot {
-    position: absolute; bottom: 16px; right: 20px; pointer-events: none;
-    font: 700 10px 'Orbitron', monospace; color: rgba(0, 243, 255, 0.65); letter-spacing: 1.5px;
+  #banner {
+    position: absolute; top: 44px; left: 50%; transform: translateX(-50%); pointer-events: none;
+    font: 900 13px monospace; letter-spacing: 2px; padding: 5px 16px; border-radius: 3px;
+    opacity: 0; transition: opacity .3s; text-transform: uppercase;
   }
   canvas { display: block; width: 100%; height: 100%; }
 </style>
 </head>
 <body>
 <aside id="sidebar">
-  <div class="top-bar">
-    <h1>DISCHARGE MATRIX</h1>
-    <span class="sys-tag">MK-X // 60FPS</span>
-  </div>
-  <div class="sub">HYPER-PLASMA & SINGULARITY ARSENAL</div>
+  <div class="hdr"><h1>Discharge Matrix</h1><span class="badge">X10 ULTRA</span></div>
+  <div class="sub">SINGULARITY & PLASMA WEAPON SANDBOX</div>
 
-  <div class="hud-card">
-    <div class="sec-head"><span>PRIMARY WEAPON SYSTEMS</span><span class="sec-code">[1-4]</span></div>
-    <div class="grid-2" id="modes">
-      <button class="wpn-btn active" data-mode="arc"><span>ARC LANCE</span><small>[1] HIGH-AMP BEAM</small></button>
-      <button class="wpn-btn" data-mode="tesla"><span>TESLA PYRON</span><small>[2] MULTI-CHAIN COIL</small></button>
-      <button class="wpn-btn" data-mode="orb"><span>PLASMA NEXUS</span><small>[3] LINKED PYLONS</small></button>
-      <button class="wpn-btn" data-mode="singularity"><span>SINGULARITY</span><small>[4] BLACK HOLE WELL</small></button>
+  <div class="sec">
+    <div class="stitle">Weapon Systems [1-4]</div>
+    <div class="grid2" id="modes">
+      <button class="active" data-m="arc">1. ARC LANCE</button>
+      <button data-m="tesla">2. TESLA COIL</button>
+      <button data-m="orb">3. PLASMA NODES</button>
+      <button data-m="singularity">4. SINGULARITY</button>
     </div>
-    <button class="cta btn-overdrive" id="btnOD">⚡ TRIGGER SUPER-OVERDRIVE [SPACE]</button>
-    <button class="cta btn-orbital" id="btnOrbital">🛰️ ORBITAL ION CANNON [O]</button>
-    <div class="grid-2" style="margin-bottom:0">
-      <button id="btnTower">+ DEPLOY COIL [T]</button>
-      <button id="btnSpawn">+ SPAWN TARGET [B]</button>
+    <button class="cta pri" id="btnOD">TRIGGER OVERDRIVE [SPACE]</button>
+    <button class="cta orb" id="btnOrb">ORBITAL ION BEAM [O]</button>
+    <div class="grid2">
+      <button id="btnTower">+ TESLA TOWER</button>
+      <button id="btnSpawn">SPAWN BOSS ROLL [B]</button>
     </div>
   </div>
 
-  <div class="hud-card">
-    <div class="sec-head"><span>MATRIX PARAMETERS</span><span class="sec-code">TUNING</span></div>
-    <div class="ctrl"><div class="ctrl-top"><label>Core Voltage</label><span class="val-pill" id="vVolt">1.44 GW</span></div><input type="range" id="sVolt" min="20" max="180" value="90"></div>
-    <div class="ctrl"><div class="ctrl-top"><label>Arc Jaggedness</label><span class="val-pill" id="vChaos">110%</span></div><input type="range" id="sChaos" min="20" max="220" value="110"></div>
-    <div class="ctrl"><div class="ctrl-top"><label>Dendrite Forks</label><span class="val-pill" id="vBranch">70%</span></div><input type="range" id="sBranch" min="0" max="100" value="70"></div>
-    <div class="ctrl"><div class="ctrl-top"><label>Singularity Mass</label><span class="val-pill" id="vGrav">1.50 G</span></div><input type="range" id="sGrav" min="30" max="300" value="150"></div>
-    <div class="ctrl"><div class="ctrl-top"><label>Chain Snap Range</label><span class="val-pill" id="vChain">280 PX</span></div><input type="range" id="sChain" min="100" max="500" value="280"></div>
-    <div class="ctrl" style="margin-bottom:0"><div class="ctrl-top"><label>Time Dilation</label><span class="val-pill" id="vTime">1.00 X</span></div><input type="range" id="sTime" min="20" max="160" value="100"></div>
-  </div>
-
-  <div class="hud-card">
-    <div class="sec-head"><span>SPECTRUM & TACTICAL</span><span class="sec-code">SYS</span></div>
-    <div class="ctrl">
+  <div class="sec">
+    <div class="stitle">Matrix Parameters</div>
+    <div class="crow"><div class="clbl"><span>CORE VOLTAGE</span><span id="vVolt">1.35 GW</span></div>
+      <input type="range" id="sVolt" min="20" max="180" value="85"></div>
+    <div class="crow"><div class="clbl"><span>ARC CHAOS</span><span id="vChaos">110%</span></div>
+      <input type="range" id="sChaos" min="20" max="220" value="110"></div>
+    <div class="crow"><div class="clbl"><span>DENDRITE FORKS</span><span id="vFork">65%</span></div>
+      <input type="range" id="sFork" min="0" max="100" value="65"></div>
+    <div class="crow"><div class="clbl"><span>CHAIN RADIUS</span><span id="vChain">260 PX</span></div>
+      <input type="range" id="sChain" min="80" max="480" value="260"></div>
+    <div class="crow"><div class="clbl"><span>GRAVITY WELL</span><span id="vGrav">1.50 G</span></div>
+      <input type="range" id="sGrav" min="10" max="300" value="150"></div>
+    <div class="crow"><div class="clbl"><span>TIME DILATION</span><span id="vTime">1.00 X</span></div>
+      <input type="range" id="sTime" min="20" max="150" value="100"></div>
+    <div class="crow"><div class="clbl"><span>AFTERIMAGE TRAIL</span><span id="vTrail">78%</span></div>
+      <input type="range" id="sTrail" min="10" max="95" value="78"></div>
+    <div class="crow"><div class="clbl"><span>IONIZATION SPECTRUM</span></div>
       <select id="selColor">
         <option value="#00f3ff">CYAN // IONIZED PLASMA</option>
         <option value="#b829ea">PURPLE // VOID RIFT</option>
@@ -231,33 +159,55 @@
         <option value="#10b981">EMERALD // RADIATION</option>
       </select>
     </div>
-    <div class="grid-2">
+  </div>
+
+  <div class="sec">
+    <div class="stitle">Dev Override Terminal</div>
+    <div class="code-box">
+      <input type="text" id="codeIn" placeholder="ENTER CODE..." maxlength="20">
+      <button id="btnCode">REDEEM</button>
+    </div>
+    <div class="code-msg" id="codeMsg">TRY: RainbowDEVblu OR gengen123</div>
+    <div class="grid2" style="margin-top:8px;">
       <button id="btnAudio">AUDIO: OFF</button>
-      <button class="btn-danger" id="btnPurge">PURGE GRID [C]</button>
+      <button class="dng" id="btnPurge">PURGE [C]</button>
     </div>
-    <div class="code-row">
-      <input type="text" id="codeInput" placeholder="OVERRIDE CODE...">
-      <button id="btnCode">UNLOCK</button>
-    </div>
-    <div id="codeMsg">STATUS: STANDARD CLEARANCE</div>
   </div>
 </aside>
 
-<main id="viewport">
-  <div class="bracket b-tl"></div><div class="bracket b-tr"></div>
-  <div class="bracket b-bl"></div><div class="bracket b-br"></div>
-  <div id="hudTop">ACTIVE WEAPON: ARC LANCE // HOLD LEFT-CLICK TO FIRE</div>
-  <div id="hudBot">60 FPS TURBO ENGINE // TARGETS: 0</div>
+<main id="vp">
+  <div id="hud">
+    <span id="hudMode">WEAPON: ARC LANCE // HOLD CLICK TO FIRE</span>
+    <span id="hudStats">FPS: 60 | TARGETS: 0</span>
+  </div>
+  <div id="banner"></div>
   <canvas id="sim"></canvas>
 </main>
 
 <script>
 const canvas = document.getElementById('sim'), ctx = canvas.getContext('2d');
 let W, H, dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-let mode = 'arc', baseColor = '#00f3ff', isRainbow = false, hue = 185;
-let volt = 90, chaos = 1.1, branchProb = 0.7, grav = 1.5, chainR = 280, timeScale = 1.0;
-let holding = false, shake = 0, tick = 0, audioCtx = null, audioOn = false;
-let mouse = { x: 0, y: 0 }, sparks = [], nodes = [], towers = [], targets = [], rings = [], jets = [];
+let mode = 'arc', baseColor = '#00f3ff', rainbowMode = false, hue = 0;
+let volt = 85, chaos = 1.1, forkChance = 0.65, chainRad = 260, grav = 1.5, timeScale = 1.0, trail = 0.22;
+let holding = false, shake = 0, flash = 0, mouse = { x: 0, y: 0 };
+let sparks = [], waves = [], nodes = [], towers = [], targets = [], projectiles = [];
+let audioCtx = null, audioOn = false, lastFpsTime = performance.now(), frames = 0, fps = 60;
+
+/* Pre-rendered glow sprite cache for 60 FPS performance */
+const spriteCache = {};
+function getGlowSprite(col) {
+  if (spriteCache[col]) return spriteCache[col];
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d'), grad = g.createRadialGradient(64, 64, 2, 64, 64, 62);
+  grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.25, col); grad.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = grad; g.fillRect(0, 0, 128, 128);
+  return (spriteCache[col] = c);
+}
+
+function activeColor(offset = 0) {
+  if (!rainbowMode) return baseColor;
+  return `hsl(${(hue + offset) % 360}, 100%, 58%)`;
+}
 
 function resize() {
   W = canvas.offsetWidth; H = canvas.offsetHeight;
@@ -267,245 +217,327 @@ function resize() {
 window.addEventListener('resize', resize); resize();
 mouse = { x: W / 2, y: H / 2 };
 
-/* Slider Fill Sync */
-function syncSlider(el, pillId, fmt) {
-  const update = () => {
-    const pct = ((el.value - el.min) / (el.max - el.min)) * 100;
-    el.style.setProperty('--fill', pct + '%');
-    document.getElementById(pillId).textContent = fmt(+el.value);
-  };
-  el.addEventListener('input', update); update();
-}
-syncSlider(document.getElementById('sVolt'), 'vVolt', v => { volt = v; return (v * 0.016).toFixed(2) + ' GW'; });
-syncSlider(document.getElementById('sChaos'), 'vChaos', v => { chaos = v / 100; return v + '%'; });
-syncSlider(document.getElementById('sBranch'), 'vBranch', v => { branchProb = v / 100; return v + '%'; });
-syncSlider(document.getElementById('sGrav'), 'vGrav', v => { grav = v / 100; return grav.toFixed(2) + ' G'; });
-syncSlider(document.getElementById('sChain'), 'vChain', v => { chainR = v; return v + ' PX'; });
-syncSlider(document.getElementById('sTime'), 'vTime', v => { timeScale = v / 100; return timeScale.toFixed(2) + ' X'; });
-
-const getCol = (offset = 0) => isRainbow ? `hsl(${(hue + offset) % 360}, 100%, 58%)` : baseColor;
-
-/* Synthesized Web Audio FX */
-function zapSound(freq = 140, dur = 0.08, type = 'sawtooth', vol = 0.06) {
-  if (!audioOn || !audioCtx) return;
-  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-  o.type = type; o.frequency.setValueAtTime(freq + Math.random() * 90, audioCtx.currentTime);
-  o.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + dur);
-  g.gain.setValueAtTime(vol, audioCtx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-  o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
+/* Procedural Web Audio Synthesizer */
+function playZap(freq = 180, dur = 0.12, type = 'sawtooth', gainVal = 0.08) {
+  if (!audioOn) return;
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const now = audioCtx.currentTime, osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+  osc.type = type; osc.frequency.setValueAtTime(freq + Math.random() * 140, now);
+  osc.frequency.exponentialRampToValueAtTime(42, now + dur);
+  g.gain.setValueAtTime(gainVal, now); g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+  osc.connect(g); g.connect(audioCtx.destination);
+  osc.start(now); osc.stop(now + dur);
 }
 
-/* Pre-rendered Radial Glow Sprite for 60FPS */
-const glowCache = {};
-function drawGlow(x, y, r, col, alpha = 0.45) {
-  if (!glowCache[col]) {
-    const c = document.createElement('canvas'); c.width = c.height = 128;
-    const gctx = c.getContext('2d'), grad = gctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-    grad.addColorStop(0, '#fff'); grad.addColorStop(0.25, col); grad.addColorStop(1, 'transparent');
-    gctx.fillStyle = grad; gctx.fillRect(0, 0, 128, 128);
-    glowCache[col] = c;
-  }
-  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = alpha;
-  ctx.drawImage(glowCache[col], x - r, y - r, r * 2, r * 2);
-  ctx.restore();
+function showBanner(txt, col) {
+  const b = document.getElementById('banner');
+  b.textContent = txt; b.style.color = col; b.style.border = `1px solid ${col}`;
+  b.style.background = 'rgba(4,8,20,0.88)'; b.style.boxShadow = `0 0 20px ${col}`;
+  b.style.opacity = 1;
+  clearTimeout(b._t); b._t = setTimeout(() => b.style.opacity = 0, 2600);
 }
 
-/* Ultra-Detailed Multi-Pass Plasma Lightning + Dendrites */
-function buildPoints(x1, y1, x2, y2, disp) {
-  let pts = [{ x: x1, y: y1 }, { x: x2, y: y2 }];
+/* Multi-pass Additive Plasma Lightning with Dendrite Branching */
+function drawPlasmaBolt(x1, y1, x2, y2, disp, width = 2.2, col = activeColor(), depth = 0) {
+  const pts = [{ x: x1, y: y1 }, { x: x2, y: y2 }];
   let d = disp * chaos;
-  for (let iter = 0; iter < 5; iter++) {
-    const next = [pts[0]];
-    for (let i = 0; i < pts.length - 1; i++) {
-      const a = pts[i], b = pts[i + 1];
-      const mx = (a.x + b.x) * 0.5 + (Math.random() - 0.5) * d;
-      const my = (a.y + b.y) * 0.5 + (Math.random() - 0.5) * d;
-      next.push({ x: mx, y: my }, b);
+  for (let i = 0; i < 4; i++) {
+    for (let j = pts.length - 1; j > 0; j--) {
+      const mx = (pts[j - 1].x + pts[j].x) * 0.5 + (Math.random() - 0.5) * d;
+      const my = (pts[j - 1].y + pts[j].y) * 0.5 + (Math.random() - 0.5) * d;
+      pts.splice(j, 0, { x: mx, y: my });
+      if (depth === 0 && i === 1 && Math.random() < forkChance * 0.38) {
+        const ang = Math.atan2(y2 - y1, x2 - x1) + (Math.random() - 0.5) * 1.4;
+        const len = Math.hypot(x2 - x1, y2 - y1) * (0.25 + Math.random() * 0.25);
+        drawPlasmaBolt(mx, my, mx + Math.cos(ang) * len, my + Math.sin(ang) * len, disp * 0.45, width * 0.55, col, 1);
+      }
     }
-    pts = next; d *= 0.52;
+    d *= 0.52;
   }
-  return pts;
-}
-
-function drawLightning(x1, y1, x2, y2, disp, width = 2.4, allowFork = true) {
-  const col = getCol(Math.random() * 35);
-  const pts = buildPoints(x1, y1, x2, y2, disp);
-
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-
-  const trace = () => {
-    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-  };
-
-  /* Pass 1: Wide Atmospheric Aura */
-  trace(); ctx.strokeStyle = col; ctx.lineWidth = width * 6.5; ctx.globalAlpha = 0.14; ctx.stroke();
-  /* Pass 2: Saturated Plasma Sheath */
-  trace(); ctx.strokeStyle = col; ctx.lineWidth = width * 2.6; ctx.globalAlpha = 0.55; ctx.stroke();
-  /* Pass 3: White-Hot Ion Core */
-  trace(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = width * 0.9; ctx.globalAlpha = 0.95; ctx.stroke();
-
-  /* Corona Beads along channel */
-  for (let i = 4; i < pts.length - 2; i += 7) {
-    drawGlow(pts[i].x, pts[i].y, width * 5, col, 0.35);
-  }
-  ctx.restore();
-
-  /* Recursive Dendrite Forks */
-  if (allowFork && Math.random() < branchProb) {
-    const idx = Math.floor(pts.length * (0.25 + Math.random() * 0.5));
-    const p = pts[idx], ang = Math.atan2(y2 - y1, x2 - x1) + (Math.random() - 0.5) * 1.4;
-    const len = Math.hypot(x2 - x1, y2 - y1) * (0.3 + Math.random() * 0.3);
-    const fx = p.x + Math.cos(ang) * len, fy = p.y + Math.sin(ang) * len;
-    drawLightning(p.x, p.y, fx, fy, disp * 0.55, width * 0.5, false);
-    if (sparks.length < 260) sparks.push({ x: fx, y: fy, vx: (Math.random()-0.5)*4, vy: (Math.random()-0.5)*4, life: 0.8, col });
-  }
-  damageNear(x2, y2, 34, width * 1.4);
-}
-
-/* Curved Spiral Lightning for Singularity */
-function drawSpiralBolt(cx, cy, startR, startAng, col) {
-  ctx.save(); ctx.globalCompositeOperation = 'lighter';
-  const steps = 16;
-  const pts = [];
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const r = startR * (1 - t * 0.88);
-    const a = startAng + t * 3.4 + (Math.random() - 0.5) * 0.25 * chaos;
-    pts.push({ x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r * 0.88 });
-  }
-  const trace = () => {
-    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-  };
-  trace(); ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.globalAlpha = 0.35; ctx.stroke();
-  trace(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.4; ctx.globalAlpha = 0.9; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.strokeStyle = col; ctx.globalAlpha = 0.28; ctx.lineWidth = width * 5.5; ctx.stroke();
+  ctx.globalAlpha = 0.65; ctx.lineWidth = width * 2.4; ctx.stroke();
+  ctx.strokeStyle = '#ffffff'; ctx.globalAlpha = 0.95; ctx.lineWidth = width * 0.85; ctx.stroke();
   ctx.restore();
 }
 
-function addSparks(x, y, n = 10, speed = 6) {
-  const col = getCol(20);
+function addSparks(x, y, n = 10, col = activeColor(), spd = 6) {
   for (let i = 0; i < n && sparks.length < 280; i++) {
-    const a = Math.random() * Math.PI * 2, s = Math.random() * speed + 1.5;
+    const a = Math.random() * Math.PI * 2, s = Math.random() * spd + 1.5;
     sparks.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 1, col });
   }
 }
 
-/* Targets & Weighted Boss Spawns (1/10 Boss, 1/2 Mini-Boss) */
-function spawnTarget() {
-  const roll = Math.random();
-  let type = 'cap', hp = 50, r = 15, label = 'CAPACITOR';
-  if (roll < 0.10) { type = 'boss'; hp = 550; r = 34; label = 'OMEGA DREADNOUGHT'; shake = 10; }
-  else if (roll < 0.60) { type = 'mini'; hp = 190; r = 23; label = 'VANGUARD WARDEN'; }
-  targets.push({
-    x: 90 + Math.random() * (W - 180), y: 80 + Math.random() * (H - 160),
-    vx: (Math.random() - 0.5) * 1.6, vy: (Math.random() - 0.5) * 1.6,
-    hp, maxHp: hp, r, type, label, rot: 0
-  });
+function addWave(x, y, maxR, col = activeColor()) {
+  waves.push({ x, y, r: 8, maxR, life: 1, col });
 }
-for (let i = 0; i < 4; i++) spawnTarget();
 
-function damageNear(x, y, rad, dmg) {
-  for (let i = targets.length - 1; i >= 0; i--) {
-    const t = targets[i];
-    if (Math.hypot(t.x - x, t.y - y) < rad + t.r) {
-      t.hp -= dmg;
-      if (t.hp <= 0) {
-        rings.push({ x: t.x, y: t.y, r: 8, maxR: t.r * 5, col: getCol(40), alpha: 1 });
-        addSparks(t.x, t.y, t.type === 'boss' ? 65 : 28, 9);
-        shake = Math.max(shake, t.type === 'boss' ? 22 : 10);
-        zapSound(75, 0.25, 'square', 0.1);
-        targets.splice(i, 1);
-        spawnTarget();
-      }
-    }
+/* Weighted Entity Spawner: 1/10 Boss, 1/2 Mini-Boss, 4/10 Capacitor */
+function spawnEntity(forceType = null) {
+  const roll = Math.random();
+  let tier = forceType || (roll < 0.10 ? 'boss' : (roll < 0.60 ? 'miniboss' : 'capacitor'));
+  const pad = 70, x = pad + Math.random() * (W - pad * 2), y = pad + Math.random() * (H - pad * 2);
+  if (tier === 'boss') {
+    targets.push({ x, y, vx: (Math.random() - 0.5) * 1.1, vy: (Math.random() - 0.5) * 1.1, r: 34, hp: 600, maxHp: 600, sp: 220, maxSp: 220, tier, cd: 90, col: '#ff007f' });
+    showBanner('WARNING: OMEGA DREADNOUGHT BOSS [1/10]', '#ff007f');
+    playZap(95, 0.45, 'sawtooth', 0.14);
+  } else if (tier === 'miniboss') {
+    targets.push({ x, y, vx: (Math.random() - 0.5) * 1.8, vy: (Math.random() - 0.5) * 1.8, r: 22, hp: 210, maxHp: 210, sp: 75, maxSp: 75, tier, cd: 120, col: '#ffbe0b' });
+    showBanner('ALERT: VANGUARD MINI-BOSS [1/2]', '#ffbe0b');
+    playZap(140, 0.25, 'triangle', 0.1);
+  } else {
+    targets.push({ x, y, vx: (Math.random() - 0.5) * 2.5, vy: (Math.random() - 0.5) * 2.5, r: 13, hp: 55, maxHp: 55, sp: 0, maxSp: 0, tier, cd: 999, col: '#00f3ff' });
   }
 }
 
-/* Weapon Controls & Hotkeys */
+function damageTarget(t, dmg, col) {
+  if (t.sp > 0) { t.sp = Math.max(0, t.sp - dmg); }
+  else { t.hp -= dmg; }
+  if (t.hp <= 0 && !t.dead) {
+    t.dead = true; shake = Math.max(shake, t.tier === 'boss' ? 24 : 12);
+    addWave(t.x, t.y, t.r * 5, t.col); addSparks(t.x, t.y, t.tier === 'boss' ? 55 : 22, t.col, 9);
+    playZap(75, 0.35, 'sawtooth', 0.15);
+    targets.forEach(o => {
+      if (!o.dead && Math.hypot(o.x - t.x, o.y - t.y) < chainRad) {
+        drawPlasmaBolt(t.x, t.y, o.x, o.y, volt * 0.7, 2.2, col);
+        damageTarget(o, dmg * 1.5, col);
+      }
+    });
+  }
+}
+
+/* Weapon Renderers */
+function renderTeslaCoil(cx, cy, col) {
+  const t = performance.now() * 0.004;
+  ctx.save(); ctx.translate(cx, cy);
+  for (let i = 0; i < 5; i++) {
+    const yOff = 18 - i * 6, wRing = 20 - i * 1.5;
+    ctx.strokeStyle = i % 2 ? '#f59e0b' : col; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.ellipse(0, yOff, wRing, 5, 0, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.strokeStyle = col; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(0, -14, 24, 7, 0, 0, Math.PI * 2); ctx.stroke();
+  for (let k = 0; k < 6; k++) {
+    const a = t * 1.6 + (k * Math.PI) / 3, nx = Math.cos(a) * 34, ny = -14 + Math.sin(a) * 11;
+    ctx.drawImage(getGlowSprite(col), nx - 12, ny - 12, 24, 24);
+    if (Math.random() < 0.35) drawPlasmaBolt(cx, cy - 14, cx + nx, cy + ny, 16, 1.2, col, 1);
+  }
+  const pulse = (t * 45) % 90;
+  ctx.globalAlpha = 1 - pulse / 90; ctx.strokeStyle = col;
+  ctx.beginPath(); ctx.ellipse(0, 0, pulse * 1.5, pulse * 0.55, 0, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+}
+
+function renderSingularity(cx, cy, col, scale = 1) {
+  const t = performance.now() * 0.003, rCore = (22 + volt * 0.12) * scale;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  /* Relativistic Polar Jets */
+  const jetH = (130 + volt * 1.1) * scale;
+  const grad = ctx.createLinearGradient(cx, cy - jetH, cx, cy + jetH);
+  grad.addColorStop(0, 'rgba(0,0,0,0)'); grad.addColorStop(0.5, col); grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad; ctx.globalAlpha = 0.45;
+  ctx.beginPath(); ctx.moveTo(cx - 5 * scale, cy); ctx.lineTo(cx, cy - jetH); ctx.lineTo(cx + 5 * scale, cy);
+  ctx.lineTo(cx, cy + jetH); ctx.closePath(); ctx.fill();
+  /* Tilted Accretion Disk */
+  for (let i = 0; i < 4; i++) {
+    ctx.strokeStyle = i % 2 === 0 ? col : '#ffffff'; ctx.globalAlpha = 0.55 - i * 0.1; ctx.lineWidth = 3 - i * 0.5;
+    ctx.beginPath(); ctx.ellipse(cx, cy, rCore * (2.3 + i * 0.55), rCore * (0.62 + i * 0.14), Math.sin(t * 0.5) * 0.18, 0, Math.PI * 2); ctx.stroke();
+  }
+  /* Spiral Inward Lightning */
+  for (let s = 0; s < 5; s++) {
+    const a0 = t * 2.5 + s * 1.25, rOut = rCore * 4.2;
+    const sx = cx + Math.cos(a0) * rOut, sy = cy + Math.sin(a0) * rOut;
+    const mx = cx + Math.cos(a0 + 0.9) * rCore * 2, my = cy + Math.sin(a0 + 0.9) * rCore * 2;
+    drawPlasmaBolt(sx, sy, mx, my, 24, 1.4, col, 1);
+    drawPlasmaBolt(mx, my, cx, cy, 14, 1.6, col, 1);
+  }
+  ctx.restore();
+  /* Event Horizon Pitch-Black Core + Photon Ring */
+  ctx.beginPath(); ctx.arc(cx, cy, rCore, 0, Math.PI * 2);
+  ctx.fillStyle = '#000000'; ctx.fill();
+  ctx.lineWidth = 3; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+  ctx.lineWidth = 7; ctx.strokeStyle = col; ctx.globalAlpha = 0.5; ctx.stroke(); ctx.globalAlpha = 1;
+}
+
+function fireWeaponAt(tx, ty, activeMode) {
+  const col = activeColor();
+  if (activeMode === 'arc') {
+    drawPlasmaBolt(W / 2, H / 2, tx, ty, volt, 2.5, col);
+    addSparks(tx, ty, 4, col);
+    targets.forEach(t => { if (Math.hypot(t.x - tx, t.y - ty) < t.r + 32) damageTarget(t, 4.2 * timeScale, col); });
+    if (Math.random() < 0.25) playZap(220, 0.08);
+  } else if (activeMode === 'tesla') {
+    renderTeslaCoil(tx, ty, col);
+    let hits = 0;
+    targets.forEach(t => {
+      if (hits < 4 && Math.hypot(t.x - tx, t.y - ty) < chainRad) {
+        drawPlasmaBolt(tx, ty - 14, t.x, t.y, volt * 0.75, 2.0, col);
+        damageTarget(t, 3.4 * timeScale, col); hits++;
+      }
+    });
+    if (hits === 0 && Math.random() < 0.5) {
+      const a = Math.random() * Math.PI * 2;
+      drawPlasmaBolt(tx, ty - 14, tx + Math.cos(a) * 130, ty + Math.sin(a) * 130, volt * 0.6, 1.5, col, 1);
+    }
+    if (Math.random() < 0.2) playZap(310, 0.07);
+  } else if (activeMode === 'singularity') {
+    shake = Math.max(shake, 4.5);
+    renderSingularity(tx, ty, col, 1);
+    targets.forEach(t => {
+      const dx = tx - t.x, dy = ty - t.y, dist = Math.hypot(dx, dy);
+      if (dist < chainRad * 1.4 && dist > 5) {
+        t.vx += (dx / dist) * 0.45 * grav * timeScale;
+        t.vy += (dy / dist) * 0.45 * grav * timeScale;
+        if (dist < 65) damageTarget(t, 5.5 * timeScale, col);
+      }
+    });
+    if (Math.random() < 0.2) playZap(85, 0.14, 'sine', 0.1);
+  } else if (activeMode === 'gengen') {
+    /* Secret Weapon: GENGEN-123 OMEGA TRI-FUSION SINGULARITY */
+    shake = Math.max(shake, 8);
+    const col2 = activeColor(120), col3 = activeColor(240);
+    renderSingularity(tx, ty, col, 1.15);
+    renderTeslaCoil(tx, ty - 45, col2);
+    drawPlasmaBolt(W / 2, H / 2, tx, ty, volt * 1.2, 3.2, col3);
+    for (let i = 0; i < 3; i++) {
+      const a = performance.now() * 0.008 + (i * Math.PI * 2) / 3;
+      const ox = tx + Math.cos(a) * 95, oy = ty + Math.sin(a) * 95;
+      ctx.drawImage(getGlowSprite(col2), ox - 20, oy - 20, 40, 40);
+      drawPlasmaBolt(tx, ty, ox, oy, 28, 2.0, col2, 1);
+    }
+    targets.forEach(t => {
+      const dx = tx - t.x, dy = ty - t.y, dist = Math.hypot(dx, dy);
+      if (dist < chainRad * 1.6 && dist > 4) {
+        t.vx += (dx / dist) * 0.75 * grav * timeScale;
+        t.vy += (dy / dist) * 0.75 * grav * timeScale;
+        drawPlasmaBolt(tx, ty, t.x, t.y, volt * 0.8, 2.2, col3);
+        damageTarget(t, 8.5 * timeScale, col);
+      }
+    });
+    if (Math.random() < 0.3) playZap(160, 0.12, 'sawtooth', 0.11);
+  }
+}
+
+/* UI Wiring */
 function setMode(m, label) {
   mode = m;
-  document.querySelectorAll('.wpn-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
-  document.getElementById('hudTop').textContent = `ACTIVE WEAPON: ${label} // HOLD LEFT-CLICK TO FIRE`;
+  document.querySelectorAll('#modes button').forEach(b => b.classList.toggle('active', b.dataset.m === m));
+  document.getElementById('hudMode').textContent = `WEAPON: ${label} // HOLD CLICK TO FIRE`;
 }
-document.querySelectorAll('.wpn-btn').forEach(b => b.onclick = () => setMode(b.dataset.mode, b.querySelector('span').textContent));
+document.querySelectorAll('#modes button').forEach(b => b.onclick = () => setMode(b.dataset.m, b.textContent));
 
-function triggerOverdrive() {
-  shake = 22; zapSound(95, 0.3, 'sawtooth', 0.12);
-  rings.push({ x: W/2, y: H/2, r: 10, maxR: Math.max(W, H) * 0.65, col: getCol(), alpha: 1 });
-  for (let i = 0; i < 16; i++) {
-    const a = (i / 16) * Math.PI * 2 + Math.random() * 0.2;
-    drawLightning(W/2, H/2, W/2 + Math.cos(a) * W * 0.55, H/2 + Math.sin(a) * H * 0.55, volt * 1.4, 3);
-  }
-  addSparks(W/2, H/2, 60, 10);
-}
-
-function triggerOrbital() {
-  const tx = mouse.x; shake = 26; zapSound(55, 0.4, 'square', 0.14);
-  jets.push({ x: tx, life: 1, col: getCol(60) });
-  rings.push({ x: tx, y: H * 0.85, r: 12, maxR: 260, col: getCol(), alpha: 1 });
-  drawLightning(tx, 0, tx, H * 0.88, volt * 1.2, 5.5);
-  addSparks(tx, H * 0.85, 70, 11);
-  damageNear(tx, H * 0.85, 130, 160);
-}
-
-document.getElementById('btnOD').onclick = triggerOverdrive;
-document.getElementById('btnOrbital').onclick = triggerOrbital;
-document.getElementById('btnTower').onclick = () => towers.push({ x: mouse.x, y: mouse.y, rot: 0 });
-document.getElementById('btnSpawn').onclick = spawnTarget;
-document.getElementById('btnPurge').onclick = () => { nodes = []; towers = []; sparks = []; rings = []; };
+const bindSlider = (id, vid, fn) => {
+  document.getElementById(id).oninput = e => { document.getElementById(vid).textContent = fn(+e.target.value); };
+};
+bindSlider('sVolt', 'vVolt', v => { volt = v; return (v * 0.016).toFixed(2) + ' GW'; });
+bindSlider('sChaos', 'vChaos', v => { chaos = v / 100; return v + '%'; });
+bindSlider('sFork', 'vFork', v => { forkChance = v / 100; return v + '%'; });
+bindSlider('sChain', 'vChain', v => { chainRad = v; return v + ' PX'; });
+bindSlider('sGrav', 'vGrav', v => { grav = v / 100; return grav.toFixed(2) + ' G'; });
+bindSlider('sTime', 'vTime', v => { timeScale = v / 100; return timeScale.toFixed(2) + ' X'; });
+bindSlider('sTrail', 'vTrail', v => { trail = 1 - v / 100; return v + '%'; });
 
 document.getElementById('selColor').onchange = e => {
-  if (e.target.value === 'RAINBOW') isRainbow = true;
-  else { isRainbow = false; baseColor = e.target.value; document.documentElement.style.setProperty('--c', baseColor); }
+  rainbowMode = e.target.value === 'RAINBOW';
+  if (!rainbowMode) baseColor = e.target.value;
 };
 
-document.getElementById('btnAudio').onclick = e => {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  audioOn = !audioOn; e.target.textContent = `AUDIO: ${audioOn ? 'ON' : 'OFF'}`;
-};
-
+/* Code Redemption: RainbowDEVblu & gengen123 */
 function redeemCode() {
-  const val = document.getElementById('codeInput').value.trim();
-  const msg = document.getElementById('codeMsg');
-  if (val === 'RainbowDEVblu') {
-    isRainbow = true;
+  const raw = document.getElementById('codeIn').value.trim(), msg = document.getElementById('codeMsg');
+  if (raw === 'RainbowDEVblu') {
+    rainbowMode = true;
     const sel = document.getElementById('selColor');
-    if (!sel.querySelector('option[value="RAINBOW"]')) {
-      const opt = document.createElement('option');
-      opt.value = 'RAINBOW'; opt.textContent = 'NEON RAINBOW // DEV OVERRIDE';
+    if (![...sel.options].some(o => o.value === 'RAINBOW')) {
+      const opt = document.createElement('option'); opt.value = 'RAINBOW'; opt.textContent = 'NEON RAINBOW // DEV OVERRIDE';
       sel.appendChild(opt);
     }
     sel.value = 'RAINBOW';
-    msg.style.color = '#00f3ff'; msg.textContent = 'ACCESS GRANTED: NEON RAINBOW UNLOCKED';
-    triggerOverdrive();
+    msg.style.color = '#00f3ff'; msg.textContent = 'UNLOCKED: NEON RAINBOW SPECTRUM!';
+    showBanner('DEV CODE ACCEPTED // NEON RAINBOW ACTIVE', '#00f3ff');
+    playZap(440, 0.3, 'triangle', 0.14);
+  } else if (raw === 'gengen123') {
+    const grid = document.getElementById('modes');
+    if (!document.getElementById('btnGenGen')) {
+      const btn = document.createElement('button');
+      btn.id = 'btnGenGen'; btn.className = 'omega-btn'; btn.dataset.m = 'gengen';
+      btn.textContent = '5. GENGEN-123 OMEGA FUSION';
+      btn.onclick = () => setMode('gengen', 'GENGEN-123 OMEGA FUSION');
+      grid.appendChild(btn);
+    }
+    setMode('gengen', 'GENGEN-123 OMEGA FUSION');
+    msg.style.color = '#ffbe0b'; msg.textContent = 'UNLOCKED: GENGEN-123 OMEGA FUSION!';
+    showBanner('SECRET WEAPON UNLOCKED // GENGEN-123 FUSION', '#ffbe0b');
+    playZap(520, 0.4, 'sawtooth', 0.15);
   } else {
-    msg.style.color = '#ff007f'; msg.textContent = 'INVALID OVERRIDE KEY';
+    msg.style.color = '#f87171'; msg.textContent = 'INVALID OVERRIDE CODE';
   }
+  document.getElementById('codeIn').value = '';
 }
 document.getElementById('btnCode').onclick = redeemCode;
-document.getElementById('codeInput').onkeydown = e => { if (e.key === 'Enter') redeemCode(); };
+document.getElementById('codeIn').onkeydown = e => { if (e.key === 'Enter') redeemCode(); };
+
+function triggerOverdrive() {
+  shake = 22; flash = 0.35; const col = activeColor();
+  addWave(W / 2, H / 2, Math.max(W, H) * 0.7, col);
+  for (let i = 0; i < 16; i++) {
+    const tx = Math.random() * W, ty = Math.random() * H;
+    drawPlasmaBolt(W / 2, H / 2, tx, ty, volt * 1.5, 2.8, activeColor(i * 22));
+    addSparks(tx, ty, 8, col);
+  }
+  targets.forEach(t => damageTarget(t, 85, col));
+  playZap(110, 0.4, 'sawtooth', 0.16);
+}
+
+function triggerOrbital() {
+  const tx = mouse.x || W / 2, col = activeColor();
+  shake = 26; flash = 0.45;
+  drawPlasmaBolt(tx, 0, tx, H, volt * 1.3, 6.5, col);
+  addWave(tx, H * 0.85, 320, col); addSparks(tx, H * 0.85, 65, col, 10);
+  targets.forEach(t => { if (Math.abs(t.x - tx) < 110) damageTarget(t, 160, col); });
+  playZap(70, 0.5, 'sawtooth', 0.18);
+}
+
+document.getElementById('btnOD').onclick = triggerOverdrive;
+document.getElementById('btnOrb').onclick = triggerOrbital;
+document.getElementById('btnTower').onclick = () => {
+  towers.push({ x: mouse.x || W * 0.3, y: mouse.y || H * 0.5 });
+  showBanner('AUTONOMOUS TESLA TOWER DEPLOYED', activeColor());
+};
+document.getElementById('btnSpawn').onclick = () => spawnEntity();
+document.getElementById('btnAudio').onclick = e => {
+  audioOn = !audioOn; e.target.textContent = audioOn ? 'AUDIO: ON' : 'AUDIO: OFF';
+  if (audioOn) playZap(320, 0.15);
+};
+document.getElementById('btnPurge').onclick = () => {
+  sparks = []; waves = []; nodes = []; towers = []; targets = []; projectiles = [];
+  ctx.clearRect(0, 0, W, H);
+};
 
 canvas.onpointerdown = e => {
   holding = true; mouse = { x: e.offsetX, y: e.offsetY };
-  if (mode === 'orb') { nodes.push({ ...mouse }); zapSound(260, 0.08); }
+  if (mode === 'orb') {
+    nodes.push({ x: mouse.x, y: mouse.y });
+    if (nodes.length > 10) nodes.shift();
+    addWave(mouse.x, mouse.y, 70, activeColor());
+    playZap(380, 0.1);
+  }
 };
-canvas.onpointermove = e => mouse = { x: e.offsetX, y: e.offsetY };
+canvas.onpointermove = e => { mouse = { x: e.offsetX, y: e.offsetY }; };
 window.onpointerup = () => {
-  if (holding && mode === 'singularity') {
-    /* Supernova Collapse Blast on Singularity Release */
-    const col = getCol(30);
-    shake = 24 * grav; zapSound(50, 0.35, 'sawtooth', 0.14);
-    rings.push({ x: mouse.x, y: mouse.y, r: 10, maxR: 260 * grav, col, alpha: 1 });
-    for (let i = 0; i < 12; i++) {
-      const a = (i / 12) * Math.PI * 2;
-      drawLightning(mouse.x, mouse.y, mouse.x + Math.cos(a) * 240 * grav, mouse.y + Math.sin(a) * 240 * grav, volt, 2.6);
+  if (holding && (mode === 'singularity' || mode === 'gengen')) {
+    const col = activeColor(); shake = 20; flash = 0.3;
+    addWave(mouse.x, mouse.y, 280, col); addSparks(mouse.x, mouse.y, 45, col, 9);
+    for (let i = 0; i < 10; i++) {
+      const a = (i * Math.PI * 2) / 10;
+      drawPlasmaBolt(mouse.x, mouse.y, mouse.x + Math.cos(a) * 240, mouse.y + Math.sin(a) * 240, volt, 2.4, col);
     }
-    addSparks(mouse.x, mouse.y, 65, 11);
-    damageNear(mouse.x, mouse.y, 180 * grav, 120 * grav);
+    targets.forEach(t => { if (Math.hypot(t.x - mouse.x, t.y - mouse.y) < 250) damageTarget(t, 120, col); });
+    playZap(65, 0.45, 'sawtooth', 0.16);
   }
   holding = false;
 };
@@ -513,213 +545,140 @@ window.onpointerup = () => {
 window.onkeydown = e => {
   if (document.activeElement.tagName === 'INPUT') return;
   const k = e.key.toLowerCase();
-  if (k === '1') setMode('arc', 'ARC LANCE');
-  else if (k === '2') setMode('tesla', 'TESLA PYRON');
-  else if (k === '3') setMode('orb', 'PLASMA NEXUS');
-  else if (k === '4') setMode('singularity', 'SINGULARITY');
-  else if (e.code === 'Space') { e.preventDefault(); triggerOverdrive(); }
-  else if (k === 'o') triggerOrbital();
-  else if (k === 't') towers.push({ x: mouse.x, y: mouse.y, rot: 0 });
-  else if (k === 'b') spawnTarget();
-  else if (k === 'c') { nodes = []; towers = []; sparks = []; rings = []; }
+  if (k === '1') setMode('arc', '1. ARC LANCE');
+  if (k === '2') setMode('tesla', '2. TESLA COIL');
+  if (k === '3') setMode('orb', '3. PLASMA NODES');
+  if (k === '4') setMode('singularity', '4. SINGULARITY');
+  if (k === '5' && document.getElementById('btnGenGen')) setMode('gengen', '5. GENGEN-123 OMEGA FUSION');
+  if (k === ' ') { e.preventDefault(); triggerOverdrive(); }
+  if (k === 'o') triggerOrbital();
+  if (k === 'b') spawnEntity();
+  if (k === 'c') document.getElementById('btnPurge').click();
 };
 
-/* Render 3D-Style Tesla Coil Assembly */
-function renderTeslaCoil(x, y, active) {
-  const col = getCol();
-  drawGlow(x, y, active ? 75 : 40, col, active ? 0.55 : 0.25);
-  ctx.save(); ctx.translate(x, y);
-  /* Copper Inductor Stack */
-  for (let i = -2; i <= 2; i++) {
-    ctx.strokeStyle = i % 2 === 0 ? col : '#fff'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.ellipse(0, i * 4, 14 - Math.abs(i), 5, 0, 0, Math.PI * 2); ctx.stroke();
-  }
-  /* Orbiting Corona Nodes */
-  for (let i = 0; i < 6; i++) {
-    const a = tick * 0.08 + (i * Math.PI) / 3;
-    const nx = Math.cos(a) * 26, ny = Math.sin(a) * 12 - 10;
-    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(nx, ny, 2.2, 0, Math.PI * 2); ctx.fill();
-  }
-  ctx.restore();
-}
+/* Seed initial targets */
+for (let i = 0; i < 4; i++) spawnEntity('capacitor');
 
-/* Render Detailed Black Hole Singularity */
-function renderSingularity(x, y) {
-  const col = getCol(), r = 24 + grav * 10;
-  drawGlow(x, y, r * 4.2, col, 0.55);
-
-  ctx.save(); ctx.translate(x, y);
-  ctx.globalCompositeOperation = 'lighter';
-
-  /* Relativistic Polar Jets */
-  const jetGrad = ctx.createLinearGradient(0, -r * 5.5, 0, r * 5.5);
-  jetGrad.addColorStop(0, 'transparent'); jetGrad.addColorStop(0.5, col); jetGrad.addColorStop(1, 'transparent');
-  ctx.fillStyle = jetGrad; ctx.globalAlpha = 0.55;
-  ctx.beginPath(); ctx.moveTo(-4, 0); ctx.lineTo(0, -r * 5.5); ctx.lineTo(4, 0); ctx.lineTo(0, r * 5.5); ctx.closePath(); ctx.fill();
-
-  /* Tilted Multi-Ring Accretion Disk */
-  ctx.rotate(-0.32);
-  for (let i = 1; i <= 4; i++) {
-    ctx.strokeStyle = i % 2 === 0 ? '#fff' : col;
-    ctx.lineWidth = 4.5 - i * 0.7; ctx.globalAlpha = 0.75 - i * 0.12;
-    ctx.beginPath(); ctx.ellipse(0, 0, r * (1.5 + i * 0.55), r * (0.42 + i * 0.14), tick * 0.02 * (i % 2 ? 1 : -1), 0, Math.PI * 2); ctx.stroke();
-  }
-  ctx.restore();
-
-  /* Pitch-Black Event Horizon + Photon Ring */
-  ctx.save();
-  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-  ctx.fillStyle = '#010104'; ctx.fill();
-  ctx.lineWidth = 3; ctx.strokeStyle = '#ffffff'; ctx.stroke();
-  ctx.lineWidth = 7; ctx.strokeStyle = col; ctx.globalAlpha = 0.45; ctx.stroke();
-  ctx.restore();
-
-  /* Inward Spiral Lightning & Gravity Suction */
-  if (Math.random() < 0.75) drawSpiralBolt(x, y, r * 4.8, Math.random() * Math.PI * 2, col);
-  targets.forEach(t => {
-    const dx = x - t.x, dy = y - t.y, dist = Math.max(40, Math.hypot(dx, dy));
-    if (dist < 380 * grav) {
-      t.vx += (dx / dist) * 0.35 * grav * timeScale;
-      t.vy += (dy / dist) * 0.35 * grav * timeScale;
-      t.hp -= 0.45 * grav * timeScale;
-    }
-  });
-}
-
-/* Main 60FPS Render Loop */
-function loop() {
-  tick += timeScale;
-  if (isRainbow) {
-    hue = (hue + 2.2 * timeScale) % 360;
-    document.documentElement.style.setProperty('--c', `hsl(${hue}, 100%, 55%)`);
+/* Main 60 FPS Simulation Loop */
+function loop(now) {
+  hue = (hue + 2.2 * timeScale) % 360;
+  frames++;
+  if (now - lastFpsTime >= 500) {
+    fps = Math.round((frames * 1000) / (now - lastFpsTime));
+    frames = 0; lastFpsTime = now;
+    document.getElementById('hudStats').textContent = `FPS: ${fps} | TARGETS: ${targets.length}`;
   }
 
   ctx.save();
-  ctx.fillStyle = 'rgba(2, 3, 8, 0.28)';
+  ctx.fillStyle = `rgba(2, 3, 8, ${Math.max(0.06, trail)})`;
   ctx.fillRect(0, 0, W, H);
 
-  if (shake > 0.3) {
+  if (flash > 0.01) {
+    ctx.fillStyle = `rgba(255, 255, 255, ${flash})`;
+    ctx.fillRect(0, 0, W, H); flash *= 0.82;
+  }
+  if (shake > 0.2) {
     ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
-    shake *= 0.88;
+    shake *= 0.86;
   }
 
-  /* Central Reactor Emitter Core */
-  const coreCol = getCol();
-  drawGlow(W / 2, H / 2, 48 + Math.sin(tick * 0.1) * 8, coreCol, 0.35);
-  ctx.strokeStyle = coreCol; ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.arc(W / 2, H / 2, 16, tick * 0.04, tick * 0.04 + Math.PI * 1.4); ctx.stroke();
+  /* Linked Plasma Nodes */
+  nodes.forEach((n, idx) => {
+    const col = activeColor(idx * 30);
+    ctx.drawImage(getGlowSprite(col), n.x - 18, n.y - 18, 36, 36);
+    if (nodes[idx + 1]) drawPlasmaBolt(n.x, n.y, nodes[idx + 1].x, nodes[idx + 1].y, volt * 0.65, 2.0, col);
+    targets.forEach(t => {
+      if (Math.hypot(t.x - n.x, t.y - n.y) < chainRad * 0.75 && Math.random() < 0.25) {
+        drawPlasmaBolt(n.x, n.y, t.x, t.y, volt * 0.5, 1.5, col);
+        damageTarget(t, 1.8 * timeScale, col);
+      }
+    });
+  });
 
   /* Autonomous Tesla Towers */
-  towers.forEach(tw => {
-    renderTeslaCoil(tw.x, tw.y, true);
-    if (Math.random() < 0.35 * timeScale) {
-      const near = targets.find(t => Math.hypot(t.x - tw.x, t.y - tw.y) < chainR);
-      if (near) drawLightning(tw.x, tw.y - 10, near.x, near.y, volt * 0.65, 1.8);
-    }
-  });
-
-  /* Linked Plasma Nexus Orbs */
-  nodes.forEach((n, idx) => {
-    drawGlow(n.x, n.y, 32, coreCol, 0.5);
-    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(n.x, n.y, 4.5, 0, Math.PI * 2); ctx.fill();
-    if (nodes[idx + 1] && Math.random() < 0.7) {
-      drawLightning(n.x, n.y, nodes[idx + 1].x, nodes[idx + 1].y, volt * 0.7, 2);
-    }
-  });
-
-  /* Active Primary Weapons */
-  if (holding) {
-    if (mode === 'arc') {
-      drawLightning(W / 2, H / 2, mouse.x, mouse.y, volt, 3.1);
-      addSparks(mouse.x, mouse.y, 4, 6);
-      if (Math.random() < 0.35) zapSound(180, 0.06);
-    } else if (mode === 'tesla') {
-      renderTeslaCoil(mouse.x, mouse.y, true);
-      let chained = 0;
-      targets.forEach(t => {
-        if (chained < 4 && Math.hypot(t.x - mouse.x, t.y - mouse.y) < chainR) {
-          drawLightning(mouse.x, mouse.y - 10, t.x, t.y, volt * 0.85, 2.3);
-          chained++;
-        }
-      });
-      if (chained === 0) {
-        for (let i = 0; i < 3; i++) {
-          const a = Math.random() * Math.PI * 2, r = chainR * 0.65;
-          drawLightning(mouse.x, mouse.y - 10, mouse.x + Math.cos(a) * r, mouse.y + Math.sin(a) * r, volt * 0.75, 1.8);
-        }
+  towers.forEach((tw, idx) => {
+    const col = activeColor(idx * 45);
+    renderTeslaCoil(tw.x, tw.y, col);
+    targets.forEach(t => {
+      if (Math.hypot(t.x - tw.x, t.y - tw.y) < chainRad && Math.random() < 0.35) {
+        drawPlasmaBolt(tw.x, tw.y - 14, t.x, t.y, volt * 0.65, 1.8, col);
+        damageTarget(t, 2.4 * timeScale, col);
       }
-      if (Math.random() < 0.4) zapSound(230, 0.05);
-    } else if (mode === 'singularity') {
-      shake = Math.max(shake, 3.5 * grav);
-      renderSingularity(mouse.x, mouse.y);
-      if (Math.random() < 0.25) zapSound(65, 0.09, 'triangle', 0.07);
-    }
-  }
-
-  /* Orbital Ion Cannon Beams */
-  jets = jets.filter(j => j.life > 0.04);
-  jets.forEach(j => {
-    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = j.life;
-    ctx.fillStyle = j.col; ctx.fillRect(j.x - 28 * j.life, 0, 56 * j.life, H * 0.88);
-    ctx.fillStyle = '#fff'; ctx.fillRect(j.x - 8 * j.life, 0, 16 * j.life, H * 0.88);
-    ctx.restore(); j.life *= 0.88;
+    });
   });
 
-  /* Shockwave Rings */
-  rings = rings.filter(r => r.alpha > 0.04);
-  rings.forEach(r => {
-    r.r += (r.maxR - r.r) * 0.14 * timeScale; r.alpha *= 0.91;
-    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = r.alpha;
-    ctx.strokeStyle = r.col; ctx.lineWidth = 3.5;
-    ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2); ctx.stroke();
-    ctx.restore();
-  });
+  /* Active Player Weapon */
+  if (holding) fireWeaponAt(mouse.x, mouse.y, mode);
 
-  /* Armored Targets & Bosses */
+  /* Targets & Bosses */
+  targets = targets.filter(t => !t.dead);
+  if (targets.length < 3 && Math.random() < 0.015) spawnEntity();
+
   targets.forEach(t => {
-    t.x += t.vx * timeScale; t.y += t.vy * timeScale; t.rot += 0.025 * timeScale;
-    if (t.x < t.r + 20 || t.x > W - t.r - 20) t.vx *= -1;
-    if (t.y < t.r + 20 || t.y > H - t.r - 20) t.vy *= -1;
-    const tCol = t.type === 'boss' ? '#ff007f' : (t.type === 'mini' ? '#ffbe0b' : '#00f3ff');
-    drawGlow(t.x, t.y, t.r * 2.1, tCol, 0.35);
+    t.x += t.vx * timeScale; t.y += t.vy * timeScale;
+    if (t.x < t.r + 10 || t.x > W - t.r - 10) t.vx *= -1;
+    if (t.y < t.r + 10 || t.y > H - t.r - 10) t.vy *= -1;
+    t.vx *= 0.992; t.vy *= 0.992;
 
-    ctx.save(); ctx.translate(t.x, t.y); ctx.rotate(t.rot);
-    ctx.strokeStyle = tCol; ctx.lineWidth = t.type === 'boss' ? 3 : 2;
-    const sides = t.type === 'boss' ? 8 : (t.type === 'mini' ? 6 : 4);
+    /* Boss Plasma Projectiles */
+    if (t.tier !== 'capacitor') {
+      t.cd -= timeScale;
+      if (t.cd <= 0) {
+        t.cd = t.tier === 'boss' ? 85 : 130;
+        const a = Math.atan2(mouse.y - t.y, mouse.x - t.x);
+        projectiles.push({ x: t.x, y: t.y, vx: Math.cos(a) * 4.5, vy: Math.sin(a) * 4.5, col: t.col, life: 140 });
+      }
+    }
+
+    /* Hull & Shield Rendering */
+    const sides = t.tier === 'boss' ? 8 : (t.tier === 'miniboss' ? 6 : 4);
+    ctx.save(); ctx.translate(t.x, t.y); ctx.rotate(now * 0.0015);
     ctx.beginPath();
-    for (let i = 0; i <= sides; i++) {
-      const a = (i / sides) * Math.PI * 2;
+    for (let i = 0; i < sides; i++) {
+      const a = (i * Math.PI * 2) / sides;
       i === 0 ? ctx.moveTo(Math.cos(a) * t.r, Math.sin(a) * t.r) : ctx.lineTo(Math.cos(a) * t.r, Math.sin(a) * t.r);
     }
-    ctx.stroke(); ctx.restore();
-
-    /* HP Bar & Tag */
-    const bw = t.r * 2.2;
-    ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.fillRect(t.x - bw / 2, t.y - t.r - 12, bw, 4);
-    ctx.fillStyle = tCol; ctx.fillRect(t.x - bw / 2, t.y - t.r - 12, bw * Math.max(0, t.hp / t.maxHp), 4);
-    if (t.type !== 'cap') {
-      ctx.font = '700 8.5px Orbitron, monospace'; ctx.fillStyle = tCol; ctx.textAlign = 'center';
-      ctx.fillText(t.label, t.x, t.y - t.r - 16);
+    ctx.closePath(); ctx.fillStyle = 'rgba(10,16,35,0.85)'; ctx.fill();
+    ctx.lineWidth = 2.5; ctx.strokeStyle = t.col; ctx.stroke();
+    if (t.sp > 0) {
+      ctx.beginPath(); ctx.arc(0, 0, t.r + 6, 0, Math.PI * 2);
+      ctx.strokeStyle = '#00f3ff'; ctx.lineWidth = 1.8; ctx.stroke();
     }
+    ctx.restore();
+
+    /* Health Bar */
+    const bw = t.r * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(t.x - t.r, t.y - t.r - 12, bw, 4);
+    ctx.fillStyle = t.col; ctx.fillRect(t.x - t.r, t.y - t.r - 12, bw * Math.max(0, t.hp / t.maxHp), 4);
   });
 
-  /* Plasma Sparks */
-  sparks = sparks.filter(s => s.life > 0.05);
-  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  /* Boss Projectiles */
+  projectiles = projectiles.filter(p => p.life > 0);
+  projectiles.forEach(p => {
+    p.x += p.vx * timeScale; p.y += p.vy * timeScale; p.life -= timeScale;
+    ctx.drawImage(getGlowSprite(p.col), p.x - 14, p.y - 14, 28, 28);
+  });
+
+  /* Shockwaves & Sparks */
+  waves = waves.filter(w => w.life > 0.03);
+  waves.forEach(w => {
+    w.r += (w.maxR - w.r) * 0.14 * timeScale; w.life *= 0.91;
+    ctx.save(); ctx.globalAlpha = w.life; ctx.strokeStyle = w.col; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(w.x, w.y, w.r, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+  });
+
+  sparks = sparks.filter(s => s.life > 0.04);
   sparks.forEach(s => {
-    s.x += s.vx * timeScale; s.y += s.vy * timeScale; s.life *= 0.92;
+    s.x += s.vx * timeScale; s.y += s.vy * timeScale; s.vy += 0.12 * timeScale; s.life *= 0.92;
     ctx.fillStyle = s.col; ctx.globalAlpha = s.life;
-    ctx.fillRect(s.x, s.y, 2.6, 2.6);
+    ctx.fillRect(s.x, s.y, 2.5, 2.5);
   });
-  ctx.restore();
+  ctx.globalAlpha = 1;
 
   ctx.restore();
-  if (Math.floor(tick) % 15 === 0) {
-    document.getElementById('hudBot').textContent = `60 FPS TURBO ENGINE // ACTIVE TARGETS: ${targets.length}`;
-  }
   requestAnimationFrame(loop);
 }
-loop();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>
