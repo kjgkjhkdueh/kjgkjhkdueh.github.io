@@ -2,1425 +2,724 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>DISCHARGE MATRIX // BOSS OVERDRIVE v8</title>
+<title>DISCHARGE MATRIX // X10 WEAPON & HUD OVERDRIVE</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap');
   :root {
-    --cyan: #00f3ff;
-    --purple: #b829ea;
-    --pink: #ff007f;
-    --amber: #ffbe0b;
-    --emerald: #00ff88;
-    --bg: #020308;
-    --cut: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    --c: #00f3ff; --p: #b829ea; --m: #ff007f; --a: #ffbe0b; --bg: #020308;
+    --cut: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    --cut-sm: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
   }
-
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    user-select: none;
-  }
-
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
   body {
-    background: var(--bg);
-    color: #e2e8f0;
-    height: 100vh;
-    display: flex;
-    overflow: hidden;
-    font: 600 13px/1.3 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: #e2e8f0; height: 100vh; display: flex; overflow: hidden;
+    font: 700 13px/1.25 'Rajdhani', system-ui, sans-serif;
   }
 
+  /* Cyber-Tactical HUD Sidebar */
   #sidebar {
-    width: 355px;
-    padding: 16px;
-    overflow-y: auto;
-    z-index: 20;
-    background: linear-gradient(180deg, #070b18 0%, #03050c 100%);
-    border-right: 1px solid rgba(0, 243, 255, 0.35);
-    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.85);
+    width: 365px; padding: 16px; overflow-y: auto; z-index: 20; position: relative;
+    background:
+      linear-gradient(180deg, rgba(6, 11, 26, 0.97) 0%, rgba(2, 4, 10, 0.99) 100%),
+      repeating-linear-gradient(90deg, rgba(0,243,255,0.03) 0 1px, transparent 1px 18px);
+    border-right: 1px solid rgba(0, 243, 255, 0.45);
+    box-shadow: 12px 0 45px rgba(0,0,0,0.95), inset -1px 0 24px rgba(0,243,255,0.12);
   }
-
-  #sidebar::-webkit-scrollbar {
-    width: 5px;
+  #sidebar::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--c), var(--p), var(--m), var(--c));
+    background-size: 200% 100%; animation: scanBar 3s linear infinite;
   }
+  @keyframes scanBar { to { background-position: 200% 0; } }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: linear-gradient(var(--c), var(--p)); }
 
-  #sidebar::-webkit-scrollbar-thumb {
-    background: linear-gradient(var(--cyan), var(--purple));
-    border-radius: 3px;
-  }
-
-  .header-box {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 4px;
-  }
-
+  /* Header & Glitch Title */
+  .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
   h1 {
-    font: 900 15px 'Segoe UI', system-ui, sans-serif;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink), var(--cyan));
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: flow 4s linear infinite;
+    font: 900 16px 'Orbitron', sans-serif; letter-spacing: 1.8px;
+    background: linear-gradient(90deg, #fff, var(--c), var(--p), var(--m), var(--c)) 0/250%;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    animation: flow 3.5s linear infinite, glitch 5s infinite;
+    filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.45));
   }
-
-  @keyframes flow {
-    to { background-position: 200% center; }
+  @keyframes flow { to { background-position: 250% center; } }
+  @keyframes glitch {
+    0%, 94%, 100% { transform: none; }
+    95% { transform: skewX(-10deg) translateX(2px); }
+    97% { transform: skewX(8deg) translateX(-2px); }
   }
-
-  .badge-pro {
-    font: 800 9px monospace;
-    letter-spacing: 1px;
-    color: #e9d5ff;
-    padding: 3px 7px;
-    border-radius: 3px;
-    background: rgba(184, 41, 234, 0.22);
-    border: 1px solid var(--purple);
+  .sys-tag {
+    font: 800 8.5px 'Orbitron', monospace; color: var(--c); letter-spacing: 1px;
+    padding: 3px 7px; background: rgba(0, 243, 255, 0.12); clip-path: var(--cut-sm);
+    border: 1px solid rgba(0, 243, 255, 0.55); box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
   }
+  .sub { font: 700 10.5px 'Orbitron', monospace; color: #64748b; letter-spacing: 1.2px; margin-bottom: 12px; }
 
-  .subtitle {
-    font-size: 11.5px;
-    color: #64748b;
-    letter-spacing: 0.6px;
-    margin-bottom: 12px;
+  /* Modular HUD Panels */
+  .hud-card {
+    background: rgba(8, 14, 30, 0.72); border: 1px solid rgba(0, 243, 255, 0.22);
+    padding: 11px 12px; margin-bottom: 11px; clip-path: var(--cut); position: relative;
+    box-shadow: inset 0 0 18px rgba(0, 243, 255, 0.04);
   }
-
-  .section {
-    border-top: 1px solid rgba(0, 243, 255, 0.16);
-    padding-top: 11px;
-    margin-top: 11px;
+  .hud-card::after {
+    content: ""; position: absolute; top: 0; left: 0; width: 22px; height: 2px;
+    background: var(--c); box-shadow: 0 0 8px var(--c);
   }
-
-  .section-title {
-    font: 700 10px monospace;
-    color: var(--cyan);
-    letter-spacing: 1.4px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
+  .sec-head {
+    font: 800 9.5px 'Orbitron', sans-serif; color: var(--c); letter-spacing: 1.6px;
+    margin-bottom: 9px; display: flex; justify-content: space-between; align-items: center;
   }
-
-  .section-title::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: var(--cyan);
-    transform: rotate(45deg);
+  .sec-head span:first-child::before {
+    content: "◆ "; color: var(--m); text-shadow: 0 0 8px var(--m);
   }
+  .sec-code { color: #475569; font-size: 8.5px; }
 
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 7px;
-    margin-bottom: 8px;
-  }
-
+  /* Tactical Weapon Grid Buttons */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 8px; }
   button {
-    font: 700 12.5px 'Segoe UI', system-ui, sans-serif;
-    color: #cbd5e1;
-    cursor: pointer;
-    background: #0c1326;
-    border: 1px solid rgba(71, 85, 105, 0.6);
-    padding: 8px 9px;
-    clip-path: var(--cut);
-    transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+    font: 700 12.5px 'Rajdhani', sans-serif; color: #cbd5e1; cursor: pointer;
+    background: linear-gradient(145deg, rgba(15, 24, 48, 0.92), rgba(7, 12, 24, 0.95));
+    border: 1px solid rgba(71, 85, 105, 0.65); padding: 8px 9px; clip-path: var(--cut-sm);
+    position: relative; overflow: hidden; transition: 0.14s cubic-bezier(0.2, 0.8, 0.2, 1);
+    text-transform: uppercase; letter-spacing: 0.6px;
   }
-
-  button:hover, button.active-mode {
-    color: #fff;
-    border-color: var(--cyan);
-    background: rgba(0, 243, 255, 0.18);
+  button::before {
+    content: ""; position: absolute; top: 0; left: -120%; width: 70%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    transform: skewX(-25deg); transition: 0.35s;
   }
-
-  button:active {
-    transform: scale(0.97);
+  button:hover::before { left: 150%; }
+  button:hover {
+    color: #fff; border-color: var(--c); transform: translateY(-1px);
+    box-shadow: 0 0 16px rgba(0, 243, 255, 0.45), inset 0 0 10px rgba(0, 243, 255, 0.18);
   }
+  button:active { transform: scale(0.96); }
 
-  button.cta {
-    font: 800 11px monospace;
-    letter-spacing: 1px;
-    color: #fff;
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 7px;
+  button.wpn-btn { text-align: left; padding: 9px 10px; display: flex; flex-direction: column; gap: 2px; }
+  button.wpn-btn small { font: 700 8.5px 'Orbitron', monospace; color: #64748b; letter-spacing: 0.8px; }
+  button.wpn-btn.active {
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.25), rgba(184, 41, 234, 0.25));
+    border-color: var(--c); color: #fff;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.5), inset 0 0 14px rgba(0, 243, 255, 0.25);
   }
+  button.wpn-btn.active small { color: var(--c); text-shadow: 0 0 6px var(--c); }
 
-  button.primary {
-    background: linear-gradient(135deg, #0284c7, #4f46e5);
-    border-color: var(--cyan);
+  /* Super-Weapon Trigger Buttons */
+  .cta {
+    font: 800 10.5px 'Orbitron', sans-serif; letter-spacing: 1.2px; color: #fff;
+    width: 100%; padding: 10px; margin-bottom: 7px; clip-path: var(--cut);
   }
-
-  button.orbital {
-    background: linear-gradient(135deg, #be185d, #7e22ce);
-    border-color: #f472b6;
+  .btn-overdrive {
+    background: linear-gradient(135deg, #0284c7, #4f46e5, #7e22ce);
+    border: 1px solid var(--c); box-shadow: 0 0 22px rgba(0, 243, 255, 0.45);
   }
-
-  button.tower {
-    background: linear-gradient(135deg, #0f766e, #0369a1);
-    border-color: #2dd4bf;
+  .btn-overdrive:hover { box-shadow: 0 0 32px rgba(0, 243, 255, 0.85); }
+  .btn-orbital {
+    background: linear-gradient(135deg, #be185d, #9333ea);
+    border: 1px solid #f472b6; box-shadow: 0 0 22px rgba(255, 0, 127, 0.45);
   }
-
-  button.spawn-btn {
-    background: linear-gradient(135deg, #b45309, #991b1b);
-    border-color: #fbbf24;
+  .btn-orbital:hover { box-shadow: 0 0 32px rgba(255, 0, 127, 0.85); }
+  .btn-danger {
+    background: rgba(80, 12, 18, 0.75); border-color: rgba(239, 68, 68, 0.65); color: #fca5a5;
   }
+  .btn-danger:hover { background: #dc2626; color: #fff; box-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
 
-  button.danger {
-    background: rgba(69, 10, 10, 0.75);
-    border-color: rgba(239, 68, 68, 0.65);
-    color: #fca5a5;
-    width: 100%;
+  /* Custom Neon Segmented Sliders */
+  .ctrl { margin-bottom: 10px; }
+  .ctrl-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .ctrl-top label { font: 700 11.5px 'Rajdhani', sans-serif; color: #94a3b8; letter-spacing: 0.7px; text-transform: uppercase; }
+  .val-pill {
+    font: 800 10px 'Orbitron', monospace; color: var(--c); background: rgba(0, 243, 255, 0.1);
+    border: 1px solid rgba(0, 243, 255, 0.35); padding: 1px 6px; clip-path: var(--cut-sm);
+    text-shadow: 0 0 6px rgba(0, 243, 255, 0.6);
   }
-
-  button.danger:hover {
-    background: #dc2626;
-    color: #fff;
-  }
-
-  .control-row {
-    margin-bottom: 9px;
-  }
-
-  .control-label {
-    display: flex;
-    justify-content: space-between;
-    color: #94a3b8;
-    font-size: 12px;
-    margin-bottom: 3px;
-  }
-
-  .control-label span:last-child {
-    color: var(--cyan);
-    font: 700 11px monospace;
-  }
-
   input[type="range"] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 4px;
-    border-radius: 2px;
-    outline: none;
-    background: linear-gradient(90deg, rgba(0, 243, 255, 0.35), rgba(184, 41, 234, 0.35));
+    -webkit-appearance: none; width: 100%; height: 6px; border-radius: 1px; outline: none; cursor: pointer;
+    background: linear-gradient(90deg, var(--c) var(--fill, 50%), rgba(15, 23, 42, 0.95) var(--fill, 50%));
+    border: 1px solid rgba(0, 243, 255, 0.35); box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
   }
-
   input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 13px;
-    height: 13px;
-    background: var(--cyan);
-    transform: rotate(45deg);
-    cursor: pointer;
-    border: 1px solid #fff;
+    -webkit-appearance: none; width: 14px; height: 14px; background: #fff;
+    border: 2px solid var(--c); transform: rotate(45deg); cursor: pointer;
+    box-shadow: 0 0 12px var(--c), 0 0 4px #fff; transition: 0.1s;
   }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: rotate(45deg) scale(1.2); background: var(--c); }
 
-  select {
-    width: 100%;
-    background: #090e1d;
-    color: #e2e8f0;
-    padding: 7px 10px;
-    border-radius: 4px;
-    border: 1px solid rgba(0, 243, 255, 0.35);
-    font: 700 12.5px 'Segoe UI', system-ui, sans-serif;
-    outline: none;
+  /* Spectrum Select & Code Input */
+  select, input[type="text"] {
+    width: 100%; background: #060b19; color: #fff; padding: 7px 10px; clip-path: var(--cut-sm);
+    border: 1px solid rgba(0, 243, 255, 0.45); font: 700 12px 'Orbitron', monospace; outline: none;
   }
+  select:focus, input[type="text"]:focus { border-color: var(--c); box-shadow: 0 0 14px rgba(0, 243, 255, 0.4); }
+  .code-row { display: flex; gap: 6px; }
+  .code-row button { padding: 7px 12px; font: 800 10px 'Orbitron', sans-serif; border-color: var(--p); color: #f3e8ff; }
+  #codeMsg { font: 700 10px 'Orbitron', monospace; color: #64748b; margin-top: 5px; letter-spacing: 0.6px; }
 
-  /* Access Code Bar */
-  .code-bar {
-    display: flex;
-    gap: 6px;
-    margin-top: 4px;
-  }
-
-  .code-bar input {
-    flex: 1;
-    background: #050914;
-    border: 1px solid rgba(0, 243, 255, 0.4);
-    color: #fff;
-    padding: 7px 9px;
-    border-radius: 4px;
-    font: 700 12px monospace;
-    outline: none;
-    user-select: text;
-  }
-
-  .code-bar input:focus {
-    border-color: var(--cyan);
-  }
-
-  .code-bar button {
-    padding: 7px 12px;
-    font: 800 11px monospace;
-    background: rgba(0, 243, 255, 0.16);
-    border-color: var(--cyan);
-    color: #fff;
-  }
-
-  #codeFeedback {
-    font: 700 11px monospace;
-    margin-top: 5px;
-    min-height: 15px;
-    color: #64748b;
-  }
-
-  .toggle-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    margin-bottom: 8px;
-  }
-
-  .toggle-btn {
-    font: 700 11px monospace;
-    padding: 6px;
-    text-align: center;
-  }
-
-  .toggle-btn.on {
-    border-color: #00ff88;
-    color: #00ff88;
-    background: rgba(0, 255, 136, 0.12);
-  }
-
-  .telemetry {
-    background: #040711;
-    border: 1px solid rgba(0, 243, 255, 0.25);
-    border-radius: 4px;
-    padding: 8px;
-    font: 700 11px monospace;
-    color: #94a3b8;
-  }
-
-  .telemetry-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-  }
-
-  .telemetry-row span:last-child {
-    color: var(--cyan);
-  }
-
+  /* Viewport & Corner Tactical Brackets */
   #viewport {
-    flex: 1;
-    position: relative;
-    cursor: crosshair;
-    overflow: hidden;
-    background: radial-gradient(circle at 50% 25%, #0a1128 0%, var(--bg) 85%);
+    flex: 1; position: relative; cursor: crosshair; overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 45%, #09122b 0%, #020308 82%),
+      linear-gradient(rgba(0, 243, 255, 0.035) 1px, transparent 1px) 0 0 / 48px 48px,
+      linear-gradient(90deg, rgba(0, 243, 255, 0.035) 1px, transparent 1px) 0 0 / 48px 48px;
   }
+  .bracket {
+    position: absolute; width: 26px; height: 26px; pointer-events: none; z-index: 10;
+    border-color: rgba(0, 243, 255, 0.55); border-style: solid;
+  }
+  .b-tl { top: 14px; left: 14px; border-width: 2px 0 0 2px; }
+  .b-tr { top: 14px; right: 14px; border-width: 2px 2px 0 0; }
+  .b-bl { bottom: 14px; left: 14px; border-width: 0 0 2px 2px; }
+  .b-br { bottom: 14px; right: 14px; border-width: 0 2px 2px 0; }
 
-  #hud {
-    position: absolute;
-    bottom: 14px;
-    right: 18px;
-    pointer-events: none;
-    font: 700 11px monospace;
-    color: rgba(0, 243, 255, 0.75);
-    letter-spacing: 1px;
-    background: rgba(2, 3, 8, 0.75);
-    padding: 5px 10px;
-    border: 1px solid rgba(0, 243, 255, 0.25);
+  #hudTop {
+    position: absolute; top: 16px; left: 50%; transform: translateX(-50%); pointer-events: none;
+    font: 800 10.5px 'Orbitron', monospace; color: var(--c); letter-spacing: 2px;
+    background: rgba(5, 10, 22, 0.78); border: 1px solid rgba(0, 243, 255, 0.35);
+    padding: 5px 16px; clip-path: var(--cut-sm); text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
   }
-
-  #banner {
-    position: absolute;
-    top: 18px;
-    left: 50%;
-    transform: translateX(-50%);
-    pointer-events: none;
-    font: 900 14px monospace;
-    letter-spacing: 2px;
-    padding: 8px 18px;
-    border-radius: 4px;
-    background: rgba(5, 8, 18, 0.88);
-    border: 1px solid var(--cyan);
-    color: #fff;
-    opacity: 0;
-    transition: opacity 0.25s ease;
-    text-transform: uppercase;
-    z-index: 30;
+  #hudBot {
+    position: absolute; bottom: 16px; right: 20px; pointer-events: none;
+    font: 700 10px 'Orbitron', monospace; color: rgba(0, 243, 255, 0.65); letter-spacing: 1.5px;
   }
-
-  canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
+  canvas { display: block; width: 100%; height: 100%; }
 </style>
 </head>
 <body>
-  <aside id="sidebar">
-    <div class="header-box">
-      <h1>Discharge Matrix</h1>
-      <span class="badge-pro">TURBO v8</span>
-    </div>
-    <div class="subtitle">BOSS ENCOUNTERS & PLASMA SIMULATOR</div>
+<aside id="sidebar">
+  <div class="top-bar">
+    <h1>DISCHARGE MATRIX</h1>
+    <span class="sys-tag">MK-X // 60FPS</span>
+  </div>
+  <div class="sub">HYPER-PLASMA & SINGULARITY ARSENAL</div>
 
-    <div class="section">
-      <div class="section-title">Discharge Weaponry</div>
-      <div class="grid-2" id="modes">
-        <button class="active-mode" data-mode="arc">1. ARC BOLT</button>
-        <button data-mode="tesla">2. TESLA COIL</button>
-        <button data-mode="orb">3. PLASMA ORB</button>
-        <button data-mode="singularity">4. SINGULARITY</button>
-      </div>
-      <button class="cta primary" id="btnOverdrive">TRIGGER OVERDRIVE [SPACE]</button>
-      <div class="grid-2">
-        <button class="cta orbital" id="btnOrbital">ORBITAL [O]</button>
-        <button class="cta tower" id="btnTower">DROP TOWER [T]</button>
-      </div>
-      <button class="cta spawn-btn" id="btnSpawn">SPAWN TARGET / BOSS ROLL [B]</button>
+  <div class="hud-card">
+    <div class="sec-head"><span>PRIMARY WEAPON SYSTEMS</span><span class="sec-code">[1-4]</span></div>
+    <div class="grid-2" id="modes">
+      <button class="wpn-btn active" data-mode="arc"><span>ARC LANCE</span><small>[1] HIGH-AMP BEAM</small></button>
+      <button class="wpn-btn" data-mode="tesla"><span>TESLA PYRON</span><small>[2] MULTI-CHAIN COIL</small></button>
+      <button class="wpn-btn" data-mode="orb"><span>PLASMA NEXUS</span><small>[3] LINKED PYLONS</small></button>
+      <button class="wpn-btn" data-mode="singularity"><span>SINGULARITY</span><small>[4] BLACK HOLE WELL</small></button>
     </div>
-
-    <div class="section">
-      <div class="section-title">Override Code Bar</div>
-      <div class="code-bar">
-        <input type="text" id="codeInput" placeholder="Enter access code..." autocomplete="off">
-        <button id="btnCode">REDEEM</button>
-      </div>
-      <div id="codeFeedback">STATUS: AWAITING DEV KEY</div>
+    <button class="cta btn-overdrive" id="btnOD">⚡ TRIGGER SUPER-OVERDRIVE [SPACE]</button>
+    <button class="cta btn-orbital" id="btnOrbital">🛰️ ORBITAL ION CANNON [O]</button>
+    <div class="grid-2" style="margin-bottom:0">
+      <button id="btnTower">+ DEPLOY COIL [T]</button>
+      <button id="btnSpawn">+ SPAWN TARGET [B]</button>
     </div>
+  </div>
 
-    <div class="section">
-      <div class="section-title">Matrix Parameters</div>
-      <div class="control-row">
-        <div class="control-label"><span>CORE VOLTAGE</span><span id="voltVal">1.20 GW</span></div>
-        <input type="range" id="voltSlider" min="20" max="150" value="75">
-      </div>
-      <div class="control-row">
-        <div class="control-label"><span>ARC CHAOS</span><span id="chaosVal">100%</span></div>
-        <input type="range" id="chaosSlider" min="20" max="200" value="100">
-      </div>
-      <div class="control-row">
-        <div class="control-label"><span>DENDRITE BRANCHING</span><span id="branchVal">55%</span></div>
-        <input type="range" id="branchSlider" min="0" max="100" value="55">
-      </div>
-      <div class="control-row">
-        <div class="control-label"><span>CORONA BLOOM</span><span id="bloomVal">120%</span></div>
-        <input type="range" id="bloomSlider" min="30" max="220" value="120">
-      </div>
-      <div class="control-row">
-        <div class="control-label"><span>CHAIN ARC RADIUS</span><span id="chainVal">240 px</span></div>
-        <input type="range" id="chainSlider" min="80" max="480" value="240">
-      </div>
-      <div class="control-row">
-        <div class="control-label"><span>GRAVITY WELL PULL</span><span id="gravVal">1.20 G</span></div>
-        <input type="range" id="gravSlider" min="0" max="300" value="120">
-      </div>
-      <div class="control-row">
-        <div class="control-label"><span>TIME DILATION</span><span id="timeVal">1.00x</span></div>
-        <input type="range" id="timeSlider" min="20" max="150" value="100">
-      </div>
-      <div class="control-row">
-        <div class="control-label"><span>AFTERIMAGE TRAIL</span><span id="trailVal">72%</span></div>
-        <input type="range" id="trailSlider" min="15" max="95" value="72">
-      </div>
-      <div class="control-row">
-        <div class="control-label"><span>IONIZATION SPECTRUM</span></div>
-        <select id="colorSelect">
-          <option value="#00f3ff">CYAN // IONIZED</option>
-          <option value="#b829ea">PURPLE // VOID</option>
-          <option value="#ff007f">PINK // HYPERNOVA</option>
-          <option value="#ffbe0b">AMBER // SOLAR</option>
-          <option value="#00ff88">EMERALD // RADIATION</option>
-        </select>
-      </div>
+  <div class="hud-card">
+    <div class="sec-head"><span>MATRIX PARAMETERS</span><span class="sec-code">TUNING</span></div>
+    <div class="ctrl"><div class="ctrl-top"><label>Core Voltage</label><span class="val-pill" id="vVolt">1.44 GW</span></div><input type="range" id="sVolt" min="20" max="180" value="90"></div>
+    <div class="ctrl"><div class="ctrl-top"><label>Arc Jaggedness</label><span class="val-pill" id="vChaos">110%</span></div><input type="range" id="sChaos" min="20" max="220" value="110"></div>
+    <div class="ctrl"><div class="ctrl-top"><label>Dendrite Forks</label><span class="val-pill" id="vBranch">70%</span></div><input type="range" id="sBranch" min="0" max="100" value="70"></div>
+    <div class="ctrl"><div class="ctrl-top"><label>Singularity Mass</label><span class="val-pill" id="vGrav">1.50 G</span></div><input type="range" id="sGrav" min="30" max="300" value="150"></div>
+    <div class="ctrl"><div class="ctrl-top"><label>Chain Snap Range</label><span class="val-pill" id="vChain">280 PX</span></div><input type="range" id="sChain" min="100" max="500" value="280"></div>
+    <div class="ctrl" style="margin-bottom:0"><div class="ctrl-top"><label>Time Dilation</label><span class="val-pill" id="vTime">1.00 X</span></div><input type="range" id="sTime" min="20" max="160" value="100"></div>
+  </div>
+
+  <div class="hud-card">
+    <div class="sec-head"><span>SPECTRUM & TACTICAL</span><span class="sec-code">SYS</span></div>
+    <div class="ctrl">
+      <select id="selColor">
+        <option value="#00f3ff">CYAN // IONIZED PLASMA</option>
+        <option value="#b829ea">PURPLE // VOID RIFT</option>
+        <option value="#ff007f">PINK // HYPERNOVA</option>
+        <option value="#ffbe0b">AMBER // SOLAR FLARE</option>
+        <option value="#10b981">EMERALD // RADIATION</option>
+      </select>
     </div>
-
-    <div class="section">
-      <div class="section-title">Systems & Telemetry</div>
-      <div class="toggle-grid">
-        <button class="toggle-btn" id="togAudio">AUDIO: OFF</button>
-        <button class="toggle-btn" id="togAuto">AUTO-FIRE: OFF</button>
-        <button class="toggle-btn on" id="togShake">SHAKE: ON</button>
-        <button class="toggle-btn on" id="togRain">ION RAIN: ON</button>
-      </div>
-      <div class="telemetry">
-        <div class="telemetry-row"><span>FPS / ENGINE</span><span id="fpsReadout">60 FPS</span></div>
-        <div class="telemetry-row"><span>ACTIVE ENTITIES</span><span id="entReadout">0</span></div>
-        <div class="telemetry-row"><span>BOSSES DEFEATED</span><span id="killReadout">0</span></div>
-      </div>
-      <button class="danger" id="btnPurge" style="margin-top: 8px;">PURGE CAPACITORS [C]</button>
+    <div class="grid-2">
+      <button id="btnAudio">AUDIO: OFF</button>
+      <button class="btn-danger" id="btnPurge">PURGE GRID [C]</button>
     </div>
-  </aside>
+    <div class="code-row">
+      <input type="text" id="codeInput" placeholder="OVERRIDE CODE...">
+      <button id="btnCode">UNLOCK</button>
+    </div>
+    <div id="codeMsg">STATUS: STANDARD CLEARANCE</div>
+  </div>
+</aside>
 
-  <main id="viewport">
-    <div id="banner">WARNING: SINGULARITY BOSS DETECTED</div>
-    <div id="hud">MODE: ARC BOLT // HOLD CLICK TO FIRE</div>
-    <canvas id="sim"></canvas>
-  </main>
+<main id="viewport">
+  <div class="bracket b-tl"></div><div class="bracket b-tr"></div>
+  <div class="bracket b-bl"></div><div class="bracket b-br"></div>
+  <div id="hudTop">ACTIVE WEAPON: ARC LANCE // HOLD LEFT-CLICK TO FIRE</div>
+  <div id="hudBot">60 FPS TURBO ENGINE // TARGETS: 0</div>
+  <canvas id="sim"></canvas>
+</main>
 
 <script>
-(function() {
-  const canvas = document.getElementById('sim');
-  const ctx = canvas.getContext('2d', { alpha: false });
+const canvas = document.getElementById('sim'), ctx = canvas.getContext('2d');
+let W, H, dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+let mode = 'arc', baseColor = '#00f3ff', isRainbow = false, hue = 185;
+let volt = 90, chaos = 1.1, branchProb = 0.7, grav = 1.5, chainR = 280, timeScale = 1.0;
+let holding = false, shake = 0, tick = 0, audioCtx = null, audioOn = false;
+let mouse = { x: 0, y: 0 }, sparks = [], nodes = [], towers = [], targets = [], rings = [], jets = [];
 
-  let W = 800;
-  let H = 600;
-  let dpr = 1;
+function resize() {
+  W = canvas.offsetWidth; H = canvas.offsetHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener('resize', resize); resize();
+mouse = { x: W / 2, y: H / 2 };
 
-  let mode = 'arc';
-  let baseColor = '#00f3ff';
-  let rainbowUnlocked = false;
-  let rainbowHue = 0;
+/* Slider Fill Sync */
+function syncSlider(el, pillId, fmt) {
+  const update = () => {
+    const pct = ((el.value - el.min) / (el.max - el.min)) * 100;
+    el.style.setProperty('--fill', pct + '%');
+    document.getElementById(pillId).textContent = fmt(+el.value);
+  };
+  el.addEventListener('input', update); update();
+}
+syncSlider(document.getElementById('sVolt'), 'vVolt', v => { volt = v; return (v * 0.016).toFixed(2) + ' GW'; });
+syncSlider(document.getElementById('sChaos'), 'vChaos', v => { chaos = v / 100; return v + '%'; });
+syncSlider(document.getElementById('sBranch'), 'vBranch', v => { branchProb = v / 100; return v + '%'; });
+syncSlider(document.getElementById('sGrav'), 'vGrav', v => { grav = v / 100; return grav.toFixed(2) + ' G'; });
+syncSlider(document.getElementById('sChain'), 'vChain', v => { chainR = v; return v + ' PX'; });
+syncSlider(document.getElementById('sTime'), 'vTime', v => { timeScale = v / 100; return timeScale.toFixed(2) + ' X'; });
 
-  let voltage = 75;
-  let chaos = 1.0;
-  let branchProb = 0.55;
-  let bloomScale = 1.2;
-  let chainRadius = 240;
-  let gravityPull = 1.2;
-  let timeScale = 1.0;
-  let trailAlpha = 0.28;
+const getCol = (offset = 0) => isRainbow ? `hsl(${(hue + offset) % 360}, 100%, 58%)` : baseColor;
 
-  let audioOn = false;
-  let autoFire = false;
-  let shakeOn = true;
-  let ionRain = true;
+/* Synthesized Web Audio FX */
+function zapSound(freq = 140, dur = 0.08, type = 'sawtooth', vol = 0.06) {
+  if (!audioOn || !audioCtx) return;
+  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq + Math.random() * 90, audioCtx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + dur);
+  g.gain.setValueAtTime(vol, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+  o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
+}
 
-  let holding = false;
-  let shake = 0;
-  let singCharge = 0;
-  let bossesDefeated = 0;
-  let mouse = { x: 400, y: 300 };
-
-  let sparks = [];
-  let shockwaves = [];
-  let orbNodes = [];
-  let towers = [];
-  let targets = [];
-  let bossProjectiles = [];
-  let rainDrops = [];
-
-  let audioCtx = null;
-  let bannerTimer = null;
-
-  /* Pre-rendered glow sprite cache for zero-lag 60FPS rendering */
-  const glowCache = {};
-  function getGlowSprite(col) {
-    if (glowCache[col]) return glowCache[col];
-    const size = 128;
-    const off = document.createElement('canvas');
-    off.width = size;
-    off.height = size;
-    const octx = off.getContext('2d');
-    const g = octx.createRadialGradient(64, 64, 2, 64, 64, 62);
-    g.addColorStop(0, '#ffffff');
-    g.addColorStop(0.25, col);
-    g.addColorStop(1, 'rgba(0,0,0,0)');
-    octx.fillStyle = g;
-    octx.fillRect(0, 0, size, size);
-    glowCache[col] = off;
-    return off;
+/* Pre-rendered Radial Glow Sprite for 60FPS */
+const glowCache = {};
+function drawGlow(x, y, r, col, alpha = 0.45) {
+  if (!glowCache[col]) {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const gctx = c.getContext('2d'), grad = gctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    grad.addColorStop(0, '#fff'); grad.addColorStop(0.25, col); grad.addColorStop(1, 'transparent');
+    gctx.fillStyle = grad; gctx.fillRect(0, 0, 128, 128);
+    glowCache[col] = c;
   }
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = alpha;
+  ctx.drawImage(glowCache[col], x - r, y - r, r * 2, r * 2);
+  ctx.restore();
+}
 
-  function activeColor(offsetHue) {
-    if (baseColor === 'rainbow') {
-      const h = (rainbowHue + (offsetHue || 0)) % 360;
-      return 'hsl(' + Math.floor(h) + ', 100%, 58%)';
+/* Ultra-Detailed Multi-Pass Plasma Lightning + Dendrites */
+function buildPoints(x1, y1, x2, y2, disp) {
+  let pts = [{ x: x1, y: y1 }, { x: x2, y: y2 }];
+  let d = disp * chaos;
+  for (let iter = 0; iter < 5; iter++) {
+    const next = [pts[0]];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1];
+      const mx = (a.x + b.x) * 0.5 + (Math.random() - 0.5) * d;
+      const my = (a.y + b.y) * 0.5 + (Math.random() - 0.5) * d;
+      next.push({ x: mx, y: my }, b);
     }
-    return baseColor;
+    pts = next; d *= 0.52;
   }
+  return pts;
+}
 
-  function showBanner(text, col) {
-    const b = document.getElementById('banner');
-    b.textContent = text;
-    b.style.borderColor = col || activeColor();
-    b.style.color = '#ffffff';
-    b.style.opacity = '1';
-    if (bannerTimer) clearTimeout(bannerTimer);
-    bannerTimer = setTimeout(function() {
-      b.style.opacity = '0';
-    }, 2600);
+function drawLightning(x1, y1, x2, y2, disp, width = 2.4, allowFork = true) {
+  const col = getCol(Math.random() * 35);
+  const pts = buildPoints(x1, y1, x2, y2, disp);
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  const trace = () => {
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  };
+
+  /* Pass 1: Wide Atmospheric Aura */
+  trace(); ctx.strokeStyle = col; ctx.lineWidth = width * 6.5; ctx.globalAlpha = 0.14; ctx.stroke();
+  /* Pass 2: Saturated Plasma Sheath */
+  trace(); ctx.strokeStyle = col; ctx.lineWidth = width * 2.6; ctx.globalAlpha = 0.55; ctx.stroke();
+  /* Pass 3: White-Hot Ion Core */
+  trace(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = width * 0.9; ctx.globalAlpha = 0.95; ctx.stroke();
+
+  /* Corona Beads along channel */
+  for (let i = 4; i < pts.length - 2; i += 7) {
+    drawGlow(pts[i].x, pts[i].y, width * 5, col, 0.35);
   }
+  ctx.restore();
 
-  function resize() {
-    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    W = canvas.offsetWidth;
-    H = canvas.offsetHeight;
-    canvas.width = Math.floor(W * dpr);
-    canvas.height = Math.floor(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  /* Recursive Dendrite Forks */
+  if (allowFork && Math.random() < branchProb) {
+    const idx = Math.floor(pts.length * (0.25 + Math.random() * 0.5));
+    const p = pts[idx], ang = Math.atan2(y2 - y1, x2 - x1) + (Math.random() - 0.5) * 1.4;
+    const len = Math.hypot(x2 - x1, y2 - y1) * (0.3 + Math.random() * 0.3);
+    const fx = p.x + Math.cos(ang) * len, fy = p.y + Math.sin(ang) * len;
+    drawLightning(p.x, p.y, fx, fy, disp * 0.55, width * 0.5, false);
+    if (sparks.length < 260) sparks.push({ x: fx, y: fy, vx: (Math.random()-0.5)*4, vy: (Math.random()-0.5)*4, life: 0.8, col });
   }
-  window.addEventListener('resize', resize);
-  resize();
+  damageNear(x2, y2, 34, width * 1.4);
+}
 
-  /* Procedural Web Audio Synthesizer */
-  function playZap(freqBase, dur, gainVal) {
-    if (!audioOn) return;
-    try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const now = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(freqBase || 160, now);
-      osc.frequency.exponentialRampToValueAtTime(42, now + (dur || 0.08));
-      gain.gain.setValueAtTime(gainVal || 0.05, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + (dur || 0.08));
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(now);
-      osc.stop(now + (dur || 0.08));
-    } catch (e) {}
+/* Curved Spiral Lightning for Singularity */
+function drawSpiralBolt(cx, cy, startR, startAng, col) {
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  const steps = 16;
+  const pts = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const r = startR * (1 - t * 0.88);
+    const a = startAng + t * 3.4 + (Math.random() - 0.5) * 0.25 * chaos;
+    pts.push({ x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r * 0.88 });
   }
+  const trace = () => {
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  };
+  trace(); ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.globalAlpha = 0.35; ctx.stroke();
+  trace(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.4; ctx.globalAlpha = 0.9; ctx.stroke();
+  ctx.restore();
+}
 
-  /* Spawn Logic: 1/10 Boss, 1/2 Mini-Boss, else Standard Conductor */
-  function spawnEntity(x, y, forcedTier) {
-    if (targets.length > 26) return;
-    const px = x !== undefined ? x : 80 + Math.random() * (W - 160);
-    const py = y !== undefined ? y : 80 + Math.random() * (H - 160);
-    const roll = Math.random();
+function addSparks(x, y, n = 10, speed = 6) {
+  const col = getCol(20);
+  for (let i = 0; i < n && sparks.length < 280; i++) {
+    const a = Math.random() * Math.PI * 2, s = Math.random() * speed + 1.5;
+    sparks.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 1, col });
+  }
+}
 
-    let tier = 'normal';
-    if (forcedTier) {
-      tier = forcedTier;
-    } else if (roll < 0.10) {
-      tier = 'boss';
-    } else if (roll < 0.60) {
-      tier = 'miniboss';
-    }
+/* Targets & Weighted Boss Spawns (1/10 Boss, 1/2 Mini-Boss) */
+function spawnTarget() {
+  const roll = Math.random();
+  let type = 'cap', hp = 50, r = 15, label = 'CAPACITOR';
+  if (roll < 0.10) { type = 'boss'; hp = 550; r = 34; label = 'OMEGA DREADNOUGHT'; shake = 10; }
+  else if (roll < 0.60) { type = 'mini'; hp = 190; r = 23; label = 'VANGUARD WARDEN'; }
+  targets.push({
+    x: 90 + Math.random() * (W - 180), y: 80 + Math.random() * (H - 160),
+    vx: (Math.random() - 0.5) * 1.6, vy: (Math.random() - 0.5) * 1.6,
+    hp, maxHp: hp, r, type, label, rot: 0
+  });
+}
+for (let i = 0; i < 4; i++) spawnTarget();
 
-    if (tier === 'boss') {
-      targets.push({
-        x: px,
-        y: py,
-        vx: (Math.random() - 0.5) * 1.1,
-        vy: (Math.random() - 0.5) * 1.1,
-        r: 34,
-        hp: 520,
-        maxHp: 520,
-        shield: 180,
-        maxShield: 180,
-        tier: 'boss',
-        name: 'OMEGA DREADNOUGHT',
-        angle: 0,
-        attackCd: 110
-      });
-      showBanner('ALERT [1/10]: OMEGA BOSS SPAWNED!', '#ff007f');
-      playZap(95, 0.35, 0.12);
-    } else if (tier === 'miniboss') {
-      targets.push({
-        x: px,
-        y: py,
-        vx: (Math.random() - 0.5) * 1.7,
-        vy: (Math.random() - 0.5) * 1.7,
-        r: 22,
-        hp: 190,
-        maxHp: 190,
-        shield: 65,
-        maxShield: 65,
-        tier: 'miniboss',
-        name: 'VANGUARD WARDEN',
-        angle: 0,
-        attackCd: 150
-      });
-      showBanner('WARNING [1/2]: MINI-BOSS DETECTED!', '#ffbe0b');
-      playZap(130, 0.2, 0.08);
-    } else {
-      targets.push({
-        x: px,
-        y: py,
-        vx: (Math.random() - 0.5) * 2.2,
-        vy: (Math.random() - 0.5) * 2.2,
-        r: 11,
-        hp: 45,
-        maxHp: 45,
-        shield: 0,
-        maxShield: 0,
-        tier: 'normal',
-        name: 'CAPACITOR',
-        angle: 0,
-        attackCd: 0
-      });
+function damageNear(x, y, rad, dmg) {
+  for (let i = targets.length - 1; i >= 0; i--) {
+    const t = targets[i];
+    if (Math.hypot(t.x - x, t.y - y) < rad + t.r) {
+      t.hp -= dmg;
+      if (t.hp <= 0) {
+        rings.push({ x: t.x, y: t.y, r: 8, maxR: t.r * 5, col: getCol(40), alpha: 1 });
+        addSparks(t.x, t.y, t.type === 'boss' ? 65 : 28, 9);
+        shake = Math.max(shake, t.type === 'boss' ? 22 : 10);
+        zapSound(75, 0.25, 'square', 0.1);
+        targets.splice(i, 1);
+        spawnTarget();
+      }
     }
   }
+}
 
-  /* Initial wave */
+/* Weapon Controls & Hotkeys */
+function setMode(m, label) {
+  mode = m;
+  document.querySelectorAll('.wpn-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+  document.getElementById('hudTop').textContent = `ACTIVE WEAPON: ${label} // HOLD LEFT-CLICK TO FIRE`;
+}
+document.querySelectorAll('.wpn-btn').forEach(b => b.onclick = () => setMode(b.dataset.mode, b.querySelector('span').textContent));
+
+function triggerOverdrive() {
+  shake = 22; zapSound(95, 0.3, 'sawtooth', 0.12);
+  rings.push({ x: W/2, y: H/2, r: 10, maxR: Math.max(W, H) * 0.65, col: getCol(), alpha: 1 });
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2 + Math.random() * 0.2;
+    drawLightning(W/2, H/2, W/2 + Math.cos(a) * W * 0.55, H/2 + Math.sin(a) * H * 0.55, volt * 1.4, 3);
+  }
+  addSparks(W/2, H/2, 60, 10);
+}
+
+function triggerOrbital() {
+  const tx = mouse.x; shake = 26; zapSound(55, 0.4, 'square', 0.14);
+  jets.push({ x: tx, life: 1, col: getCol(60) });
+  rings.push({ x: tx, y: H * 0.85, r: 12, maxR: 260, col: getCol(), alpha: 1 });
+  drawLightning(tx, 0, tx, H * 0.88, volt * 1.2, 5.5);
+  addSparks(tx, H * 0.85, 70, 11);
+  damageNear(tx, H * 0.85, 130, 160);
+}
+
+document.getElementById('btnOD').onclick = triggerOverdrive;
+document.getElementById('btnOrbital').onclick = triggerOrbital;
+document.getElementById('btnTower').onclick = () => towers.push({ x: mouse.x, y: mouse.y, rot: 0 });
+document.getElementById('btnSpawn').onclick = spawnTarget;
+document.getElementById('btnPurge').onclick = () => { nodes = []; towers = []; sparks = []; rings = []; };
+
+document.getElementById('selColor').onchange = e => {
+  if (e.target.value === 'RAINBOW') isRainbow = true;
+  else { isRainbow = false; baseColor = e.target.value; document.documentElement.style.setProperty('--c', baseColor); }
+};
+
+document.getElementById('btnAudio').onclick = e => {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  audioOn = !audioOn; e.target.textContent = `AUDIO: ${audioOn ? 'ON' : 'OFF'}`;
+};
+
+function redeemCode() {
+  const val = document.getElementById('codeInput').value.trim();
+  const msg = document.getElementById('codeMsg');
+  if (val === 'RainbowDEVblu') {
+    isRainbow = true;
+    const sel = document.getElementById('selColor');
+    if (!sel.querySelector('option[value="RAINBOW"]')) {
+      const opt = document.createElement('option');
+      opt.value = 'RAINBOW'; opt.textContent = 'NEON RAINBOW // DEV OVERRIDE';
+      sel.appendChild(opt);
+    }
+    sel.value = 'RAINBOW';
+    msg.style.color = '#00f3ff'; msg.textContent = 'ACCESS GRANTED: NEON RAINBOW UNLOCKED';
+    triggerOverdrive();
+  } else {
+    msg.style.color = '#ff007f'; msg.textContent = 'INVALID OVERRIDE KEY';
+  }
+}
+document.getElementById('btnCode').onclick = redeemCode;
+document.getElementById('codeInput').onkeydown = e => { if (e.key === 'Enter') redeemCode(); };
+
+canvas.onpointerdown = e => {
+  holding = true; mouse = { x: e.offsetX, y: e.offsetY };
+  if (mode === 'orb') { nodes.push({ ...mouse }); zapSound(260, 0.08); }
+};
+canvas.onpointermove = e => mouse = { x: e.offsetX, y: e.offsetY };
+window.onpointerup = () => {
+  if (holding && mode === 'singularity') {
+    /* Supernova Collapse Blast on Singularity Release */
+    const col = getCol(30);
+    shake = 24 * grav; zapSound(50, 0.35, 'sawtooth', 0.14);
+    rings.push({ x: mouse.x, y: mouse.y, r: 10, maxR: 260 * grav, col, alpha: 1 });
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      drawLightning(mouse.x, mouse.y, mouse.x + Math.cos(a) * 240 * grav, mouse.y + Math.sin(a) * 240 * grav, volt, 2.6);
+    }
+    addSparks(mouse.x, mouse.y, 65, 11);
+    damageNear(mouse.x, mouse.y, 180 * grav, 120 * grav);
+  }
+  holding = false;
+};
+
+window.onkeydown = e => {
+  if (document.activeElement.tagName === 'INPUT') return;
+  const k = e.key.toLowerCase();
+  if (k === '1') setMode('arc', 'ARC LANCE');
+  else if (k === '2') setMode('tesla', 'TESLA PYRON');
+  else if (k === '3') setMode('orb', 'PLASMA NEXUS');
+  else if (k === '4') setMode('singularity', 'SINGULARITY');
+  else if (e.code === 'Space') { e.preventDefault(); triggerOverdrive(); }
+  else if (k === 'o') triggerOrbital();
+  else if (k === 't') towers.push({ x: mouse.x, y: mouse.y, rot: 0 });
+  else if (k === 'b') spawnTarget();
+  else if (k === 'c') { nodes = []; towers = []; sparks = []; rings = []; }
+};
+
+/* Render 3D-Style Tesla Coil Assembly */
+function renderTeslaCoil(x, y, active) {
+  const col = getCol();
+  drawGlow(x, y, active ? 75 : 40, col, active ? 0.55 : 0.25);
+  ctx.save(); ctx.translate(x, y);
+  /* Copper Inductor Stack */
+  for (let i = -2; i <= 2; i++) {
+    ctx.strokeStyle = i % 2 === 0 ? col : '#fff'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.ellipse(0, i * 4, 14 - Math.abs(i), 5, 0, 0, Math.PI * 2); ctx.stroke();
+  }
+  /* Orbiting Corona Nodes */
   for (let i = 0; i < 6; i++) {
-    spawnEntity();
+    const a = tick * 0.08 + (i * Math.PI) / 3;
+    const nx = Math.cos(a) * 26, ny = Math.sin(a) * 12 - 10;
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(nx, ny, 2.2, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+/* Render Detailed Black Hole Singularity */
+function renderSingularity(x, y) {
+  const col = getCol(), r = 24 + grav * 10;
+  drawGlow(x, y, r * 4.2, col, 0.55);
+
+  ctx.save(); ctx.translate(x, y);
+  ctx.globalCompositeOperation = 'lighter';
+
+  /* Relativistic Polar Jets */
+  const jetGrad = ctx.createLinearGradient(0, -r * 5.5, 0, r * 5.5);
+  jetGrad.addColorStop(0, 'transparent'); jetGrad.addColorStop(0.5, col); jetGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = jetGrad; ctx.globalAlpha = 0.55;
+  ctx.beginPath(); ctx.moveTo(-4, 0); ctx.lineTo(0, -r * 5.5); ctx.lineTo(4, 0); ctx.lineTo(0, r * 5.5); ctx.closePath(); ctx.fill();
+
+  /* Tilted Multi-Ring Accretion Disk */
+  ctx.rotate(-0.32);
+  for (let i = 1; i <= 4; i++) {
+    ctx.strokeStyle = i % 2 === 0 ? '#fff' : col;
+    ctx.lineWidth = 4.5 - i * 0.7; ctx.globalAlpha = 0.75 - i * 0.12;
+    ctx.beginPath(); ctx.ellipse(0, 0, r * (1.5 + i * 0.55), r * (0.42 + i * 0.14), tick * 0.02 * (i % 2 ? 1 : -1), 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.restore();
+
+  /* Pitch-Black Event Horizon + Photon Ring */
+  ctx.save();
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = '#010104'; ctx.fill();
+  ctx.lineWidth = 3; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+  ctx.lineWidth = 7; ctx.strokeStyle = col; ctx.globalAlpha = 0.45; ctx.stroke();
+  ctx.restore();
+
+  /* Inward Spiral Lightning & Gravity Suction */
+  if (Math.random() < 0.75) drawSpiralBolt(x, y, r * 4.8, Math.random() * Math.PI * 2, col);
+  targets.forEach(t => {
+    const dx = x - t.x, dy = y - t.y, dist = Math.max(40, Math.hypot(dx, dy));
+    if (dist < 380 * grav) {
+      t.vx += (dx / dist) * 0.35 * grav * timeScale;
+      t.vy += (dy / dist) * 0.35 * grav * timeScale;
+      t.hp -= 0.45 * grav * timeScale;
+    }
+  });
+}
+
+/* Main 60FPS Render Loop */
+function loop() {
+  tick += timeScale;
+  if (isRainbow) {
+    hue = (hue + 2.2 * timeScale) % 360;
+    document.documentElement.style.setProperty('--c', `hsl(${hue}, 100%, 55%)`);
   }
 
-  function spawnSparks(x, y, count, col) {
-    const c = col || activeColor();
-    for (let i = 0; i < count; i++) {
-      if (sparks.length >= 260) break;
-      const a = Math.random() * Math.PI * 2;
-      const s = 1.5 + Math.random() * 5.5;
-      sparks.push({
-        x: x,
-        y: y,
-        vx: Math.cos(a) * s,
-        vy: Math.sin(a) * s,
-        life: 1,
-        col: c
+  ctx.save();
+  ctx.fillStyle = 'rgba(2, 3, 8, 0.28)';
+  ctx.fillRect(0, 0, W, H);
+
+  if (shake > 0.3) {
+    ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
+    shake *= 0.88;
+  }
+
+  /* Central Reactor Emitter Core */
+  const coreCol = getCol();
+  drawGlow(W / 2, H / 2, 48 + Math.sin(tick * 0.1) * 8, coreCol, 0.35);
+  ctx.strokeStyle = coreCol; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(W / 2, H / 2, 16, tick * 0.04, tick * 0.04 + Math.PI * 1.4); ctx.stroke();
+
+  /* Autonomous Tesla Towers */
+  towers.forEach(tw => {
+    renderTeslaCoil(tw.x, tw.y, true);
+    if (Math.random() < 0.35 * timeScale) {
+      const near = targets.find(t => Math.hypot(t.x - tw.x, t.y - tw.y) < chainR);
+      if (near) drawLightning(tw.x, tw.y - 10, near.x, near.y, volt * 0.65, 1.8);
+    }
+  });
+
+  /* Linked Plasma Nexus Orbs */
+  nodes.forEach((n, idx) => {
+    drawGlow(n.x, n.y, 32, coreCol, 0.5);
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(n.x, n.y, 4.5, 0, Math.PI * 2); ctx.fill();
+    if (nodes[idx + 1] && Math.random() < 0.7) {
+      drawLightning(n.x, n.y, nodes[idx + 1].x, nodes[idx + 1].y, volt * 0.7, 2);
+    }
+  });
+
+  /* Active Primary Weapons */
+  if (holding) {
+    if (mode === 'arc') {
+      drawLightning(W / 2, H / 2, mouse.x, mouse.y, volt, 3.1);
+      addSparks(mouse.x, mouse.y, 4, 6);
+      if (Math.random() < 0.35) zapSound(180, 0.06);
+    } else if (mode === 'tesla') {
+      renderTeslaCoil(mouse.x, mouse.y, true);
+      let chained = 0;
+      targets.forEach(t => {
+        if (chained < 4 && Math.hypot(t.x - mouse.x, t.y - mouse.y) < chainR) {
+          drawLightning(mouse.x, mouse.y - 10, t.x, t.y, volt * 0.85, 2.3);
+          chained++;
+        }
       });
-    }
-  }
-
-  function addShockwave(x, y, maxR, col) {
-    if (shockwaves.length > 18) shockwaves.shift();
-    shockwaves.push({
-      x: x,
-      y: y,
-      r: 8,
-      maxR: maxR,
-      alpha: 0.9,
-      col: col || activeColor()
-    });
-  }
-
-  /* Fast 4-layer iterative plasma lightning with dendrite branches */
-  function buildBoltPoints(x1, y1, x2, y2, displace) {
-    let pts = [{ x: x1, y: y1 }, { x: x2, y: y2 }];
-    let disp = displace * chaos;
-    const steps = 4;
-    for (let s = 0; s < steps; s++) {
-      const next = [pts[0]];
-      for (let i = 0; i < pts.length - 1; i++) {
-        const a = pts[i];
-        const b = pts[i + 1];
-        const mx = (a.x + b.x) * 0.5 + (Math.random() - 0.5) * disp;
-        const my = (a.y + b.y) * 0.5 + (Math.random() - 0.5) * disp;
-        next.push({ x: mx, y: my }, b);
+      if (chained === 0) {
+        for (let i = 0; i < 3; i++) {
+          const a = Math.random() * Math.PI * 2, r = chainR * 0.65;
+          drawLightning(mouse.x, mouse.y - 10, mouse.x + Math.cos(a) * r, mouse.y + Math.sin(a) * r, volt * 0.75, 1.8);
+        }
       }
-      pts = next;
-      disp *= 0.52;
+      if (Math.random() < 0.4) zapSound(230, 0.05);
+    } else if (mode === 'singularity') {
+      shake = Math.max(shake, 3.5 * grav);
+      renderSingularity(mouse.x, mouse.y);
+      if (Math.random() < 0.25) zapSound(65, 0.09, 'triangle', 0.07);
     }
-    return pts;
   }
 
-  function strokePolyline(pts, col, width, alpha) {
-    if (pts.length < 2) return;
+  /* Orbital Ion Cannon Beams */
+  jets = jets.filter(j => j.life > 0.04);
+  jets.forEach(j => {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = j.life;
+    ctx.fillStyle = j.col; ctx.fillRect(j.x - 28 * j.life, 0, 56 * j.life, H * 0.88);
+    ctx.fillStyle = '#fff'; ctx.fillRect(j.x - 8 * j.life, 0, 16 * j.life, H * 0.88);
+    ctx.restore(); j.life *= 0.88;
+  });
+
+  /* Shockwave Rings */
+  rings = rings.filter(r => r.alpha > 0.04);
+  rings.forEach(r => {
+    r.r += (r.maxR - r.r) * 0.14 * timeScale; r.alpha *= 0.91;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = r.alpha;
+    ctx.strokeStyle = r.col; ctx.lineWidth = 3.5;
+    ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  });
+
+  /* Armored Targets & Bosses */
+  targets.forEach(t => {
+    t.x += t.vx * timeScale; t.y += t.vy * timeScale; t.rot += 0.025 * timeScale;
+    if (t.x < t.r + 20 || t.x > W - t.r - 20) t.vx *= -1;
+    if (t.y < t.r + 20 || t.y > H - t.r - 20) t.vy *= -1;
+    const tCol = t.type === 'boss' ? '#ff007f' : (t.type === 'mini' ? '#ffbe0b' : '#00f3ff');
+    drawGlow(t.x, t.y, t.r * 2.1, tCol, 0.35);
+
+    ctx.save(); ctx.translate(t.x, t.y); ctx.rotate(t.rot);
+    ctx.strokeStyle = tCol; ctx.lineWidth = t.type === 'boss' ? 3 : 2;
+    const sides = t.type === 'boss' ? 8 : (t.type === 'mini' ? 6 : 4);
     ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) {
-      ctx.lineTo(pts[i].x, pts[i].y);
+    for (let i = 0; i <= sides; i++) {
+      const a = (i / sides) * Math.PI * 2;
+      i === 0 ? ctx.moveTo(Math.cos(a) * t.r, Math.sin(a) * t.r) : ctx.lineTo(Math.cos(a) * t.r, Math.sin(a) * t.r);
     }
-    ctx.strokeStyle = col;
-    ctx.lineWidth = width;
-    ctx.globalAlpha = alpha;
-    ctx.stroke();
-  }
+    ctx.stroke(); ctx.restore();
 
-  function drawPlasmaBolt(x1, y1, x2, y2, displace, width, depth, hueShift) {
-    const col = activeColor(hueShift || 0);
-    const pts = buildBoltPoints(x1, y1, x2, y2, displace);
-
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-
-    /* Layer 1: Wide outer aura */
-    strokePolyline(pts, col, width * 5.2 * bloomScale, 0.14);
-    /* Layer 2: Mid neon sheath */
-    strokePolyline(pts, col, width * 2.4 * bloomScale, 0.38);
-    /* Layer 3: Hot core */
-    strokePolyline(pts, '#ffffff', Math.max(1, width * 0.85), 0.95);
-
-    /* Corona bead at midpoint */
-    const mid = pts[Math.floor(pts.length * 0.5)];
-    if (mid && baseColor !== 'rainbow') {
-      const sp = getGlowSprite(col);
-      const sz = width * 10 * bloomScale;
-      ctx.globalAlpha = 0.45;
-      ctx.drawImage(sp, mid.x - sz * 0.5, mid.y - sz * 0.5, sz, sz);
-    }
-
-    /* Dendrite branches */
-    if ((depth || 0) < 1 && Math.random() < branchProb && pts.length > 4) {
-      const idx = 2 + Math.floor(Math.random() * (pts.length - 4));
-      const origin = pts[idx];
-      const ang = Math.atan2(y2 - y1, x2 - x1) + (Math.random() - 0.5) * 1.4;
-      const len = Math.hypot(x2 - x1, y2 - y1) * (0.28 + Math.random() * 0.25);
-      const bx = origin.x + Math.cos(ang) * len;
-      const by = origin.y + Math.sin(ang) * len;
-      drawPlasmaBolt(origin.x, origin.y, bx, by, displace * 0.55, width * 0.55, 1, (hueShift || 0) + 45);
-      if (Math.random() < 0.45) spawnSparks(bx, by, 2, col);
-    }
-
-    ctx.restore();
-  }
-
-  function damageEntitiesNear(x, y, radius, dmg) {
-    for (let i = targets.length - 1; i >= 0; i--) {
-      const t = targets[i];
-      const d = Math.hypot(t.x - x, t.y - y);
-      if (d <= radius + t.r) {
-        let rem = dmg;
-        if (t.shield > 0) {
-          const absorbed = Math.min(t.shield, rem);
-          t.shield -= absorbed;
-          rem -= absorbed;
-        }
-        t.hp -= rem;
-        if (t.hp <= 0) {
-          const isBig = t.tier !== 'normal';
-          spawnSparks(t.x, t.y, isBig ? 48 : 16, t.tier === 'boss' ? '#ff007f' : '#ffbe0b');
-          addShockwave(t.x, t.y, t.r * (isBig ? 5.5 : 3.2), t.tier === 'boss' ? '#ff007f' : activeColor());
-          if (shakeOn) shake = Math.max(shake, isBig ? 16 : 6);
-          playZap(isBig ? 70 : 140, isBig ? 0.35 : 0.12, isBig ? 0.12 : 0.06);
-          if (isBig) {
-            bossesDefeated++;
-            document.getElementById('killReadout').textContent = bossesDefeated;
-            showBanner(t.name + ' DESTROYED!', '#00ff88');
-          }
-          targets.splice(i, 1);
-          spawnEntity();
-        }
-      }
-    }
-  }
-
-  /* Code Bar Redemption: RainbowDEVblu */
-  function redeemCode() {
-    const input = document.getElementById('codeInput');
-    const fb = document.getElementById('codeFeedback');
-    const val = input.value.trim();
-
-    if (val === 'RainbowDEVblu') {
-      const sel = document.getElementById('colorSelect');
-      if (!rainbowUnlocked) {
-        const opt = document.createElement('option');
-        opt.value = 'rainbow';
-        opt.textContent = 'NEON RAINBOW // DEV OVERRIDE';
-        sel.appendChild(opt);
-        rainbowUnlocked = true;
-      }
-      sel.value = 'rainbow';
-      baseColor = 'rainbow';
-      fb.style.color = '#00ff88';
-      fb.textContent = 'UNLOCKED: NEON RAINBOW SPECTRUM!';
-      showBanner('DEV OVERRIDE: NEON RAINBOW ACTIVATED', '#00f3ff');
-      spawnSparks(W * 0.5, H * 0.5, 45, '#00f3ff');
-      playZap(260, 0.25, 0.1);
-      input.value = '';
-    } else {
-      fb.style.color = '#ff007f';
-      fb.textContent = 'ERROR: INVALID ACCESS CODE';
-      playZap(65, 0.15, 0.06);
-    }
-  }
-
-  document.getElementById('btnCode').onclick = redeemCode;
-  document.getElementById('codeInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') redeemCode();
-  });
-
-  /* UI Bindings */
-  function setMode(m) {
-    mode = m;
-    document.querySelectorAll('#modes button').forEach(function(btn) {
-      btn.classList.toggle('active-mode', btn.dataset.mode === m);
-    });
-    document.getElementById('hud').textContent = 'MODE: ' + m.toUpperCase() + ' // HOLD CLICK TO DISCHARGE';
-  }
-
-  document.querySelectorAll('#modes button').forEach(function(btn) {
-    btn.onclick = function() {
-      setMode(btn.dataset.mode);
-    };
-  });
-
-  document.getElementById('voltSlider').oninput = function(e) {
-    voltage = +e.target.value;
-    document.getElementById('voltVal').textContent = (voltage * 0.016).toFixed(2) + ' GW';
-  };
-  document.getElementById('chaosSlider').oninput = function(e) {
-    chaos = (+e.target.value) / 100;
-    document.getElementById('chaosVal').textContent = e.target.value + '%';
-  };
-  document.getElementById('branchSlider').oninput = function(e) {
-    branchProb = (+e.target.value) / 100;
-    document.getElementById('branchVal').textContent = e.target.value + '%';
-  };
-  document.getElementById('bloomSlider').oninput = function(e) {
-    bloomScale = (+e.target.value) / 100;
-    document.getElementById('bloomVal').textContent = e.target.value + '%';
-  };
-  document.getElementById('chainSlider').oninput = function(e) {
-    chainRadius = +e.target.value;
-    document.getElementById('chainVal').textContent = chainRadius + ' px';
-  };
-  document.getElementById('gravSlider').oninput = function(e) {
-    gravityPull = (+e.target.value) / 100;
-    document.getElementById('gravVal').textContent = gravityPull.toFixed(2) + ' G';
-  };
-  document.getElementById('timeSlider').oninput = function(e) {
-    timeScale = (+e.target.value) / 100;
-    document.getElementById('timeVal').textContent = timeScale.toFixed(2) + 'x';
-  };
-  document.getElementById('trailSlider').oninput = function(e) {
-    const pct = +e.target.value;
-    trailAlpha = 1 - (pct / 100) * 0.88;
-    document.getElementById('trailVal').textContent = pct + '%';
-  };
-  document.getElementById('colorSelect').onchange = function(e) {
-    baseColor = e.target.value;
-  };
-
-  function triggerOverdrive() {
-    if (shakeOn) shake = 18;
-    playZap(110, 0.28, 0.11);
-    for (let i = 0; i < 14; i++) {
-      const tx = Math.random() * W;
-      const ty = Math.random() * H;
-      drawPlasmaBolt(W * 0.5, H * 0.5, tx, ty, voltage * 1.4, 2.5, 0, i * 25);
-      damageEntitiesNear(tx, ty, 75, 28);
-    }
-    addShockwave(W * 0.5, H * 0.5, Math.max(W, H) * 0.55, activeColor());
-    spawnSparks(W * 0.5, H * 0.5, 45);
-  }
-
-  function triggerOrbital() {
-    const tx = mouse.x || W * 0.5;
-    if (shakeOn) shake = 22;
-    playZap(85, 0.32, 0.12);
-    for (let i = -1; i <= 1; i++) {
-      drawPlasmaBolt(tx + i * 16, 0, tx + i * 10, H, voltage * 1.1, 4.2, 0, i * 40);
-    }
-    addShockwave(tx, H * 0.85, 220, activeColor());
-    spawnSparks(tx, H * 0.85, 55);
-    damageEntitiesNear(tx, mouse.y || H * 0.5, 160, 95);
-  }
-
-  function dropTower() {
-    if (towers.length >= 6) towers.shift();
-    towers.push({
-      x: mouse.x || W * 0.5,
-      y: mouse.y || H * 0.5,
-      angle: 0,
-      cd: 0
-    });
-    spawnSparks(mouse.x, mouse.y, 14);
-    playZap(220, 0.1, 0.05);
-  }
-
-  function purgeAll() {
-    sparks = [];
-    shockwaves = [];
-    orbNodes = [];
-    towers = [];
-    bossProjectiles = [];
-    ctx.fillStyle = '#020308';
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  document.getElementById('btnOverdrive').onclick = triggerOverdrive;
-  document.getElementById('btnOrbital').onclick = triggerOrbital;
-  document.getElementById('btnTower').onclick = dropTower;
-  document.getElementById('btnSpawn').onclick = function() {
-    spawnEntity();
-  };
-  document.getElementById('btnPurge').onclick = purgeAll;
-
-  document.getElementById('togAudio').onclick = function(e) {
-    audioOn = !audioOn;
-    e.target.textContent = 'AUDIO: ' + (audioOn ? 'ON' : 'OFF');
-    e.target.classList.toggle('on', audioOn);
-  };
-  document.getElementById('togAuto').onclick = function(e) {
-    autoFire = !autoFire;
-    e.target.textContent = 'AUTO-FIRE: ' + (autoFire ? 'ON' : 'OFF');
-    e.target.classList.toggle('on', autoFire);
-  };
-  document.getElementById('togShake').onclick = function(e) {
-    shakeOn = !shakeOn;
-    e.target.textContent = 'SHAKE: ' + (shakeOn ? 'ON' : 'OFF');
-    e.target.classList.toggle('on', shakeOn);
-  };
-  document.getElementById('togRain').onclick = function(e) {
-    ionRain = !ionRain;
-    e.target.textContent = 'ION RAIN: ' + (ionRain ? 'ON' : 'OFF');
-    e.target.classList.toggle('on', ionRain);
-  };
-
-  /* Pointer & Keyboard Controls */
-  canvas.addEventListener('pointerdown', function(e) {
-    holding = true;
-    mouse = { x: e.offsetX, y: e.offsetY };
-    if (mode === 'orb') {
-      if (orbNodes.length >= 14) orbNodes.shift();
-      orbNodes.push({ x: mouse.x, y: mouse.y });
-      spawnSparks(mouse.x, mouse.y, 10);
-      playZap(240, 0.08, 0.05);
+    /* HP Bar & Tag */
+    const bw = t.r * 2.2;
+    ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.fillRect(t.x - bw / 2, t.y - t.r - 12, bw, 4);
+    ctx.fillStyle = tCol; ctx.fillRect(t.x - bw / 2, t.y - t.r - 12, bw * Math.max(0, t.hp / t.maxHp), 4);
+    if (t.type !== 'cap') {
+      ctx.font = '700 8.5px Orbitron, monospace'; ctx.fillStyle = tCol; ctx.textAlign = 'center';
+      ctx.fillText(t.label, t.x, t.y - t.r - 16);
     }
   });
 
-  canvas.addEventListener('pointermove', function(e) {
-    mouse = { x: e.offsetX, y: e.offsetY };
+  /* Plasma Sparks */
+  sparks = sparks.filter(s => s.life > 0.05);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  sparks.forEach(s => {
+    s.x += s.vx * timeScale; s.y += s.vy * timeScale; s.life *= 0.92;
+    ctx.fillStyle = s.col; ctx.globalAlpha = s.life;
+    ctx.fillRect(s.x, s.y, 2.6, 2.6);
   });
+  ctx.restore();
 
-  window.addEventListener('pointerup', function() {
-    if (holding && mode === 'singularity' && singCharge > 12) {
-      const blastR = 120 + singCharge * 2.5 * gravityPull;
-      addShockwave(mouse.x, mouse.y, blastR, activeColor());
-      spawnSparks(mouse.x, mouse.y, 45);
-      if (shakeOn) shake = Math.min(22, 6 + singCharge * 0.18);
-      for (let i = 0; i < 10; i++) {
-        const a = (Math.PI * 2 * i) / 10;
-        drawPlasmaBolt(
-          mouse.x,
-          mouse.y,
-          mouse.x + Math.cos(a) * blastR * 0.85,
-          mouse.y + Math.sin(a) * blastR * 0.85,
-          voltage,
-          2.2,
-          0,
-          i * 36
-        );
-      }
-      damageEntitiesNear(mouse.x, mouse.y, blastR, 35 + singCharge * 0.9);
-      playZap(75, 0.3, 0.11);
-    }
-    holding = false;
-    singCharge = 0;
-  });
-
-  window.addEventListener('keydown', function(e) {
-    if (document.activeElement === document.getElementById('codeInput')) return;
-    if (e.key === '1') setMode('arc');
-    if (e.key === '2') setMode('tesla');
-    if (e.key === '3') setMode('orb');
-    if (e.key === '4') setMode('singularity');
-    if (e.code === 'Space') {
-      e.preventDefault();
-      triggerOverdrive();
-    }
-    if (e.key.toLowerCase() === 'o') triggerOrbital();
-    if (e.key.toLowerCase() === 't') dropTower();
-    if (e.key.toLowerCase() === 'b') spawnEntity();
-    if (e.key.toLowerCase() === 'c') purgeAll();
-  });
-
-  /* Render Upgraded Tesla Coil Assembly */
-  function renderTeslaCoil(cx, cy, tNow) {
-    const col = activeColor();
-    ctx.save();
-    ctx.translate(cx, cy);
-
-    /* Expanding field rings */
-    for (let r = 0; r < 3; r++) {
-      const prog = ((tNow * 0.002 + r * 0.33) % 1);
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 26 + prog * 90, 12 + prog * 40, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = col;
-      ctx.globalAlpha = (1 - prog) * 0.45;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-
-    /* Stacked copper inductor windings */
-    ctx.globalAlpha = 0.95;
-    for (let i = -3; i <= 3; i++) {
-      ctx.beginPath();
-      ctx.ellipse(0, i * 4, 14, 5, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = i % 2 === 0 ? '#f59e0b' : col;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-
-    /* Spinning top toroid terminal */
-    ctx.beginPath();
-    ctx.ellipse(0, -18, 22, 8, 0, 0, Math.PI * 2);
-    ctx.fillStyle = '#0f172a';
-    ctx.fill();
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    /* 6 Orbiting corona nodes */
-    for (let k = 0; k < 6; k++) {
-      const ang = tNow * 0.005 + (k * Math.PI) / 3;
-      const nx = Math.cos(ang) * 26;
-      const ny = -18 + Math.sin(ang) * 10;
-      ctx.fillStyle = col;
-      ctx.fillRect(nx - 2, ny - 2, 4, 4);
-    }
-    ctx.restore();
+  ctx.restore();
+  if (Math.floor(tick) % 15 === 0) {
+    document.getElementById('hudBot').textContent = `60 FPS TURBO ENGINE // ACTIVE TARGETS: ${targets.length}`;
   }
-
-  /* Render Turbo 60FPS Singularity Black Hole */
-  function renderSingularity(cx, cy, tNow) {
-    const col = activeColor();
-    const coreR = 18 + Math.min(22, singCharge * 0.22);
-
-    ctx.save();
-    ctx.translate(cx, cy);
-
-    /* Polar relativistic jets */
-    ctx.globalCompositeOperation = 'lighter';
-    const jetH = 90 + singCharge * 1.4;
-    ctx.fillStyle = col;
-    ctx.globalAlpha = 0.22;
-    ctx.fillRect(-4, -jetH, 8, jetH * 2);
-    ctx.fillStyle = '#ffffff';
-    ctx.globalAlpha = 0.55;
-    ctx.fillRect(-1.5, -jetH * 0.7, 3, jetH * 1.4);
-
-    /* Tilted multi-ring accretion disk */
-    ctx.save();
-    ctx.rotate(-0.32);
-    for (let ring = 1; ring <= 4; ring++) {
-      ctx.beginPath();
-      ctx.ellipse(0, 0, coreR * (1.8 + ring * 0.65), coreR * (0.45 + ring * 0.14), 0, 0, Math.PI * 2);
-      ctx.strokeStyle = ring % 2 === 0 ? '#ffffff' : activeColor(ring * 35);
-      ctx.globalAlpha = 0.65 - ring * 0.1;
-      ctx.lineWidth = 3.5 - ring * 0.5;
-      ctx.stroke();
-    }
-    ctx.restore();
-
-    /* Event horizon pitch-black core + photon ring */
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = 1;
-    ctx.beginPath();
-    ctx.arc(0, 0, coreR, 0, Math.PI * 2);
-    ctx.fillStyle = '#000000';
-    ctx.fill();
-    ctx.lineWidth = 2.5;
-    ctx.strokeStyle = '#ffffff';
-    ctx.stroke();
-
-    ctx.restore();
-
-    /* Inward spiral lightning filaments */
-    for (let s = 0; s < 4; s++) {
-      const baseA = tNow * 0.006 + (s * Math.PI) * 0.5;
-      const outerR = 140 + Math.sin(tNow * 0.01 + s) * 25;
-      const sx = cx + Math.cos(baseA) * outerR;
-      const sy = cy + Math.sin(baseA) * outerR;
-      drawPlasmaBolt(sx, sy, cx, cy, voltage * 0.65, 1.5, 1, s * 45);
-    }
-  }
-
-  /* Main Animation Loop */
-  let lastTime = performance.now();
-  let frameCount = 0;
-  let fpsTimer = lastTime;
-
-  function loop(now) {
-    const rawDt = Math.min(0.05, (now - lastTime) / 1000);
-    lastTime = now;
-    const dt = rawDt * timeScale;
-
-    rainbowHue = (rainbowHue + 140 * dt) % 360;
-
-    /* FPS Counter */
-    frameCount++;
-    if (now - fpsTimer >= 500) {
-      const fps = Math.round((frameCount * 1000) / (now - fpsTimer));
-      document.getElementById('fpsReadout').textContent = fps + ' FPS';
-      document.getElementById('entReadout').textContent = targets.length + towers.length;
-      frameCount = 0;
-      fpsTimer = now;
-    }
-
-    ctx.save();
-    ctx.fillStyle = 'rgba(2, 3, 8, ' + trailAlpha.toFixed(2) + ')';
-    ctx.fillRect(0, 0, W, H);
-
-    /* Subtle grid lines */
-    ctx.strokeStyle = 'rgba(0, 243, 255, 0.035)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    for (let gx = 0; gx < W; gx += 48) {
-      ctx.moveTo(gx, 0);
-      ctx.lineTo(gx, H);
-    }
-    for (let gy = 0; gy < H; gy += 48) {
-      ctx.moveTo(0, gy);
-      ctx.lineTo(W, gy);
-    }
-    ctx.stroke();
-
-    if (shake > 0.2 && shakeOn) {
-      ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
-      shake *= 0.88;
-    } else {
-      shake = 0;
-    }
-
-    /* Ambient Ion Rain */
-    if (ionRain) {
-      if (rainDrops.length < 36 && Math.random() < 0.4) {
-        rainDrops.push({
-          x: Math.random() * W,
-          y: -10,
-          vy: 4 + Math.random() * 5,
-          len: 10 + Math.random() * 14
-        });
-      }
-      ctx.strokeStyle = activeColor(20);
-      ctx.globalAlpha = 0.22;
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      for (let i = rainDrops.length - 1; i >= 0; i--) {
-        const d = rainDrops[i];
-        d.y += d.vy * timeScale;
-        ctx.moveTo(d.x, d.y);
-        ctx.lineTo(d.x, d.y + d.len);
-        if (d.y > H) rainDrops.splice(i, 1);
-      }
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-    }
-
-    /* Update & Render Targets, Mini-Bosses, and Bosses */
-    for (let i = targets.length - 1; i >= 0; i--) {
-      const t = targets[i];
-      t.angle += 0.03 * timeScale;
-
-      /* Gravity pull when Singularity is active */
-      if ((holding || autoFire) && mode === 'singularity' && gravityPull > 0) {
-        const dx = mouse.x - t.x;
-        const dy = mouse.y - t.y;
-        const dist = Math.max(25, Math.hypot(dx, dy));
-        if (dist < 420) {
-          const pull = (gravityPull * 180) / dist;
-          t.vx += (dx / dist) * pull * dt;
-          t.vy += (dy / dist) * pull * dt;
-        }
-      }
-
-      t.x += t.vx * timeScale;
-      t.y += t.vy * timeScale;
-
-      if (t.x < t.r + 12 || t.x > W - t.r - 12) t.vx *= -1;
-      if (t.y < t.r + 12 || t.y > H - t.r - 12) t.vy *= -1;
-
-      /* Boss & Mini-Boss plasma pulse attacks */
-      if (t.tier !== 'normal') {
-        t.attackCd -= timeScale;
-        if (t.attackCd <= 0) {
-          t.attackCd = t.tier === 'boss' ? 95 : 140;
-          const ang = Math.atan2(mouse.y - t.y, mouse.x - t.x);
-          bossProjectiles.push({
-            x: t.x,
-            y: t.y,
-            vx: Math.cos(ang) * 4.2,
-            vy: Math.sin(ang) * 4.2,
-            col: t.tier === 'boss' ? '#ff007f' : '#ffbe0b',
-            life: 140
-          });
-        }
-      }
-
-      /* Draw entity */
-      ctx.save();
-      ctx.translate(t.x, t.y);
-      const tCol = t.tier === 'boss' ? '#ff007f' : (t.tier === 'miniboss' ? '#ffbe0b' : '#38bdf8');
-
-      /* Rotating polygon chassis */
-      ctx.save();
-      ctx.rotate(t.angle);
-      const sides = t.tier === 'boss' ? 8 : (t.tier === 'miniboss' ? 6 : 4);
-      ctx.beginPath();
-      for (let s = 0; s < sides; s++) {
-        const a = (s * Math.PI * 2) / sides;
-        const px = Math.cos(a) * t.r;
-        const py = Math.sin(a) * t.r;
-        if (s === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(10, 15, 30, 0.85)';
-      ctx.fill();
-      ctx.lineWidth = t.tier === 'boss' ? 3 : 2;
-      ctx.strokeStyle = tCol;
-      ctx.stroke();
-
-      /* Inner core */
-      ctx.beginPath();
-      ctx.arc(0, 0, t.r * 0.42, 0, Math.PI * 2);
-      ctx.fillStyle = tCol;
-      ctx.fill();
-      ctx.restore();
-
-      /* Energy shield ring */
-      if (t.shield > 0) {
-        ctx.beginPath();
-        ctx.arc(0, 0, t.r + 6, 0, Math.PI * 2);
-        ctx.strokeStyle = '#00f3ff';
-        ctx.lineWidth = 1.8;
-        ctx.globalAlpha = 0.75;
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-      }
-
-      /* HP & Shield bars for Bosses / Mini-Bosses */
-      if (t.tier !== 'normal') {
-        const bw = t.r * 2.4;
-        ctx.fillStyle = 'rgba(0,0,0,0.75)';
-        ctx.fillRect(-bw * 0.5, -t.r - 18, bw, 5);
-        ctx.fillStyle = tCol;
-        ctx.fillRect(-bw * 0.5, -t.r - 18, bw * Math.max(0, t.hp / t.maxHp), 5);
-
-        if (t.maxShield > 0 && t.shield > 0) {
-          ctx.fillStyle = '#00f3ff';
-          ctx.fillRect(-bw * 0.5, -t.r - 23, bw * (t.shield / t.maxShield), 3);
-        }
-
-        ctx.font = '700 9px monospace';
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'center';
-        ctx.fillText(t.name, 0, -t.r - 27);
-      }
-
-      ctx.restore();
-    }
-
-    /* Boss projectiles */
-    for (let i = bossProjectiles.length - 1; i >= 0; i--) {
-      const p = bossProjectiles[i];
-      p.x += p.vx * timeScale;
-      p.y += p.vy * timeScale;
-      p.life -= timeScale;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
-      ctx.fillStyle = p.col;
-      ctx.fill();
-      if (p.life <= 0 || p.x < 0 || p.x > W || p.y < 0 || p.y > H) {
-        bossProjectiles.splice(i, 1);
-      }
-    }
-
-    /* Autonomous Tesla Towers */
-    towers.forEach(function(tw) {
-      tw.angle += 0.04 * timeScale;
-      tw.cd -= timeScale;
-      renderTeslaCoil(tw.x, tw.y, now);
-      if (tw.cd <= 0 && targets.length > 0) {
-        let nearest = null;
-        let bestD = chainRadius;
-        targets.forEach(function(t) {
-          const d = Math.hypot(t.x - tw.x, t.y - tw.y);
-          if (d < bestD) {
-            bestD = d;
-            nearest = t;
-          }
-        });
-        if (nearest) {
-          tw.cd = 16;
-          drawPlasmaBolt(tw.x, tw.y - 18, nearest.x, nearest.y, voltage * 0.85, 2.0, 0, 30);
-          spawnSparks(nearest.x, nearest.y, 5);
-          damageEntitiesNear(nearest.x, nearest.y, 18, 12);
-        }
-      }
-    });
-
-    /* Persistent Plasma Orbs */
-    for (let i = 0; i < orbNodes.length; i++) {
-      const n = orbNodes[i];
-      const oCol = activeColor(i * 28);
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = oCol;
-      ctx.fill();
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      if (i > 0) {
-        const prev = orbNodes[i - 1];
-        drawPlasmaBolt(prev.x, prev.y, n.x, n.y, voltage * 0.65, 1.8, 0, i * 28);
-        damageEntitiesNear((prev.x + n.x) * 0.5, (prev.y + n.y) * 0.5, 35, 1.5);
-      }
-    }
-
-    /* Active Weapon Firing */
-    const isFiring = holding || autoFire;
-    if (isFiring) {
-      if (Math.random() < 0.25) playZap(150 + Math.random() * 80, 0.06, 0.035);
-
-      if (mode === 'arc') {
-        drawPlasmaBolt(W * 0.5, H * 0.5, mouse.x, mouse.y, voltage, 2.4, 0, 0);
-        spawnSparks(mouse.x, mouse.y, 4);
-        damageEntitiesNear(mouse.x, mouse.y, 34, 4.8 * timeScale);
-      } else if (mode === 'tesla') {
-        renderTeslaCoil(mouse.x, mouse.y, now);
-        /* Snap arcs onto all targets within chain radius */
-        let chained = 0;
-        targets.forEach(function(t, idx) {
-          const d = Math.hypot(t.x - mouse.x, t.y - mouse.y);
-          if (d <= chainRadius && chained < 5) {
-            chained++;
-            drawPlasmaBolt(mouse.x, mouse.y - 18, t.x, t.y, voltage * 0.9, 2.1, 0, idx * 40);
-            spawnSparks(t.x, t.y, 3);
-            damageEntitiesNear(t.x, t.y, 16, 4.2 * timeScale);
-          }
-        });
-        /* Idle corona arcs */
-        for (let k = chained; k < 3; k++) {
-          const a = Math.random() * Math.PI * 2;
-          const r = 65 + Math.random() * (chainRadius * 0.55);
-          drawPlasmaBolt(
-            mouse.x,
-            mouse.y - 18,
-            mouse.x + Math.cos(a) * r,
-            mouse.y + Math.sin(a) * r,
-            voltage * 0.75,
-            1.6,
-            0,
-            k * 50
-          );
-        }
-      } else if (mode === 'orb') {
-        if (orbNodes.length > 0) {
-          const last = orbNodes[orbNodes.length - 1];
-          drawPlasmaBolt(last.x, last.y, mouse.x, mouse.y, voltage * 0.85, 2.1, 0, 60);
-          damageEntitiesNear(mouse.x, mouse.y, 30, 3.8 * timeScale);
-        }
-      } else if (mode === 'singularity') {
-        singCharge = Math.min(100, singCharge + 45 * dt);
-        renderSingularity(mouse.x, mouse.y, now);
-        damageEntitiesNear(mouse.x, mouse.y, 65 + singCharge * 0.5, 5.5 * timeScale);
-        if (shakeOn) shake = Math.max(shake, 3.5);
-      }
-    }
-
-    /* Shockwaves */
-    for (let i = shockwaves.length - 1; i >= 0; i--) {
-      const sw = shockwaves[i];
-      sw.r += (sw.maxR - sw.r) * 0.14 * timeScale + 2;
-      sw.alpha *= 0.92;
-      ctx.beginPath();
-      ctx.arc(sw.x, sw.y, sw.r, 0, Math.PI * 2);
-      ctx.strokeStyle = sw.col;
-      ctx.globalAlpha = sw.alpha;
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-      if (sw.alpha < 0.04) shockwaves.splice(i, 1);
-    }
-
-    /* Sparks */
-    for (let i = sparks.length - 1; i >= 0; i--) {
-      const s = sparks[i];
-      s.x += s.vx * timeScale;
-      s.y += s.vy * timeScale;
-      s.vy += 0.14 * timeScale;
-      s.life *= 0.92;
-      ctx.fillStyle = s.col;
-      ctx.globalAlpha = s.life;
-      ctx.fillRect(s.x, s.y, 2.5, 2.5);
-      if (s.life < 0.05) sparks.splice(i, 1);
-    }
-    ctx.globalAlpha = 1;
-
-    ctx.restore();
-    requestAnimationFrame(loop);
-  }
-
   requestAnimationFrame(loop);
-})();
+}
+loop();
 </script>
 </body>
 </html>
