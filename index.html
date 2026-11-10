@@ -2,401 +2,654 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>DISCHARGE MATRIX // SINGULARITY APEX v5.0</title>
+<title>DISCHARGE MATRIX // SINGULARITY APEX</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap');
-  
   :root {
-    --c: #00f3ff; --p: #b829ea; --m: #ff007f; --g: #ffbe0b; --bg: #010206;
+    --c: #00f3ff; --p: #b829ea; --m: #ff007f; --g: #ffbe0b; --bg: #020308;
     --cut: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-    --card-cut: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
-    --neon-glow: 0 0 20px rgba(0, 243, 255, 0.4), 0 0 40px rgba(184, 41, 234, 0.2);
+    --card-cut: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
   }
-  
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-  
   body {
-    background: var(--bg); color: #f1f5f9; height: 100vh; display: flex; overflow: hidden;
-    font: 700 13px/1.4 'Rajdhani', system-ui, sans-serif;
+    background: var(--bg); color: #e2e8f0; height: 100vh; display: flex; overflow: hidden;
+    font: 600 13px/1.3 'Rajdhani', system-ui, sans-serif;
   }
-  
   body::after {
     content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 100;
-    background: 
-      linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-      linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
-    background-size: 100% 3px, 6px 100%;
-    opacity: 0.85;
+    background: repeating-linear-gradient(0deg, rgba(0,243,255,.02) 0 1px, transparent 1px 3px),
+                radial-gradient(circle at center, transparent 58%, rgba(0,0,0,.78) 100%);
   }
-  
-  body::before {
-    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 99;
-    background: 
-      radial-gradient(circle at center, transparent 30%, rgba(1, 2, 6, 0.85) 100%),
-      repeating-linear-gradient(0deg, rgba(0,243,255,.01) 0 1px, transparent 1px 4px);
-  }
-
   #sidebar {
-    width: 410px; padding: 18px; overflow-y: auto; z-index: 20; display: flex; flex-direction: column; gap: 12px;
-    background: linear-gradient(180deg, rgba(4,8,20,0.95) 0%, rgba(1,3,8,0.98) 100%);
-    border-right: 2px solid rgba(0,243,255,0.3);
-    box-shadow: 15px 0 60px rgba(0,0,0,0.85), inset -2px 0 30px rgba(0,243,255,0.05);
-    backdrop-filter: blur(12px);
+    width: 376px; padding: 14px; overflow-y: auto; z-index: 20; display: flex; flex-direction: column; gap: 10px;
+    background: linear-gradient(180deg, rgba(6,10,22,.98), rgba(2,4,10,.99));
+    border-right: 1px solid rgba(0,243,255,.45);
+    box-shadow: 12px 0 50px rgba(0,0,0,.95), inset -1px 0 25px rgba(0,243,255,.1);
   }
-  #sidebar::-webkit-scrollbar { width: 5px; }
-  #sidebar::-webkit-scrollbar-thumb { background: linear-gradient(var(--m), var(--p), var(--c)); border-radius: 10px; }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: linear-gradient(var(--c), var(--p), var(--m)); }
 
   .hero-header {
-    padding: 16px; background: linear-gradient(135deg, rgba(0,243,255,0.08), rgba(184,41,234,0.05));
-    border: 1px solid rgba(0,243,255,0.4); clip-path: var(--card-cut); position: relative; overflow: hidden;
+    padding: 12px 14px; background: linear-gradient(135deg, rgba(0,243,255,.12), rgba(184,41,234,.12));
+    border: 1px solid rgba(0,243,255,.45); clip-path: var(--card-cut); position: relative; overflow: hidden;
   }
   .hero-header::before {
-    content: ""; position: absolute; top: 0; left: -150%; width: 300%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0,243,255,0.2), rgba(255,0,127,0.2), transparent);
-    transform: skewX(-25deg);
-    animation: sweep 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    content: ""; position: absolute; top: 0; left: -100%; width: 200%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--c), var(--m), var(--g), transparent);
+    animation: scanbar 2.8s linear infinite;
   }
-  @keyframes sweep { 0% { left: -150%; } 100% { left: 150%; } }
-  
+  @keyframes scanbar { to { transform: translateX(50%); } }
   .header-top { display: flex; justify-content: space-between; align-items: center; }
-  
   h1 {
-    font: 900 19px 'Orbitron', sans-serif; letter-spacing: 2.5px; text-transform: uppercase;
-    background: linear-gradient(90deg, var(--c), #fff, var(--m), var(--g), var(--c));
-    background-size: 300% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-    animation: metallicFlow 4s linear infinite;
-    filter: drop-shadow(0 0 6px rgba(0,243,255,0.5));
+    font: 900 16px 'Orbitron', sans-serif; letter-spacing: 1.6px;
+    background: linear-gradient(90deg, var(--c), #fff, var(--p), var(--m), var(--c)) 0/250%;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    animation: flow 3.5s linear infinite;
   }
-  @keyframes metallicFlow { 0% { background-position: 0% center; } 100% { background-position: 300% center; } }
-  
+  @keyframes flow { to { background-position: 250% center; } }
   .badge {
-    font: 900 9px 'Orbitron', sans-serif; letter-spacing: 1.5px; padding: 4px 9px;
-    color: #fff; background: linear-gradient(90deg, var(--m), var(--p));
-    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
-    box-shadow: 0 0 15px rgba(255,0,127,0.7);
+    font: 800 8px 'Orbitron', sans-serif; letter-spacing: 1px; padding: 3px 7px;
+    color: #fff; background: linear-gradient(90deg, var(--p), var(--m));
+    clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+    box-shadow: 0 0 14px rgba(255,0,127,.6);
   }
-  
-  .sub { font: 700 11px 'Orbitron', monospace; color: #38bdf8; letter-spacing: 2px; margin-top: 5px; opacity: .9; text-shadow: 0 0 5px rgba(56,189,248,0.5); }
+  .sub { font: 700 10px 'Orbitron', monospace; color: #7dd3fc; letter-spacing: 1.4px; margin-top: 3px; opacity: .85; }
 
   .panel {
-    background: rgba(6,11,28,0.75); border: 1px solid rgba(0,243,255,0.18);
-    padding: 14px; clip-path: var(--card-cut); position: relative;
-    box-shadow: inset 0 0 25px rgba(0,0,0,0.8);
-    transition: all 0.25s ease;
+    background: rgba(9,14,29,.82); border: 1px solid rgba(0,243,255,.22);
+    padding: 11px; clip-path: var(--card-cut); position: relative;
+    box-shadow: inset 0 0 20px rgba(0,0,0,.65);
   }
   .panel::before {
-    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-    background: linear-gradient(180deg, var(--c), var(--p), transparent);
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--c), var(--p));
   }
-  
   .p-head {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
-    font: 900 11px 'Orbitron', sans-serif; color: var(--c); letter-spacing: 1.8px;
-    text-shadow: 0 0 8px rgba(0,243,255,0.4);
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;
+    font: 800 9.5px 'Orbitron', sans-serif; color: var(--c); letter-spacing: 1.5px;
   }
-  .p-head span:last-child { color: #475569; font-size: 9px; font-family: monospace; }
+  .p-head span:last-child { color: #64748b; font-size: 8.5px; }
 
-  .w-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .w-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
   .w-btn {
-    text-align: left; padding: 11px 12px; background: rgba(9,15,32,0.9);
-    border: 1px solid rgba(51,65,85,0.7); clip-path: var(--cut); cursor: pointer;
-    position: relative; overflow: hidden; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left; padding: 9px 10px; background: rgba(13,20,40,.92);
+    border: 1px solid rgba(71,85,105,.55); clip-path: var(--cut); cursor: pointer;
+    position: relative; overflow: hidden; transition: .15s;
   }
-  .w-btn .w-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-  .w-btn .w-name { font: 800 12px 'Orbitron', sans-serif; color: #94a3b8; letter-spacing: .5px; }
+  .w-btn .w-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+  .w-btn .w-name { font: 800 11px 'Orbitron', sans-serif; color: #cbd5e1; letter-spacing: .5px; }
   .w-btn .w-key {
-    font: 800 9px 'Orbitron', monospace; padding: 2px 6px; color: var(--c);
-    background: rgba(0,243,255,0.08); border: 1px solid rgba(0,243,255,0.25);
+    font: 800 9px 'Orbitron', monospace; padding: 1px 5px; color: var(--c);
+    background: rgba(0,243,255,.12); border: 1px solid rgba(0,243,255,.35);
   }
-  .w-btn .w-desc { font-size: 11px; color: #475569; font-weight: 700; }
-  
-  .w-btn:hover {
-    border-color: rgba(0,243,255,0.6); background: rgba(14,23,47,0.95);
-    transform: translateY(-2px);
+  .w-btn .w-desc { font-size: 11px; color: #64748b; font-weight: 600; }
+  .w-btn:hover, .w-btn.active {
+    background: linear-gradient(135deg, rgba(0,243,255,.22), rgba(184,41,234,.22));
+    border-color: var(--c); transform: translateY(-1px);
+    box-shadow: 0 0 18px rgba(0,243,255,.35), inset 0 0 12px rgba(0,243,255,.2);
   }
-  
-  .w-btn.active {
-    background: linear-gradient(135deg, rgba(0,243,255,0.18), rgba(184,41,234,0.12));
-    border-color: var(--c);
-    box-shadow: var(--neon-glow), inset 0 0 15px rgba(0,243,255,0.15);
-  }
-  .w-btn.active .w-name { color: #fff; text-shadow: 0 0 10px var(--c); }
-  .w-btn.active .w-key { background: var(--c); color: #000; border-color: #fff; }
-  .w-btn.active .w-desc { color: #e0f2fe; }
-  
-  .w-btn.secret { border-color: rgba(255,190,11,0.4); background: linear-gradient(135deg, rgba(255,190,11,0.08), rgba(255,0,127,0.05)); }
-  .w-btn.secret .w-name { color: #ffbe0b; }
-  .w-btn.secret.active { 
-    border-color: var(--g); 
-    background: linear-gradient(135deg, rgba(255,190,11,0.22), rgba(255,0,127,0.15));
-    box-shadow: 0 0 25px rgba(255,190,11,0.4); 
-  }
+  .w-btn.active .w-name { color: #fff; text-shadow: 0 0 8px var(--c); }
+  .w-btn.active .w-desc { color: #bae6fd; }
+  .w-btn.secret { border-color: rgba(255,190,11,.6); background: linear-gradient(135deg, rgba(255,190,11,.15), rgba(255,0,127,.15)); }
+  .w-btn.secret .w-name { color: var(--g); }
+  .w-btn.secret.active { border-color: var(--g); box-shadow: 0 0 22px rgba(255,190,11,.55); }
 
-  .act-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .act-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 8px; }
   button.act {
-    font: 900 11px 'Orbitron', sans-serif; letter-spacing: 1px; color: #fff;
-    padding: 12px 10px; border: 1px solid var(--c); clip-path: var(--cut); cursor: pointer;
-    background: linear-gradient(135deg, #0284c7, #3730a3); transition: all 0.2s;
-    box-shadow: 0 0 15px rgba(0,243,255,0.25);
+    font: 800 10px 'Orbitron', sans-serif; letter-spacing: .8px; color: #fff;
+    padding: 9px 8px; border: 1px solid var(--c); clip-path: var(--cut); cursor: pointer;
+    background: linear-gradient(135deg, #0369a1, #4338ca); transition: .15s;
+    box-shadow: 0 0 15px rgba(0,243,255,.3);
   }
-  button.act:hover { filter: brightness(1.15); transform: translateY(-2px); box-shadow: 0 0 25px rgba(0,243,255,0.5); }
-  
-  button.act.orb { background: linear-gradient(135deg, #db2777, #5b21b6); border-color: #f472b6; }
-  button.act.util { background: rgba(15,23,42,0.85); border-color: rgba(148,163,184,0.35); color: #cbd5e1; }
-  button.act.danger { background: rgba(153,27,27,0.6); border-color: #ef4444; color: #fff; }
-  button.act.danger:hover { background: #dc2626; box-shadow: 0 0 25px rgba(239,68,68,0.6); }
+  button.act:hover { filter: brightness(1.25); transform: translateY(-1px); box-shadow: 0 0 22px rgba(0,243,255,.65); }
+  button.act.orb { background: linear-gradient(135deg, #be185d, #6d28d9); border-color: #f472b6; box-shadow: 0 0 15px rgba(255,0,127,.3); }
+  button.act.util { background: rgba(15,23,42,.95); border-color: rgba(148,163,184,.45); color: #e2e8f0; box-shadow: none; }
+  button.act.util:hover { border-color: var(--c); color: #fff; box-shadow: 0 0 14px rgba(0,243,255,.35); }
+  button.act.danger { background: rgba(69,10,10,.75); border-color: rgba(239,68,68,.65); color: #fca5a5; }
+  button.act.danger:hover { background: #dc2626; color: #fff; box-shadow: 0 0 18px rgba(239,68,68,.75); }
 
-  .s-row { margin-bottom: 12px; }
+  .s-row { margin-bottom: 9px; }
   .s-row:last-child { margin-bottom: 0; }
-  .s-lbl { display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 5px; font-weight: 700; }
+  .s-lbl { display: flex; justify-content: space-between; font-size: 11.5px; color: #94a3b8; margin-bottom: 3px; }
   .s-lbl span:last-child {
-    font: 800 11px 'Orbitron', monospace; color: var(--c);
-    background: rgba(0,243,255,0.08); padding: 1px 6px; border: 1px solid rgba(0,243,255,0.3);
+    font: 700 10.5px 'Orbitron', monospace; color: var(--c);
+    background: rgba(0,243,255,.1); padding: 0 5px; border: 1px solid rgba(0,243,255,.25);
   }
-  
   input[type="range"] {
-    -webkit-appearance: none; width: 100%; height: 6px; outline: none; background: #090f24;
+    -webkit-appearance: none; width: 100%; height: 5px; outline: none; border-radius: 1px;
+    background: linear-gradient(90deg, var(--c), var(--p)); box-shadow: 0 0 8px rgba(0,243,255,.25);
   }
   input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 14px; height: 14px; background: #fff; cursor: pointer;
-    border: 3px solid var(--c); transform: rotate(45deg); box-shadow: 0 0 10px var(--c);
+    -webkit-appearance: none; width: 13px; height: 13px; background: #fff; cursor: pointer;
+    border: 2px solid var(--c); transform: rotate(45deg); box-shadow: 0 0 12px var(--c);
   }
-  
   select, input[type="text"] {
-    width: 100%; background: #030612; color: #fff; padding: 9px 12px;
-    border: 1px solid rgba(0,243,255,0.3); font: 700 12px 'Orbitron', monospace; outline: none;
+    width: 100%; background: #050814; color: #fff; padding: 7px 9px;
+    border: 1px solid rgba(0,243,255,.4); font: 700 12px 'Orbitron', monospace; outline: none;
   }
-  
-  .code-box { display: flex; gap: 8px; }
-  .code-box input[type="text"] { flex: 1; }
+  input[type="text"]:focus, select:focus { border-color: var(--c); box-shadow: 0 0 14px rgba(0,243,255,.4); }
+  .code-box { display: flex; gap: 6px; }
   .code-box button {
-    padding: 0 16px; font: 900 11px 'Orbitron', sans-serif; color: #010206;
+    padding: 0 12px; font: 800 10px 'Orbitron', sans-serif; color: #020308;
     background: var(--c); border: none; clip-path: var(--cut); cursor: pointer;
   }
-  #codeMsg { font: 700 11px 'Orbitron', monospace; color: #475569; margin-top: 6px; min-height: 15px; }
+  .code-box button:hover { background: #fff; box-shadow: 0 0 16px var(--c); }
+  #codeMsg { font: 700 10px 'Orbitron', monospace; color: #64748b; margin-top: 5px; min-height: 13px; }
 
   #viewport {
     flex: 1; position: relative; cursor: crosshair; overflow: hidden;
-    background: radial-gradient(circle at 50% 45%, #080f2b 0%, #02040b 75%, #000103 100%);
-    display: flex; flex-direction: column;
+    background: radial-gradient(circle at 50% 45%, #0c1638 0%, #03050e 70%, #010205 100%);
   }
-  
   #hudTop {
-    position: absolute; top: 18px; left: 20px; right: 20px; display: flex; justify-content: space-between;
-    pointer-events: none; font: 900 11.5px 'Orbitron', monospace; letter-spacing: 1.5px; z-index: 30;
+    position: absolute; top: 14px; left: 16px; right: 16px; display: flex; justify-content: space-between;
+    pointer-events: none; font: 800 10.5px 'Orbitron', monospace; letter-spacing: 1.2px;
   }
   .hud-pill {
-    padding: 8px 16px; background: rgba(4, 9, 26, 0.85); border: 1px solid rgba(0, 243, 255, 0.35);
-    color: #fff; clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    padding: 6px 12px; background: rgba(5,9,22,.82); border: 1px solid rgba(0,243,255,.4);
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); color: var(--c);
+    box-shadow: 0 0 18px rgba(0,0,0,.8);
   }
-
-  #canvasContainer { flex: 1; position: relative; width: 100%; height: 100%; }
-  canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
-
-  #terminalOverlay {
-    position: absolute; bottom: 20px; left: 20px; right: 20px; height: 180px;
-    background: rgba(2, 4, 12, 0.85); border: 1px solid rgba(0, 243, 255, 0.25);
-    backdrop-filter: blur(8px); z-index: 10; clip-path: var(--card-cut); padding: 12px; display: flex; flex-direction: column; gap: 6px;
+  #banner {
+    position: absolute; top: 54px; left: 50%; transform: translateX(-50%); pointer-events: none;
+    font: 900 13px 'Orbitron', sans-serif; letter-spacing: 2px; padding: 6px 18px;
+    background: rgba(6,10,24,.92); border: 1px solid var(--m); color: #fff;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    opacity: 0; transition: opacity .25s; box-shadow: 0 0 25px rgba(255,0,127,.55);
   }
-  .term-header {
-    display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 243, 255, 0.15);
-    padding-bottom: 6px; font: 900 11px 'Orbitron', sans-serif; color: var(--c);
+  #hudBot {
+    position: absolute; bottom: 12px; right: 16px; pointer-events: none;
+    font: 700 10px 'Orbitron', monospace; color: rgba(0,243,255,.65); letter-spacing: 1.4px;
   }
-  .term-feed { flex: 1; overflow-y: auto; font-family: monospace; font-size: 11px; color: #38bdf8; display: flex; flex-direction: column; gap: 4px; }
-  .log-line { display: flex; gap: 10px; }
-  .log-line.warn { color: var(--g); }
-  .log-line.crit { color: var(--m); font-weight: bold; }
-  .log-time { color: rgba(0, 243, 255, 0.5); font-family: 'Orbitron', monospace; }
-
-  .grid-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-  .stat-block { background: rgba(4, 8, 22, 0.6); border: 1px solid rgba(148, 163, 184, 0.15); padding: 8px; text-align: center; }
-  .stat-val { font: 900 14px 'Orbitron', monospace; color: #fff; }
-  .stat-lbl-mini { font-size: 9px; color: #64748b; }
-
-  .beacon-container { display: flex; gap: 12px; margin-top: 5px; background: rgba(0,0,0,0.2); padding: 8px; border: 1px solid rgba(255,255,255,0.05); }
-  .beacon-row { flex: 1; display: flex; align-items: center; gap: 8px; }
-  .beacon-dot { width: 8px; height: 8px; background: #64748b; border-radius: 50%; }
-  .beacon-dot.active { background: var(--c); box-shadow: 0 0 10px var(--c); }
-  .beacon-lbl { font: 800 10px 'Orbitron', sans-serif; color: #94a3b8; }
+  canvas { display: block; width: 100%; height: 100%; }
 </style>
 </head>
 <body>
-
-<div id="sidebar">
+<aside id="sidebar">
   <div class="hero-header">
-    <div class="header-top">
-      <h1>Singularity Apex</h1>
-      <div class="badge">V5.0_LIVE</div>
-    </div>
-    <div class="sub">DISCHARGE MATRIX LAYER</div>
+    <div class="header-top"><h1>DISCHARGE MATRIX</h1><span class="badge">APEX X20</span></div>
+    <div class="sub">SINGULARITY &amp; PLASMA OVERDRIVE ENGINE</div>
   </div>
 
   <div class="panel">
-    <div class="p-head"><span>MATRIX EMISSION NODE</span><span>NODE_01</span></div>
-    <div class="w-grid">
-      <div class="w-btn active" data-node="beam_x1"><div class="w-top"><span class="w-name">BEAM_X1</span><span class="w-key">A</span></div><div class="w-desc">Continuous Discharge</div></div>
-      <div class="w-btn" data-node="burst_max"><div class="w-top"><span class="w-name">BURST_MAX</span><span class="w-key">B</span></div><div class="w-desc">Quad-Phase Blast</div></div>
-      <div class="w-btn secret" data-node="plasma_fx"><div class="w-top"><span class="w-name">PLASMA_FX</span><span class="w-key">C</span></div><div class="w-desc">Exotic Bio-Combustion</div></div>
-      <div class="w-btn" data-node="vortex_omega"><div class="w-top"><span class="w-name">VORTEX_Ω</span><span class="w-key">D</span></div><div class="w-desc">Singularity Capture</div></div>
+    <div class="p-head"><span>01 // WEAPON ARSENAL</span><span>KEYS 1-6</span></div>
+    <div class="w-grid" id="wGrid">
+      <div class="w-btn active" data-w="arc"><div class="w-top"><span class="w-name">ARC BOLT</span><span class="w-key">1</span></div><div class="w-desc">Core Tether + Forks</div></div>
+      <div class="w-btn" data-w="tesla"><div class="w-top"><span class="w-name">TESLA COIL</span><span class="w-key">2</span></div><div class="w-desc">3D Toroid + Chain</div></div>
+      <div class="w-btn" data-w="orb"><div class="w-top"><span class="w-name">PLASMA ORB</span><span class="w-key">3</span></div><div class="w-desc">Linked Node Grid</div></div>
+      <div class="w-btn" data-w="sing"><div class="w-top"><span class="w-name">SINGULARITY</span><span class="w-key">4</span></div><div class="w-desc">Black Hole + Nova</div></div>
     </div>
-  </div>
-
-  <div class="panel">
-    <div class="p-head"><span>LIVE CORE METRICS</span><span>TELEMETRY</span></div>
-    <div class="grid-3col">
-      <div class="stat-block"><span class="stat-val" id="valCoreTemp">412.5°C</span><span class="stat-lbl-mini">CORE TEMP</span></div>
-      <div class="stat-block"><span class="stat-val" id="valOutputCap">89.2%</span><span class="stat-lbl-mini">CAP CAPACITY</span></div>
-      <div class="stat-block"><span class="stat-val" id="valFreqMod">2.41 GHz</span><span class="stat-lbl-mini">FREQ MOD</span></div>
-    </div>
-    <div class="beacon-container">
-      <div class="beacon-row"><div class="beacon-dot active"></div><span class="beacon-lbl">GRID_SYNC</span></div>
-      <div class="beacon-row"><div class="beacon-dot active" id="fluxBeacon" style="background: var(--p);"></div><span class="beacon-lbl">FLUX_STBL</span></div>
+    <div class="act-grid">
+      <button class="act" id="bOver">OVERDRIVE [SPC]</button>
+      <button class="act orb" id="bOrb">ORBITAL BEAM [O]</button>
+      <button class="act util" id="bTow">DROP TOWER [T]</button>
+      <button class="act util" id="bBoss">SPAWN BOSS [B]</button>
     </div>
   </div>
 
   <div class="panel">
-    <div class="p-head"><span>OUTPUT KINETICS</span><span>STAT_CTRL</span></div>
+    <div class="p-head"><span>02 // MATRIX PARAMETERS</span><span>REAL-TIME</span></div>
+    <div class="s-row"><div class="s-lbl"><span>CORE VOLTAGE</span><span id="vVolt">1.50 GW</span></div><input type="range" id="sVolt" min="20" max="200" value="95"></div>
+    <div class="s-row"><div class="s-lbl"><span>ARC CHAOS</span><span id="vChaos">110%</span></div><input type="range" id="sChaos" min="20" max="220" value="110"></div>
+    <div class="s-row"><div class="s-lbl"><span>DENDRITE FORKS</span><span id="vFork">65%</span></div><input type="range" id="sFork" min="0" max="100" value="65"></div>
+    <div class="s-row"><div class="s-lbl"><span>CHAIN RADIUS</span><span id="vChain">280 PX</span></div><input type="range" id="sChain" min="80" max="520" value="280"></div>
+    <div class="s-row"><div class="s-lbl"><span>GRAVITY WELL</span><span id="vGrav">1.50 G</span></div><input type="range" id="sGrav" min="0" max="300" value="150"></div>
+    <div class="s-row"><div class="s-lbl"><span>TIME DILATION</span><span id="vTime">1.00X</span></div><input type="range" id="sTime" min="20" max="160" value="100"></div>
+    <div class="s-row"><div class="s-lbl"><span>AFTERIMAGE TRAIL</span><span id="vTrail">78%</span></div><input type="range" id="sTrail" min="15" max="95" value="78"></div>
+  </div>
+
+  <div class="panel">
+    <div class="p-head"><span>03 // SPECTRUM &amp; SYSTEMS</span><span>HUD</span></div>
     <div class="s-row">
-      <div class="s-lbl"><span>VELOCITY MULTIPLIER</span><span id="lblVelocity">1.50x</span></div>
-      <input type="range" id="rngVelocity" min="0.5" max="3" step="0.1" value="1.5">
-    </div>
-    <div class="s-row">
-      <div class="s-lbl"><span>AMPLITUDE MODULATOR</span><span id="lblAmplitude">82%</span></div>
-      <input type="range" id="rngAmplitude" min="0" max="100" value="82">
-    </div>
-    <div class="s-row">
-      <div class="s-lbl"><span>PARTICLE DENSITY</span><span id="lblDensity">250</span></div>
-      <input type="range" id="rngDensity" min="50" max="800" step="10" value="250">
-    </div>
-    <div class="s-row" style="margin-top: 10px;">
-      <div class="s-lbl"><span>MATRIX TARGET PROFILES</span></div>
-      <select id="selProfile">
-        <option value="alpha">PROT_ALPHA // TARGET_LOCK</option>
-        <option value="beta">PROT_BETA // WIDE_DIST</option>
-        <option value="gamma">PROT_GAMMA // VORTEX</option>
-        <option value="omega">PROT_OMEGA // APEX_CRIT</option>
+      <select id="selCol">
+        <option value="#00f3ff">CYAN // IONIZED SURGE</option>
+        <option value="#b829ea">PURPLE // VOID RIFT</option>
+        <option value="#ff007f">PINK // HYPERNOVA</option>
+        <option value="#ffbe0b">AMBER // SOLAR FLARE</option>
+        <option value="#10b981">EMERALD // RADIATION</option>
       </select>
     </div>
-  </div>
-
-  <div class="panel">
-    <div class="p-head"><span>ENCRYPTION AUTH</span><span>KEY_SEC</span></div>
-    <div class="code-box">
-      <input type="text" id="txtCryptoKey" placeholder="ENTER MATRIX ACCESS KEY...">
-      <button id="btnCryptoSubmit">SUBMIT</button>
-    </div>
-    <div id="codeMsg">ENTER KEY TO CODE ACCESS</div>
-  </div>
-
-  <div class="panel">
-    <div class="p-head"><span>TACTICAL OVERRIDES</span><span>EXEC_SYS</span></div>
     <div class="act-grid">
-      <button class="act" id="btnEngage">ENGAGE APEX</button>
-      <button class="act orb" id="btnOrbital">ORBITAL STRIKE</button>
-      <button class="act util" id="btnFlush">FLUSH DATA</button>
-      <button class="act danger" id="btnTerminate">RESET ARRAY</button>
+      <button class="act util" id="bAud">AUDIO: OFF</button>
+      <button class="act util" id="bAuto">AUTO-FIRE: OFF</button>
+      <button class="act danger" id="bClr" style="grid-column:span 2">PURGE CAPACITORS [C]</button>
     </div>
   </div>
-</div>
 
-<div id="viewport">
+  <div class="panel">
+    <div class="p-head"><span>04 // DEV OVERRIDE TERMINAL</span><span>ENCRYPTED</span></div>
+    <div class="code-box">
+      <input type="text" id="inCode" placeholder="ENTER ACCESS CODE..." autocomplete="off">
+      <button id="bRedeem">EXEC</button>
+    </div>
+    <div id="codeMsg">AWAITING OVERRIDE KEY...</div>
+  </div>
+</aside>
+
+<main id="viewport">
   <div id="hudTop">
-    <div class="hud-pill" id="hudStatus">SYS_STATUS: ACTIVE</div>
-    <div class="hud-pill" id="hudLatency">LATENCY: 0.02ms</div>
+    <div class="hud-pill" id="hudWeapon">WEAPON: ARC BOLT // 1.50 GW</div>
+    <div class="hud-pill" id="hudStats">KILLS: 0 // FPS: 60</div>
   </div>
-  <div id="canvasContainer"><canvas id="matrixCanvas"></canvas></div>
-  <div id="terminalOverlay">
-    <div class="term-header"><span>DIAGNOSTICS MONITOR CORE FEED</span><span id="termLineCount">FEED ACTIVE</span></div>
-    <div class="term-feed" id="terminalFeed"></div>
-  </div>
-</div>
+  <div id="banner">OMEGA DREADNOUGHT DETECTED</div>
+  <div id="hudBot">HOLD CLICK TO FIRE // [B] ROLL BOSS (1/10 BOSS, 1/2 MINI)</div>
+  <canvas id="c"></canvas>
+</main>
 
 <script>
-(function() {
-  "use strict";
-  const state = { velocity: 1.5, amplitude: 82, density: 250, activeProfile: 'alpha', activeNode: 'beam_x1', apexEngaged: false, logsGenerated: 0 };
-  const ui = {
-    rngVelocity: document.getElementById('rngVelocity'), rngAmplitude: document.getElementById('rngAmplitude'), rngDensity: document.getElementById('rngDensity'),
-    lblVelocity: document.getElementById('lblVelocity'), lblAmplitude: document.getElementById('lblAmplitude'), lblDensity: document.getElementById('lblDensity'),
-    selProfile: document.getElementById('selProfile'), txtCryptoKey: document.getElementById('txtCryptoKey'), btnCryptoSubmit: document.getElementById('btnCryptoSubmit'),
-    codeMsg: document.getElementById('codeMsg'), btnEngage: document.getElementById('btnEngage'), btnOrbital: document.getElementById('btnOrbital'),
-    btnFlush: document.getElementById('btnFlush'), btnTerminate: document.getElementById('btnTerminate'), hudStatus: document.getElementById('hudStatus'),
-    hudLatency: document.getElementById('hudLatency'), valCoreTemp: document.getElementById('valCoreTemp'), valOutputCap: document.getElementById('valOutputCap'),
-    valFreqMod: document.getElementById('valFreqMod'), terminalFeed: document.getElementById('terminalFeed'), termLineCount: document.getElementById('termLineCount'),
-    canvas: document.getElementById('matrixCanvas'), nodeButtons: document.querySelectorAll('.w-btn')
-  };
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+let W = 800, H = 600, dpr = 1;
+const resize = () => {
+  dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  W = cv.offsetWidth; H = cv.offsetHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+};
+window.addEventListener('resize', resize); resize();
 
-  let ctx = ui.canvas.getContext('2d'), particlesArray = [];
-  function appendLog(txt, mode='norm') {
-    state.logsGenerated++;
-    const line = document.createElement('div'); line.className = `log-line ${mode}`;
-    line.innerHTML = `<span class="log-time">[${new Date().toLocaleTimeString()}]</span> <span>// ${txt}</span>`;
-    ui.terminalFeed.appendChild(line); ui.terminalFeed.scrollTop = ui.terminalFeed.scrollHeight;
-    if (ui.terminalFeed.children.length > 30) ui.terminalFeed.removeChild(ui.terminalFeed.firstChild);
-    ui.termLineCount.textContent = `LOGS: ${state.logsGenerated}`;
+const S = {
+  w: 'arc', volt: 95, chaos: 1.1, fork: 0.65, chain: 280, grav: 1.5, time: 1.0, trail: 0.22,
+  col: '#00f3ff', rainbow: false, god: false, hold: false, auto: false, aud: false,
+  mx: W / 2, my: H / 2, shake: 0, flash: 0, hue: 0, kills: 0, t: 0
+};
+let sparks = [], waves = [], nodes = [], towers = [], foes = [], stars = [], actx = null;
+for (let i = 0; i < 75; i++) stars.push({ x: Math.random(), y: Math.random(), z: Math.random() * 1.8 + 0.4 });
+
+const getCol = (shift = 0) => S.rainbow ? `hsl(${(S.hue + shift) % 360}, 100%, 58%)` : S.col;
+const banner = (txt, c = '#ff007f') => {
+  const b = document.getElementById('banner');
+  b.textContent = txt; b.style.borderColor = c; b.style.opacity = 1;
+  clearTimeout(b._t); b._t = setTimeout(() => b.style.opacity = 0, 2400);
+};
+
+/* Pre-rendered glow sprite for lag-free 60FPS additive bloom */
+const glowCache = {};
+function drawGlow(x, y, r, col, alpha = 0.55) {
+  if (r < 2) return;
+  if (!glowCache[col]) {
+    const oc = document.createElement('canvas'); oc.width = oc.height = 128;
+    const octx = oc.getContext('2d'), g = octx.createRadialGradient(64, 64, 2, 64, 64, 62);
+    g.addColorStop(0, '#fff'); g.addColorStop(0.25, col); g.addColorStop(1, 'transparent');
+    octx.fillStyle = g; octx.fillRect(0, 0, 128, 128);
+    glowCache[col] = oc;
   }
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = alpha;
+  ctx.drawImage(glowCache[col], x - r, y - r, r * 2, r * 2); ctx.restore();
+}
 
-  class Particle {
-    constructor() { this.reset(); this.y = Math.random() * ui.canvas.height; }
-    reset() {
-      this.x = Math.random() * ui.canvas.width; this.y = ui.canvas.height + 10;
-      this.size = Math.random() * 2 + 1; this.speed = (Math.random() * 1 + 0.5) * state.velocity;
+function beep(f1, f2, dur = 0.12, type = 'sawtooth', vol = 0.06) {
+  if (!S.aud) return;
+  try {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f1, actx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(Math.max(20, f2), actx.currentTime + dur);
+    g.gain.setValueAtTime(vol, actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
+    o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + dur);
+  } catch (e) {}
+}
+
+function addSpark(x, y, n = 6, spd = 6, col = getCol()) {
+  for (let i = 0; i < n && sparks.length < 320; i++) {
+    const a = Math.random() * Math.PI * 2, v = (Math.random() * 0.7 + 0.3) * spd;
+    sparks.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, col });
+  }
+}
+function addWave(x, y, maxR, col = getCol()) {
+  if (waves.length < 24) waves.push({ x, y, r: 8, maxR, life: 1, col });
+}
+
+/* Multi-layer plasma lightning with recursive dendrite forks */
+function bolt(x1, y1, x2, y2, disp, w = 2.2, col = getCol(), depth = 0) {
+  const pts = [{ x: x1, y: y1 }, { x: x2, y: y2 }];
+  let d = disp * S.chaos;
+  for (let it = 0; it < 4; it++) {
+    for (let i = pts.length - 1; i > 0; i--) {
+      const mx = (pts[i - 1].x + pts[i].x) * 0.5 + (Math.random() - 0.5) * d;
+      const my = (pts[i - 1].y + pts[i].y) * 0.5 + (Math.random() - 0.5) * d;
+      pts.splice(i, 0, { x: mx, y: my });
+      if (depth < 1 && Math.random() < S.fork * 0.22 && it === 1) {
+        const ang = Math.atan2(y2 - y1, x2 - x1) + (Math.random() - 0.5) * 1.4;
+        const len = Math.hypot(x2 - x1, y2 - y1) * (0.3 + Math.random() * 0.25);
+        bolt(mx, my, mx + Math.cos(ang) * len, my + Math.sin(ang) * len, disp * 0.45, w * 0.55, col, depth + 1);
+      }
     }
-    update() {
-      this.y -= this.speed * (state.apexEngaged ? 2.5 : 1);
-      if (state.activeNode === 'burst_max') this.x += Math.sin(this.y / 15) * 1.5;
-      if (this.y < -10) this.reset();
+    d *= 0.52;
+  }
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.strokeStyle = col; ctx.globalAlpha = 0.28; ctx.lineWidth = w * 4.8; ctx.stroke();
+  ctx.globalAlpha = 0.65; ctx.lineWidth = w * 2.1; ctx.stroke();
+  ctx.strokeStyle = '#ffffff'; ctx.globalAlpha = 0.95; ctx.lineWidth = w * 0.75; ctx.stroke();
+  ctx.restore();
+}
+
+function damageAt(x, y, rad, dmg, col) {
+  for (let i = foes.length - 1; i >= 0; i--) {
+    const f = foes[i], dist = Math.hypot(f.x - x, f.y - y);
+    if (dist < rad + f.r) {
+      let rem = dmg;
+      if (f.sp > 0) { const s = Math.min(f.sp, rem); f.sp -= s; rem -= s; }
+      f.hp -= rem; f.hit = 1;
+      if (f.hp <= 0) {
+        S.kills++; S.shake = Math.min(26, S.shake + f.r * 0.45); S.flash = 0.28;
+        addWave(f.x, f.y, f.r * 4.5, col); addSpark(f.x, f.y, 28, 9, col);
+        beep(180, 35, 0.25, 'sawtooth', 0.12);
+        foes.splice(i, 1);
+      }
     }
-    draw() {
-      ctx.fillStyle = state.activeNode === 'beam_x1' ? '#00f3ff' : state.activeNode === 'burst_max' ? '#b829ea' : state.activeNode === 'plasma_fx' ? '#ffbe0b' : '#ff007f';
-      ctx.fillRect(this.x, this.y, this.size, this.size * 3);
+  }
+}
+
+/* Weighted Boss Spawn: 1/10 Boss, 1/2 Mini-Boss, 4/10 Capacitor */
+function spawnFoe() {
+  const roll = Math.random(), x = 80 + Math.random() * (W - 160), y = 80 + Math.random() * (H - 160);
+  if (roll < 0.10) {
+    foes.push({ type: 'BOSS', x, y, vx: (Math.random() - 0.5) * 1.1, vy: (Math.random() - 0.5) * 1.1, r: 38, hp: 600, maxHp: 600, sp: 240, maxSp: 240, sides: 8, hit: 0, rot: 0 });
+    banner('WARNING: OMEGA DREADNOUGHT BOSS [1/10]', '#ff007f'); beep(90, 42, 0.45, 'sawtooth', 0.14);
+  } else if (roll < 0.60) {
+    foes.push({ type: 'MINI', x, y, vx: (Math.random() - 0.5) * 1.8, vy: (Math.random() - 0.5) * 1.8, r: 24, hp: 220, maxHp: 220, sp: 80, maxSp: 80, sides: 6, hit: 0, rot: 0 });
+    banner('ALERT: VANGUARD MINI-BOSS [1/2]', '#ffbe0b'); beep(150, 70, 0.25, 'triangle', 0.1);
+  } else {
+    foes.push({ type: 'NODE', x, y, vx: (Math.random() - 0.5) * 2.5, vy: (Math.random() - 0.5) * 2.5, r: 14, hp: 55, maxHp: 55, sp: 0, maxSp: 0, sides: 4, hit: 0, rot: 0 });
+  }
+}
+for (let i = 0; i < 4; i++) spawnFoe();
+
+function drawSingularity(x, y, scale, col) {
+  const R = (24 + S.volt * 0.18) * scale;
+  drawGlow(x, y, R * 3.8, col, 0.55);
+  /* Relativistic Polar Jets */
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  const jg = ctx.createLinearGradient(x, y - R * 5.5, x, y + R * 5.5);
+  jg.addColorStop(0, 'transparent'); jg.addColorStop(0.5, col); jg.addColorStop(1, 'transparent');
+  ctx.fillStyle = jg; ctx.globalAlpha = 0.45;
+  ctx.fillRect(x - R * 0.22, y - R * 5.5, R * 0.44, R * 11);
+  /* Tilted Accretion Disk */
+  ctx.translate(x, y); ctx.rotate(-0.28);
+  for (let i = 0; i < 3; i++) {
+    ctx.beginPath(); ctx.ellipse(0, 0, R * (2.6 - i * 0.45), R * (0.68 - i * 0.12), S.t * (1.2 + i * 0.5), 0, Math.PI * 2);
+    ctx.strokeStyle = i === 1 ? '#ffffff' : getCol(i * 45); ctx.lineWidth = 3 - i * 0.6; ctx.globalAlpha = 0.8; ctx.stroke();
+  }
+  ctx.restore();
+  /* Event Horizon + Photon Sphere */
+  ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fillStyle = '#000'; ctx.fill();
+  ctx.lineWidth = 2.5; ctx.strokeStyle = '#fff'; ctx.stroke();
+  /* Spiral Inward Lightning */
+  for (let i = 0; i < 4; i++) {
+    const a = S.t * 3 + (i * Math.PI) / 2, dist = R * 3.4;
+    bolt(x + Math.cos(a) * dist, y + Math.sin(a) * dist, x + Math.cos(a + 1.1) * R, y + Math.sin(a + 1.1) * R, 28, 1.4, getCol(i * 30), 1);
+  }
+  /* Gravity Well Suction */
+  foes.forEach(f => {
+    const dx = x - f.x, dy = y - f.y, d = Math.max(30, Math.hypot(dx, dy));
+    if (d < S.chain * 1.6) {
+      f.vx += (dx / d) * S.grav * 0.35 * S.time;
+      f.vy += (dy / d) * S.grav * 0.35 * S.time;
+    }
+  });
+}
+
+function drawTesla(x, y, col) {
+  drawGlow(x, y, 75, col, 0.5);
+  ctx.save(); ctx.translate(x, y);
+  for (let i = -2; i <= 2; i++) {
+    ctx.beginPath(); ctx.ellipse(0, i * 6, 16 - Math.abs(i) * 1.5, 5, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke();
+  }
+  for (let i = 0; i < 6; i++) {
+    const a = S.t * 4 + (i * Math.PI) / 3, nx = Math.cos(a) * 28, ny = Math.sin(a) * 14;
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(nx, ny, 2.2, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+  let chained = 0;
+  foes.forEach(f => {
+    if (Math.hypot(f.x - x, f.y - y) < S.chain && chained < 4) {
+      bolt(x, y, f.x, f.y, 35, 2.1, col);
+      damageAt(f.x, f.y, 18, (S.god ? 99 : S.volt * 0.08) * S.time, col);
+      chained++;
+    }
+  });
+  if (chained === 0) {
+    for (let i = 0; i < 3; i++) {
+      const a = Math.random() * Math.PI * 2, r = 55 + Math.random() * 65;
+      bolt(x, y, x + Math.cos(a) * r, y + Math.sin(a) * r, 32, 1.5, col, 1);
     }
   }
+}
 
-  function initCanvas() {
-    const rect = ui.canvas.parentElement.getBoundingClientRect();
-    ui.canvas.width = rect.width; ui.canvas.height = rect.height;
-    particlesArray = []; for(let i=0; i<state.density; i++) particlesArray.push(new Particle());
+/* Weapon Selection & Actions */
+function selectWeapon(w) {
+  S.w = w;
+  document.querySelectorAll('.w-btn').forEach(b => b.classList.toggle('active', b.dataset.w === w));
+  updateHud();
+}
+document.getElementById('wGrid').onclick = e => {
+  const btn = e.target.closest('.w-btn'); if (btn) selectWeapon(btn.dataset.w);
+};
+
+function unlockSecretBtn(id, key, name, desc) {
+  if (document.querySelector(`[data-w="${id}"]`)) return selectWeapon(id);
+  const d = document.createElement('div'); d.className = 'w-btn secret'; d.dataset.w = id;
+  d.innerHTML = `<div class="w-top"><span class="w-name">${name}</span><span class="w-key">${key}</span></div><div class="w-desc">${desc}</div>`;
+  document.getElementById('wGrid').appendChild(d); selectWeapon(id);
+}
+
+function triggerOverdrive() {
+  const col = getCol(); S.shake = 22; S.flash = 0.45; addWave(W / 2, H / 2, Math.max(W, H) * 0.6, col);
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    bolt(W / 2, H / 2, W / 2 + Math.cos(a) * W * 0.6, H / 2 + Math.sin(a) * H * 0.6, 75, 2.8, getCol(i * 22));
   }
+  foes.forEach(f => damageAt(f.x, f.y, 40, S.god ? 999 : S.volt * 1.4, col));
+  addSpark(W / 2, H / 2, 55, 11, col); beep(220, 35, 0.35, 'sawtooth', 0.14);
+}
 
-  function loop() {
-    requestAnimationFrame(loop);
-    ctx.fillStyle = 'rgba(1, 2, 6, 0.2)'; ctx.fillRect(0, 0, ui.canvas.width, ui.canvas.height);
-    particlesArray.forEach(p => { p.update(); p.draw(); });
+function triggerOrbital() {
+  const col = getCol(), tx = S.mx; S.shake = 26; S.flash = 0.5;
+  bolt(tx, 0, tx, H, 65, 6.5, col); bolt(tx - 16, 0, tx - 16, H, 40, 2.2, '#fff', 1); bolt(tx + 16, 0, tx + 16, H, 40, 2.2, '#fff', 1);
+  addWave(tx, S.my, 240, col); addSpark(tx, S.my, 65, 12, col);
+  damageAt(tx, S.my, 190, S.god ? 999 : S.volt * 2.2, col); beep(320, 28, 0.4, 'square', 0.14);
+}
+
+document.getElementById('bOver').onclick = triggerOverdrive;
+document.getElementById('bOrb').onclick = triggerOrbital;
+document.getElementById('bTow').onclick = () => { if (towers.length < 8) { towers.push({ x: S.mx, y: S.my }); banner('TESLA TURRET DEPLOYED', '#00f3ff'); } };
+document.getElementById('bBoss').onclick = spawnFoe;
+document.getElementById('bClr').onclick = () => { nodes = []; towers = []; sparks = []; waves = []; banner('CAPACITORS PURGED', '#94a3b8'); };
+document.getElementById('bAud').onclick = e => { S.aud = !S.aud; e.target.textContent = `AUDIO: ${S.aud ? 'ON' : 'OFF'}`; };
+document.getElementById('bAuto').onclick = e => { S.auto = !S.auto; e.target.textContent = `AUTO-FIRE: ${S.auto ? 'ON' : 'OFF'}`; };
+
+const bindSlider = (id, vid, fn) => document.getElementById(id).oninput = e => {
+  document.getElementById(vid).textContent = fn(+e.target.value); updateHud();
+};
+bindSlider('sVolt', 'vVolt', v => { S.volt = v; return S.god ? '999.9 GW' : (v * 0.016).toFixed(2) + ' GW'; });
+bindSlider('sChaos', 'vChaos', v => { S.chaos = v / 100; return v + '%'; });
+bindSlider('sFork', 'vFork', v => { S.fork = v / 100; return v + '%'; });
+bindSlider('sChain', 'vChain', v => { S.chain = v; return v + ' PX'; });
+bindSlider('sGrav', 'vGrav', v => { S.grav = v / 100; return S.grav.toFixed(2) + ' G'; });
+bindSlider('sTime', 'vTime', v => { S.time = v / 100; return S.time.toFixed(2) + 'X'; });
+bindSlider('sTrail', 'vTrail', v => { S.trail = 1 - v / 100; return v + '%'; });
+document.getElementById('selCol').onchange = e => { S.rainbow = e.target.value === 'RAINBOW'; if (!S.rainbow) S.col = e.target.value; };
+
+/* Dev Override Terminal */
+function redeemCode() {
+  const raw = document.getElementById('inCode').value.trim(), msg = document.getElementById('codeMsg');
+  if (raw === 'RainbowDEVblu') {
+    S.rainbow = true;
+    if (!document.querySelector('#selCol option[value="RAINBOW"]')) {
+      const opt = document.createElement('option'); opt.value = 'RAINBOW'; opt.textContent = 'NEON RAINBOW // DEV OVERRIDE';
+      document.getElementById('selCol').appendChild(opt);
+    }
+    document.getElementById('selCol').value = 'RAINBOW';
+    msg.style.color = '#00f3ff'; msg.textContent = 'UNLOCKED: NEON RAINBOW SPECTRUM'; banner('NEON RAINBOW ACTIVATED', '#00f3ff');
+  } else if (raw === 'gengen123') {
+    unlockSecretBtn('gengen', '5', 'GENGEN FUSION', 'All Weapons Combined');
+    msg.style.color = '#ffbe0b'; msg.textContent = 'UNLOCKED: GENGEN-123 TRI-FUSION'; banner('GENGEN-123 OMEGA FUSION UNLOCKED', '#ffbe0b');
+  } else if (raw === 'zayonisthebest') {
+    S.god = true; S.rainbow = true; document.getElementById('vVolt').textContent = '999.9 GW';
+    if (!document.querySelector('#selCol option[value="RAINBOW"]')) {
+      const opt = document.createElement('option'); opt.value = 'RAINBOW'; opt.textContent = 'NEON RAINBOW // DEV OVERRIDE';
+      document.getElementById('selCol').appendChild(opt);
+    }
+    document.getElementById('selCol').value = 'RAINBOW';
+    unlockSecretBtn('zayon', '6', 'ZAYON OVERLORD', '999GW Dual Singularity');
+    msg.style.color = '#ff007f'; msg.textContent = 'GOD MODE + ZAYON OVERLORD ACTIVE'; banner('ZAYON GOD TIER UNLOCKED [999.9 GW]', '#ff007f');
+  } else {
+    msg.style.color = '#ef4444'; msg.textContent = 'ACCESS DENIED: INVALID KEY'; beep(110, 75, 0.18, 'square', 0.08);
   }
+  document.getElementById('inCode').value = ''; updateHud();
+}
+document.getElementById('bRedeem').onclick = redeemCode;
+document.getElementById('inCode').onkeydown = e => { if (e.key === 'Enter') redeemCode(); };
 
-  ui.rngVelocity.addEventListener('input', e => { state.velocity = parseFloat(e.target.value); ui.lblVelocity.textContent = `${state.velocity.toFixed(2)}x`; });
-  ui.rngAmplitude.addEventListener('input', e => { state.amplitude = parseInt(e.target.value); ui.lblAmplitude.textContent = `${state.amplitude}%`; });
-  ui.rngDensity.addEventListener('input', e => { state.density = parseInt(e.target.value); ui.lblDensity.textContent = state.density; initCanvas(); });
-  ui.nodeButtons.forEach(b => b.addEventListener('click', function() {
-    ui.nodeButtons.forEach(btn => btn.classList.remove('active')); this.classList.add('active');
-    state.activeNode = this.getAttribute('data-node'); appendLog(`Node routed to ${state.activeNode.toUpperCase()}`);
-  }));
+cv.onpointerdown = e => {
+  S.hold = true; S.mx = e.offsetX; S.my = e.offsetY;
+  if (S.w === 'orb') { if (nodes.length >= 10) nodes.shift(); nodes.push({ x: S.mx, y: S.my }); addWave(S.mx, S.my, 65, getCol()); beep(420, 180, 0.1); }
+};
+cv.onpointermove = e => { S.mx = e.offsetX; S.my = e.offsetY; };
+window.onpointerup = () => {
+  if (S.hold && (S.w === 'sing' || S.w === 'gengen' || S.w === 'zayon')) {
+    const col = getCol(); S.shake = 20; S.flash = 0.35; addWave(S.mx, S.my, 260, col); addSpark(S.mx, S.my, 45, 10, col);
+    for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2; bolt(S.mx, S.my, S.mx + Math.cos(a) * 220, S.my + Math.sin(a) * 220, 45, 2.2, col); }
+    damageAt(S.mx, S.my, 210, S.god ? 999 : S.volt * 1.6, col); beep(140, 28, 0.35, 'sawtooth', 0.14);
+  }
+  S.hold = false;
+};
+window.onkeydown = e => {
+  if (document.activeElement.tagName === 'INPUT') return;
+  const k = e.key.toLowerCase();
+  if (k === '1') selectWeapon('arc'); else if (k === '2') selectWeapon('tesla'); else if (k === '3') selectWeapon('orb'); else if (k === '4') selectWeapon('sing');
+  else if (k === '5' && document.querySelector('[data-w="gengen"]')) selectWeapon('gengen');
+  else if (k === '6' && document.querySelector('[data-w="zayon"]')) selectWeapon('zayon');
+  else if (k === ' ') { e.preventDefault(); triggerOverdrive(); }
+  else if (k === 'o') triggerOrbital();
+  else if (k === 't') document.getElementById('bTow').click();
+  else if (k === 'b') spawnFoe();
+  else if (k === 'c') document.getElementById('bClr').click();
+};
 
-  ui.btnEngage.addEventListener('click', () => {
-    state.apexEngaged = !state.apexEngaged;
-    ui.btnEngage.textContent = state.apexEngaged ? "NORMAL CORE" : "ENGAGE APEX";
-    ui.hudStatus.textContent = state.apexEngaged ? "SYS_STATUS: APEX OVERCLOCK" : "SYS_STATUS: ACTIVE";
-    appendLog(state.apexEngaged ? "WARNING: CRITICAL EMISSION ENGAGED" : "Emissions restored to nominal baseline.");
+let frames = 0, lastFps = performance.now(), fps = 60;
+function updateHud() {
+  const gw = S.god ? '999.9 GW' : (S.volt * 0.016).toFixed(2) + ' GW';
+  document.getElementById('hudWeapon').textContent = `WEAPON: ${S.w.toUpperCase()} // ${gw}`;
+  document.getElementById('hudStats').textContent = `KILLS: ${S.kills} // FPS: ${fps}`;
+}
+
+function loop(now) {
+  frames++; if (now - lastFps >= 500) { fps = Math.round((frames * 1000) / (now - lastFps)); frames = 0; lastFps = now; updateHud(); }
+  S.t += 0.025 * S.time; S.hue = (S.hue + 2.5) % 360;
+  const col = getCol();
+
+  ctx.save();
+  ctx.fillStyle = `rgba(2, 3, 8, ${Math.max(0.08, S.trail)})`; ctx.fillRect(0, 0, W, H);
+  if (S.flash > 0.01) { ctx.fillStyle = col; ctx.globalAlpha = S.flash * 0.25; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; S.flash *= 0.85; }
+  if (S.shake > 0.3) { ctx.translate((Math.random() - 0.5) * S.shake, (Math.random() - 0.5) * S.shake); S.shake *= 0.88; }
+
+  /* Starfield + Perspective Cyber Grid */
+  ctx.fillStyle = 'rgba(180,230,255,0.45)';
+  stars.forEach(st => { st.x = (st.x + 0.0003 * st.z * S.time) % 1; ctx.fillRect(st.x * W, st.y * H, st.z, st.z); });
+  ctx.strokeStyle = 'rgba(0,243,255,0.035)'; ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 48) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 48) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  /* Core Reactor Node */
+  drawGlow(W / 2, H / 2, 42, col, 0.45);
+  ctx.beginPath(); ctx.arc(W / 2, H / 2, 7 + Math.sin(S.t * 4) * 2, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+
+  /* Autonomous Tesla Towers */
+  towers.forEach(tw => {
+    drawTesla(tw.x, tw.y, col);
   });
 
-  ui.btnTerminate.addEventListener('click', () => {
-    state.apexEngaged = false; state.velocity = 1.5; state.amplitude = 82; state.density = 250;
-    ui.rngVelocity.value = 1.5; ui.rngAmplitude.value = 82; ui.rngDensity.value = 250;
-    ui.lblVelocity.textContent = "1.50x"; ui.lblAmplitude.textContent = "82%"; ui.lblDensity.textContent = "250";
-    ui.btnEngage.textContent = "ENGAGE APEX"; ui.hudStatus.textContent = "SYS_STATUS: ACTIVE";
-    appendLog("Emergency array cleared. Recalibrating vectors...", "warn");
-    initCanvas();
+  /* Linked Plasma Nodes */
+  nodes.forEach((n, i) => {
+    drawGlow(n.x, n.y, 28, col, 0.5);
+    ctx.beginPath(); ctx.arc(n.x, n.y, 6, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+    if (nodes[i + 1]) {
+      bolt(n.x, n.y, nodes[i + 1].x, nodes[i + 1].y, 26, 2, col);
+      foes.forEach(f => {
+        if (Math.hypot(f.x - n.x, f.y - n.y) < 90) damageAt(f.x, f.y, 20, (S.god ? 99 : S.volt * 0.05) * S.time, col);
+      });
+    }
   });
 
-  ui.btnFlush.addEventListener('click', () => { ui.terminalFeed.innerHTML = ''; appendLog("Diagnostic logs cleared."); });
-  window.addEventListener('resize', initCanvas);
-  
-  // Bootstrap
-  initCanvas(); loop();
-  appendLog("Core System loaded. Intercept networks active.");
-})();
+  /* Active Weapon Firing */
+  const firing = S.hold || S.auto;
+  const tx = S.auto && !S.hold ? W / 2 + Math.cos(S.t * 1.4) * 210 : S.mx;
+  const ty = S.auto && !S.hold ? H / 2 + Math.sin(S.t * 1.9) * 140 : S.my;
+  const dmg = (S.god ? 99 : S.volt * 0.14) * S.time;
+
+  if (firing) {
+    if (Math.random() < 0.25) beep(260 + Math.random() * 240, 90, 0.07, 'sawtooth', 0.03);
+    if (S.w === 'arc') {
+      bolt(W / 2, H / 2, tx, ty, 52, 2.8, col);
+      addSpark(tx, ty, 3, 5, col); damageAt(tx, ty, 38, dmg, col);
+    } else if (S.w === 'tesla') {
+      drawTesla(tx, ty, col);
+    } else if (S.w === 'sing') {
+      drawSingularity(tx, ty, 1.0, col); damageAt(tx, ty, 85, dmg * 1.2, col);
+    } else if (S.w === 'gengen') {
+      drawSingularity(tx, ty, 0.9, col); drawTesla(tx, ty, getCol(60));
+      bolt(W / 2, H / 2, tx, ty, 55, 3.2, getCol(120));
+      damageAt(tx, ty, 110, dmg * 1.8, col);
+    } else if (S.w === 'zayon') {
+      const ox = Math.cos(S.t * 3) * 65, oy = Math.sin(S.t * 3) * 65;
+      drawSingularity(tx + ox, ty + oy, 0.78, getCol(0));
+      drawSingularity(tx - ox, ty - oy, 0.78, getCol(140));
+      drawTesla(tx, ty, getCol(70));
+      bolt(W / 2, H / 2, tx, ty, 65, 3.8, '#fff');
+      if (Math.random() < 0.28) bolt(tx + (Math.random() - 0.5) * 90, 0, tx, ty, 50, 3.2, getCol(210));
+      damageAt(tx, ty, 150, dmg * 3.5, col);
+    }
+  }
+
+  /* Update & Render Bosses / Mini-Bosses / Targets */
+  foes.forEach(f => {
+    f.x += f.vx * S.time; f.y += f.vy * S.time; f.rot += 0.02 * S.time;
+    if (f.x < f.r + 20 || f.x > W - f.r - 20) f.vx *= -1;
+    if (f.y < f.r + 20 || f.y > H - f.r - 20) f.vy *= -1;
+    const fc = f.hit > 0 ? '#ffffff' : (f.type === 'BOSS' ? '#ff007f' : f.type === 'MINI' ? '#ffbe0b' : '#00f3ff');
+    f.hit = Math.max(0, f.hit - 0.15);
+    drawGlow(f.x, f.y, f.r * 2.1, fc, 0.38);
+    ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.rot);
+    ctx.beginPath();
+    for (let i = 0; i <= f.sides; i++) {
+      const a = (i / f.sides) * Math.PI * 2;
+      i === 0 ? ctx.moveTo(Math.cos(a) * f.r, Math.sin(a) * f.r) : ctx.lineTo(Math.cos(a) * f.r, Math.sin(a) * f.r);
+    }
+    ctx.fillStyle = 'rgba(8,14,30,0.85)'; ctx.fill();
+    ctx.strokeStyle = fc; ctx.lineWidth = f.type === 'BOSS' ? 3.5 : 2.2; ctx.stroke();
+    if (f.sp > 0) {
+      ctx.beginPath(); ctx.arc(0, 0, f.r + 7, 0, Math.PI * 2);
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+    }
+    ctx.restore();
+    /* HP Bar */
+    const bw = f.r * 2.2;
+    ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(f.x - bw / 2, f.y - f.r - 14, bw, 4);
+    ctx.fillStyle = fc; ctx.fillRect(f.x - bw / 2, f.y - f.r - 14, bw * Math.max(0, f.hp / f.maxHp), 4);
+  });
+  if (foes.length < 3 && Math.random() < 0.015) spawnFoe();
+
+  /* Shockwaves & Sparks */
+  waves = waves.filter(w => w.life > 0.04);
+  waves.forEach(w => {
+    w.r += (w.maxR - w.r) * 0.14 * S.time; w.life *= 0.91;
+    ctx.beginPath(); ctx.arc(w.x, w.y, w.r, 0, Math.PI * 2);
+    ctx.strokeStyle = w.col; ctx.globalAlpha = w.life; ctx.lineWidth = 3 * w.life; ctx.stroke(); ctx.globalAlpha = 1;
+  });
+  sparks = sparks.filter(p => p.life > 0.04);
+  sparks.forEach(p => {
+    p.x += p.vx * S.time; p.y += p.vy * S.time; p.life *= 0.92;
+    ctx.fillStyle = p.col; ctx.globalAlpha = p.life; ctx.fillRect(p.x, p.y, 2.5, 2.5); ctx.globalAlpha = 1;
+  });
+
+  ctx.restore();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>
-<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0001 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0002 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0003 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0004 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0005 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0006 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0007 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0008 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0009 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x000A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x000B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x000C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x000D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x000E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x000F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0010 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0011 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0012 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0013 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0014 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0015 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0016 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0017 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0018 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0019 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x001A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x001B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x001C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x001D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x001E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x001F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0020 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0021 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0022 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0023 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0024 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0025 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0026 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0027 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0028 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0029 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x002A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x002B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x002C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x002D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x002E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x002F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0030 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0031 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0032 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0033 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0034 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0035 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0036 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0037 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0038 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0039 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x003A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x003B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x003C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x003D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x003E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x003F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0040 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0041 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0042 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0043 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0044 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0045 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0046 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0047 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0048 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0049 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x004A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x004B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x004C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x004D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x004E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x004F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0050 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0051 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0052 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0053 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0054 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0055 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0056 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0057 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0058 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0059 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x005A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x005B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x005C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x005D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x005E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x005F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0060 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0061 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0062 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0063 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0064 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0065 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0066 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0067 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0068 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0069 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x006A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x006B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x006C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x006D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x006E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x006F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0070 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0071 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0072 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0073 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0074 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0075 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0076 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0077 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0078 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0079 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x007A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x007B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x007C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x007D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x007E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x007F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0080 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0081 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0082 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0083 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0084 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0085 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0086 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0087 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0088 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0089 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x008A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x008B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x008C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x008D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x008E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x008F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0090 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0091 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0092 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0093 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0094 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0095 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0096 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0097 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0098 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0099 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x009A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x009B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x009C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x009D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x009E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x009F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00AA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00AB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00AC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00AD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00AE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00AF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00BA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00BB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00BC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00BD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00BE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00BF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00CA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00CB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00CC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00CD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00CE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00CF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00DA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00DB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00DC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00DD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00DE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00DF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00EA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00EB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00EC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00ED // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00EE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00EF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00FA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00FB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00FC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00FD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00FE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00FF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0100 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0101 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0102 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0103 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0104 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0105 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0106 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0107 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0108 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0109 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x010A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x010B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x010C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x010D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x010E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x010F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0110 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0111 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0112 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0113 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0114 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0115 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0116 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0117 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0118 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0119 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x011A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x011B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x011C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x011D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x011E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x011F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0120 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0121 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0122 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0123 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0124 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0125 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0126 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0127 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0128 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0129 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x012A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x012B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x012C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x012D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x012E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x012F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0130 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0131 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0132 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0133 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0134 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0135 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0136 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0137 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0138 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0139 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x013A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x013B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x013C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x013D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x013E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x013F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0140 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0141 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0142 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0143 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0144 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0145 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0146 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0147 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0148 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0149 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x014A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x014B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x014C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x014D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x014E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x014F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0150 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0151 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0152 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0153 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0154 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0155 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0156 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0157 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0158 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0159 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x015A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x015B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x015C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x015D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x015E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x015F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0160 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0161 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0162 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0163 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0164 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0165 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0166 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0167 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0168 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0169 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x016A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x016B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x016C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x016D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x016E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x016F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0170 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0171 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0172 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0173 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0174 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0175 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0176 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0177 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0178 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0179 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x017A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x017B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x017C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x017D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x017E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x017F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0180 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0181 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0182 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0183 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0184 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0185 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0186 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0187 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0188 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0189 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x018A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x018B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x018C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x018D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x018E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x018F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0190 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0191 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0192 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0193 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0194 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0195 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0196 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0197 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0198 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0199 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x019A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x019B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x019C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x019D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x019E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x019F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01AA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01AB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01AC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01AD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01AE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01AF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01BA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01BB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01BC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01BD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01BE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01BF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01CA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01CB // MEMORY LINE CLEAR -->
