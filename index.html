@@ -2,646 +2,954 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>DISCHARGE MATRIX // APEX SINGULARITY</title>
+<title>DISCHARGE MATRIX // APEX SINGULARITY X10</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap');
   :root {
-    --c: #00f3ff; --p: #b829ea; --m: #ff007f; --a: #ffbe0b; --bg: #020308;
+    --c: #00f3ff; --p: #b829ea; --k: #ff007f; --a: #ffbe0b; --g: #10b981;
+    --bg: #020308; --panel: rgba(6, 10, 22, 0.94);
     --cut: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    --cut-sm: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
   }
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-  body { background: var(--bg); color: #e2e8f0; height: 100vh; display: flex; overflow: hidden; font: 700 13px/1.3 'Rajdhani', sans-serif; }
-  
+  body {
+    background: var(--bg); color: #e2e8f0; height: 100vh; display: flex; overflow: hidden;
+    font: 600 13px/1.3 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+
   /* Cyber-Tactical Sidebar */
   #sidebar {
-    width: 345px; padding: 14px; overflow-y: auto; z-index: 20; position: relative;
-    background: linear-gradient(180deg, rgba(6,10,24,.97), rgba(2,4,10,.99));
+    width: 356px; padding: 14px; overflow-y: auto; z-index: 20; position: relative;
+    background: linear-gradient(180deg, rgba(7,12,26,.98), rgba(2,4,10,.99));
     border-right: 1px solid rgba(0,243,255,.45);
-    box-shadow: 12px 0 40px rgba(0,0,0,.95), inset -1px 0 18px rgba(0,243,255,.15);
+    box-shadow: 12px 0 45px rgba(0,0,0,.95), inset -1px 0 24px rgba(0,243,255,.12);
   }
   #sidebar::-webkit-scrollbar { width: 4px; }
-  #sidebar::-webkit-scrollbar-thumb { background: linear-gradient(var(--c), var(--p)); }
+  #sidebar::-webkit-scrollbar-thumb { background: linear-gradient(var(--c), var(--p), var(--k)); }
 
-  .hdr {
+  .brand {
     position: relative; padding: 10px 12px; margin-bottom: 12px; clip-path: var(--cut);
-    background: linear-gradient(135deg, rgba(0,243,255,.12), rgba(184,41,234,.12));
+    background: linear-gradient(135deg, rgba(0,243,255,.12), rgba(184,41,234,.14));
     border: 1px solid rgba(0,243,255,.4); overflow: hidden;
   }
-  .hdr::after {
-    content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--c), #fff, transparent);
-    animation: scan 3s linear infinite;
+  .brand::before {
+    content: ""; position: absolute; top: 0; left: -100%; width: 60%; height: 2px;
+    background: linear-gradient(90deg, transparent, #fff, var(--c), transparent);
+    animation: scan 2.8s linear infinite;
   }
-  @keyframes scan { to { left: 200%; } }
-  .hdr-top { display: flex; justify-content: space-between; align-items: center; }
+  @keyframes scan { to { left: 160%; } }
+  .brand-top { display: flex; justify-content: space-between; align-items: center; }
   h1 {
-    font: 900 15px 'Orbitron', sans-serif; letter-spacing: 1.5px;
-    background: linear-gradient(90deg, var(--c), #fff, var(--p), var(--m)) 0/200%;
+    font-size: 15px; font-weight: 900; letter-spacing: 1.6px; text-transform: uppercase;
+    background: linear-gradient(90deg, var(--c), #fff, var(--p), var(--k), var(--c)) 0/200%;
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-    animation: flow 4s linear infinite;
+    animation: flow 3.5s linear infinite;
   }
   @keyframes flow { to { background-position: 200% center; } }
-  .badge { font: 800 8px 'Orbitron', sans-serif; padding: 2px 6px; color: #fff; background: var(--p); border-radius: 2px; box-shadow: 0 0 10px var(--p); }
-  .sub { font-size: 10.5px; color: #7dd3fc; letter-spacing: 1.2px; margin-top: 3px; }
-
-  /* Beveled Armor Panels */
-  .panel {
-    background: rgba(10, 16, 34, 0.72); border: 1px solid rgba(0,243,255,.22);
-    border-left: 3px solid var(--c); padding: 10px; margin-bottom: 10px;
-    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  .badge {
+    font-size: 9px; font-weight: 900; letter-spacing: 1.2px; padding: 2px 7px;
+    background: rgba(255,0,127,.2); border: 1px solid var(--k); color: #fbcfe8;
+    clip-path: var(--cut-sm); text-shadow: 0 0 8px var(--k);
   }
-  .p-title {
-    font: 800 9.5px 'Orbitron', sans-serif; color: var(--c); letter-spacing: 1.6px;
-    margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
-  }
+  .sub { font-size: 10px; color: #7dd3fc; letter-spacing: 1.4px; margin-top: 3px; opacity: .85; }
 
-  /* Weapon Cards */
-  .w-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  /* Modular Armor Cards */
+  .card {
+    background: var(--panel); border: 1px solid rgba(0,243,255,.22);
+    border-left: 3px solid var(--c); padding: 10px 11px; margin-bottom: 10px;
+    clip-path: var(--cut); box-shadow: inset 0 0 18px rgba(0,243,255,.04);
+  }
+  .card.purple { border-left-color: var(--p); }
+  .card.pink { border-left-color: var(--k); }
+  .card.amber { border-left-color: var(--a); }
+
+  .sec-hd {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 10px; font-weight: 800; letter-spacing: 1.5px; color: var(--c);
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .card.purple .sec-hd { color: #d8b4fe; }
+  .card.pink .sec-hd { color: #f9a8d4; }
+  .card.amber .sec-hd { color: #fde68a; }
+
+  /* Weapon Grid */
+  .w-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
   .w-btn {
-    text-align: left; padding: 8px 9px; background: rgba(15,23,48,.85);
-    border: 1px solid rgba(100,116,139,.4); color: #cbd5e1; cursor: pointer;
-    clip-path: var(--cut); transition: .15s; position: relative;
+    text-align: left; padding: 7px 9px; background: rgba(10,17,34,.9);
+    border: 1px solid rgba(71,85,105,.55); color: #cbd5e1; cursor: pointer;
+    clip-path: var(--cut-sm); transition: .14s; position: relative;
   }
-  .w-btn b { display: block; font: 800 11px 'Orbitron', sans-serif; color: #fff; letter-spacing: .5px; }
-  .w-btn small { font-size: 10.5px; color: #94a3b8; }
-  .w-btn span.hk { position: absolute; top: 5px; right: 8px; font: 800 9px 'Orbitron'; color: var(--c); opacity: .7; }
-  .w-btn:hover, .w-btn.active {
-    background: linear-gradient(135deg, rgba(0,243,255,.22), rgba(184,41,234,.22));
-    border-color: var(--c); box-shadow: 0 0 15px rgba(0,243,255,.35); transform: translateY(-1px);
+  .w-btn:hover { border-color: var(--c); background: rgba(0,243,255,.14); color: #fff; transform: translateY(-1px); }
+  .w-btn.active {
+    background: linear-gradient(135deg, rgba(0,243,255,.28), rgba(184,41,234,.25));
+    border-color: var(--c); color: #fff; box-shadow: 0 0 16px rgba(0,243,255,.35);
   }
-  .w-btn.active b { color: var(--c); text-shadow: 0 0 8px var(--c); }
-  .w-btn.secret { border-color: rgba(255,0,127,.5); grid-column: span 2; background: linear-gradient(90deg, rgba(184,41,234,.2), rgba(255,0,127,.2)); }
-  .w-btn.secret.active { border-color: var(--a); box-shadow: 0 0 18px rgba(255,190,11,.45); }
+  .w-btn.secret {
+    grid-column: span 2; display: none;
+    background: linear-gradient(135deg, rgba(184,41,234,.26), rgba(255,0,127,.26));
+    border-color: var(--k);
+  }
+  .w-btn.secret.unlocked { display: block; }
+  .w-btn.secret.active { box-shadow: 0 0 22px rgba(255,0,127,.55); border-color: #fff; }
+  .w-top { display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 800; letter-spacing: .5px; }
+  .w-key { font-size: 9.5px; padding: 0 4px; background: rgba(0,243,255,.2); border: 1px solid rgba(0,243,255,.5); color: var(--c); }
+  .w-sub { font-size: 9.5px; color: #94a3b8; margin-top: 2px; }
 
-  /* Action Buttons */
-  .act-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
-  button.act {
-    font: 800 10px 'Orbitron', sans-serif; letter-spacing: .8px; padding: 9px 6px;
-    color: #fff; border: 1px solid var(--c); cursor: pointer; clip-path: var(--cut);
-    background: linear-gradient(135deg, #0284c7, #4f46e5); transition: .15s;
+  /* Action Triggers */
+  .act-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .btn {
+    padding: 8px 9px; font-size: 10.5px; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; color: #fff; border: 1px solid rgba(0,243,255,.5);
+    background: rgba(12,22,44,.9); cursor: pointer; clip-path: var(--cut-sm); transition: .14s;
   }
-  button.act:hover { filter: brightness(1.25); box-shadow: 0 0 16px rgba(0,243,255,.5); }
-  button.orb { background: linear-gradient(135deg, #be185d, #7e22ce); border-color: #f472b6; }
-  button.spn { background: linear-gradient(135deg, #b45309, #d97706); border-color: var(--a); }
-  button.prg { background: rgba(127,29,29,.7); border-color: #ef4444; color: #fecaca; }
+  .btn:hover { filter: brightness(1.25); transform: translateY(-1px); box-shadow: 0 0 14px rgba(0,243,255,.45); }
+  .btn:active { transform: scale(.97); }
+  .btn.full { grid-column: span 2; }
+  .btn.overdrive { background: linear-gradient(135deg, #0284c7, #4f46e5); border-color: var(--c); }
+  .btn.orbital { background: linear-gradient(135deg, #be185d, #7e22ce); border-color: #f472b6; }
+  .btn.boss { background: linear-gradient(135deg, #b45309, #991b1b); border-color: var(--a); }
+  .btn.danger { background: rgba(80,12,18,.85); border-color: #ef4444; color: #fecaca; }
 
-  /* Custom Sliders & Inputs */
-  .sl-row { margin-bottom: 8px; }
-  .sl-top { display: flex; justify-content: space-between; font-size: 11.5px; color: #94a3b8; margin-bottom: 3px; }
-  .sl-top .val {
-    font: 700 10px 'Orbitron', monospace; color: var(--c); background: rgba(0,243,255,.1);
-    padding: 1px 6px; border: 1px solid rgba(0,243,255,.3); border-radius: 2px;
+  /* Sliders & Telemetry */
+  .ctrl { margin-bottom: 8px; }
+  .ctrl:last-child { margin-bottom: 0; }
+  .ctrl-hd { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8; margin-bottom: 3px; }
+  .val-box {
+    font-family: monospace; font-size: 10.5px; font-weight: 800; color: var(--c);
+    background: rgba(0,243,255,.1); border: 1px solid rgba(0,243,255,.35); padding: 1px 6px;
   }
-  input[type=range] {
+  input[type="range"] {
     -webkit-appearance: none; width: 100%; height: 4px; outline: none;
     background: linear-gradient(90deg, var(--c), var(--p)); border-radius: 2px;
   }
-  input[type=range]::-webkit-slider-thumb {
+  input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; width: 12px; height: 12px; background: #fff;
-    border: 2px solid var(--c); transform: rotate(45deg); cursor: pointer; box-shadow: 0 0 10px var(--c);
+    border: 2px solid var(--c); transform: rotate(45deg); cursor: pointer;
+    box-shadow: 0 0 10px var(--c);
   }
-  select, input[type=text] {
-    width: 100%; background: #050914; color: #fff; border: 1px solid rgba(0,243,255,.4);
-    padding: 6px 8px; font: 700 12px 'Rajdhani', sans-serif; outline: none;
+  select, input[type="text"] {
+    width: 100%; background: #060b19; color: #f1f5f9; padding: 7px 9px;
+    border: 1px solid rgba(0,243,255,.4); font-size: 11.5px; font-weight: 700;
+    outline: none; clip-path: var(--cut-sm);
   }
-  .code-box { display: flex; gap: 5px; }
-  .code-box button { padding: 0 12px; font: 800 10px 'Orbitron'; background: var(--p); color: #fff; border: none; cursor: pointer; clip-path: var(--cut); }
-  #codeMsg { font-size: 11px; margin-top: 4px; min-height: 14px; color: var(--a); }
+  select:focus, input[type="text"]:focus { border-color: #fff; box-shadow: 0 0 12px rgba(0,243,255,.4); }
+  .code-row { display: flex; gap: 6px; }
+  .code-msg { font-size: 10px; margin-top: 5px; min-height: 13px; color: #94a3b8; letter-spacing: .5px; }
 
   /* Viewport & Floating HUD */
-  #viewport { flex: 1; position: relative; cursor: crosshair; overflow: hidden; background: #020308; }
-  #hud-top {
-    position: absolute; top: 12px; left: 16px; right: 16px; display: flex; justify-content: space-between;
-    pointer-events: none; z-index: 10;
+  #viewport { flex: 1; position: relative; cursor: crosshair; overflow: hidden; background: var(--bg); }
+  canvas { display: block; width: 100%; height: 100%; }
+  #hud-bar {
+    position: absolute; top: 12px; left: 14px; right: 14px; display: flex;
+    justify-content: space-between; pointer-events: none; gap: 8px; flex-wrap: wrap;
   }
   .pill {
-    background: rgba(6,11,25,.82); border: 1px solid rgba(0,243,255,.4); padding: 5px 12px;
-    font: 700 10.5px 'Orbitron', monospace; color: var(--c); clip-path: var(--cut);
-    box-shadow: 0 0 15px rgba(0,0,0,.8);
+    background: rgba(5,9,20,.84); border: 1px solid rgba(0,243,255,.38);
+    padding: 5px 11px; font-size: 10.5px; font-weight: 800; letter-spacing: 1px;
+    color: #e0f2fe; clip-path: var(--cut-sm); backdrop-filter: blur(4px);
   }
+  .pill b { color: var(--c); }
   #banner {
-    position: absolute; top: 52px; left: 50%; transform: translateX(-50%);
-    font: 900 13px 'Orbitron', sans-serif; letter-spacing: 2px; padding: 6px 18px;
-    background: rgba(185,28,28,.85); border: 1px solid #fca5a5; color: #fff;
-    clip-path: var(--cut); opacity: 0; transition: .25s; pointer-events: none; z-index: 15;
+    position: absolute; top: 54px; left: 50%; transform: translateX(-50%);
+    padding: 7px 20px; font-size: 12px; font-weight: 900; letter-spacing: 2px;
+    background: rgba(10,5,24,.9); border: 1px solid var(--k); color: #fff;
+    clip-path: var(--cut); pointer-events: none; opacity: 0; transition: .25s;
+    text-shadow: 0 0 10px var(--k); box-shadow: 0 0 25px rgba(255,0,127,.45);
   }
-  canvas { display: block; width: 100%; height: 100%; }
+  #banner.show { opacity: 1; }
 </style>
 </head>
 <body>
-<aside id="sidebar">
-  <div class="hdr">
-    <div class="hdr-top"><h1>DISCHARGE MATRIX</h1><span class="badge">APEX X25</span></div>
-    <div class="sub">RELATIVISTIC SINGULARITY & PLASMA ENGINE</div>
-  </div>
-
-  <div class="panel">
-    <div class="p-title"><span>01 // WEAPON SYSTEMS</span><span>[1-6]</span></div>
-    <div class="w-grid" id="wGrid">
-      <button class="w-btn active" data-m="arc"><span class="hk">1</span><b>ARC LANCE</b><small>Core plasma beam</small></button>
-      <button class="w-btn" data-m="tesla"><span class="hk">2</span><b>TESLA TOROID</b><small>3D chain inductor</small></button>
-      <button class="w-btn" data-m="orb"><span class="hk">3</span><b>PLASMA NODES</b><small>Linked pylon grid</small></button>
-      <button class="w-btn" data-m="singularity"><span class="hk">4</span><b>SINGULARITY</b><small>Relativistic black hole</small></button>
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="brand-top">
+        <h1>DISCHARGE MATRIX</h1>
+        <span class="badge">APEX X10</span>
+      </div>
+      <div class="sub">RELATIVISTIC PLASMA &amp; SINGULARITY ENGINE</div>
     </div>
-    <div class="act-grid">
-      <button class="act" id="bOver">OVERDRIVE [SPC]</button>
-      <button class="act orb" id="bOrb">ORBITAL [O]</button>
-      <button class="act spn" id="bSpawn">SPAWN BOSS [B]</button>
-      <button class="act prg" id="bPurge">PURGE [C]</button>
-    </div>
-  </div>
 
-  <div class="panel">
-    <div class="p-title"><span>02 // MATRIX PARAMETERS</span><span id="audBtn" style="cursor:pointer;color:var(--a)">AUDIO: OFF</span></div>
-    <div class="sl-row"><div class="sl-top"><span>CORE VOLTAGE</span><span class="val" id="vVolt">1.20 GW</span></div><input type="range" id="sVolt" min="20" max="150" value="80"></div>
-    <div class="sl-row"><div class="sl-top"><span>ARC CHAOS</span><span class="val" id="vChaos">100%</span></div><input type="range" id="sChaos" min="20" max="200" value="100"></div>
-    <div class="sl-row"><div class="sl-top"><span>DENDRITE FORKS</span><span class="val" id="vFork">55%</span></div><input type="range" id="sFork" min="0" max="100" value="55"></div>
-    <div class="sl-row"><div class="sl-top"><span>GRAVITY WELL</span><span class="val" id="vGrav">1.50 G</span></div><input type="range" id="sGrav" min="10" max="300" value="150"></div>
-    <div class="sl-row"><div class="sl-top"><span>TIME DILATION</span><span class="val" id="vTime">1.00x</span></div><input type="range" id="sTime" min="20" max="150" value="100"></div>
-    <div class="sl-row" style="margin:0"><div class="sl-top"><span>ION SPECTRUM</span></div>
+    <div class="card">
+      <div class="sec-hd"><span>01 // Weapon Arsenals</span><span>[1-6]</span></div>
+      <div class="w-grid" id="wGrid">
+        <button class="w-btn active" data-w="arc">
+          <div class="w-top"><span>ARC LANCE</span><span class="w-key">1</span></div>
+          <div class="w-sub">4-Pass Dendrite Beam</div>
+        </button>
+        <button class="w-btn" data-w="tesla">
+          <div class="w-top"><span>TESLA TOROID</span><span class="w-key">2</span></div>
+          <div class="w-sub">3D Coil + Auto-Chain</div>
+        </button>
+        <button class="w-btn" data-w="orb">
+          <div class="w-top"><span>PLASMA NODES</span><span class="w-key">3</span></div>
+          <div class="w-sub">Click-Link Surge Grid</div>
+        </button>
+        <button class="w-btn" data-w="singularity">
+          <div class="w-top"><span>SINGULARITY</span><span class="w-key">4</span></div>
+          <div class="w-sub">Black Hole + Jets</div>
+        </button>
+        <button class="w-btn secret" id="btnGengen" data-w="gengen">
+          <div class="w-top"><span>GENGEN-123 OMEGA TRI-FUSION</span><span class="w-key">5</span></div>
+          <div class="w-sub">Singularity + Tesla + Core Arcs</div>
+        </button>
+        <button class="w-btn secret" id="btnZayon" data-w="zayon">
+          <div class="w-top"><span>ZAYON SUPREME OVERLORD</span><span class="w-key">6</span></div>
+          <div class="w-sub">Dual Black Holes + Sky Hyper-Bolts</div>
+        </button>
+      </div>
+      <div class="act-grid">
+        <button class="btn overdrive" id="actOverdrive">OVERDRIVE [SPC]</button>
+        <button class="btn orbital" id="actOrbital">ORBITAL BEAM [O]</button>
+        <button class="btn" id="actTower">DROP TOWER [T]</button>
+        <button class="btn boss" id="actSpawn">SPAWN ROLL [B]</button>
+        <button class="btn" id="actAudio">AUDIO: OFF</button>
+        <button class="btn danger" id="actPurge">PURGE GRID [C]</button>
+      </div>
+    </div>
+
+    <div class="card purple">
+      <div class="sec-hd"><span>02 // Matrix Parameters</span><span>LIVE</span></div>
+      <div class="ctrl">
+        <div class="ctrl-hd"><span>CORE VOLTAGE</span><span class="val-box" id="vVolt">1.45 GW</span></div>
+        <input type="range" id="sVolt" min="20" max="200" value="90">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-hd"><span>ARC CHAOS</span><span class="val-box" id="vChaos">110%</span></div>
+        <input type="range" id="sChaos" min="20" max="220" value="110">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-hd"><span>DENDRITE FORKS</span><span class="val-box" id="vFork">65%</span></div>
+        <input type="range" id="sFork" min="0" max="100" value="65">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-hd"><span>CHAIN RADIUS</span><span class="val-box" id="vChain">280 PX</span></div>
+        <input type="range" id="sChain" min="90" max="520" value="280">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-hd"><span>GRAVITY WELL</span><span class="val-box" id="vGrav">1.50 G</span></div>
+        <input type="range" id="sGrav" min="10" max="300" value="150">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-hd"><span>TIME DILATION</span><span class="val-box" id="vTime">1.00 X</span></div>
+        <input type="range" id="sTime" min="20" max="150" value="100">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-hd"><span>AFTERIMAGE TRAIL</span><span class="val-box" id="vTrail">78%</span></div>
+        <input type="range" id="sTrail" min="10" max="95" value="78">
+      </div>
+    </div>
+
+    <div class="card pink">
+      <div class="sec-hd"><span>03 // Ionization Spectrum</span><span>HUE</span></div>
       <select id="selColor">
-        <option value="#00f3ff">CYAN // IONIZED</option>
-        <option value="#b829ea">PURPLE // VOID</option>
-        <option value="#ff007f">PINK // HYPERNOVA</option>
-        <option value="#ffbe0b">AMBER // SOLAR</option>
-        <option value="#10b981">EMERALD // RADIATION</option>
+        <option value="cyan">CYAN // IONIZED PLASMA</option>
+        <option value="purple">PURPLE // VOID RIFT</option>
+        <option value="pink">PINK // HYPERNOVA</option>
+        <option value="amber">AMBER // SOLAR FLARE</option>
+        <option value="emerald">EMERALD // RADIATION SURGE</option>
       </select>
     </div>
-  </div>
 
-  <div class="panel" style="margin-bottom:0">
-    <div class="p-title"><span>03 // DEV OVERRIDE TERMINAL</span></div>
-    <div class="code-box"><input type="text" id="codeIn" placeholder="Enter override key..."><button id="codeBtn">EXEC</button></div>
-    <div id="codeMsg"></div>
-  </div>
-</aside>
+    <div class="card amber">
+      <div class="sec-hd"><span>04 // Dev Override Terminal</span><span>AUTH</span></div>
+      <div class="code-row">
+        <input type="text" id="codeInput" placeholder="ENTER SECRET CODE...">
+        <button class="btn" id="codeBtn">EXEC</button>
+      </div>
+      <div class="code-msg" id="codeMsg">AWAITING OVERRIDE KEY...</div>
+    </div>
+  </aside>
 
-<main id="viewport">
-  <div id="hud-top">
-    <div class="pill" id="hudMode">SYS: ARC LANCE // HOLD LMB</div>
-    <div class="pill" id="hudStats">FPS: 60 | ENTITIES: 0</div>
-  </div>
-  <div id="banner">OMEGA DREADNOUGHT DETECTED</div>
-  <canvas id="c"></canvas>
-</main>
+  <main id="viewport">
+    <div id="hud-bar">
+      <div class="pill">WEAPON: <b id="hudW">ARC LANCE</b></div>
+      <div class="pill">OUTPUT: <b id="hudPow">1.45 GW</b></div>
+      <div class="pill">HOSTILES: <b id="hudEnt">0</b></div>
+      <div class="pill">FPS: <b id="hudFps">60</b></div>
+    </div>
+    <div id="banner">OMEGA DREADNOUGHT DETECTED</div>
+    <canvas id="c"></canvas>
+  </main>
 
 <script>
-const C = document.getElementById('c'), X = C.getContext('2d');
-let W, H, dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-const resize = () => { W = C.offsetWidth; H = C.offsetHeight; C.width = W * dpr; C.height = H * dpr; X.setTransform(dpr, 0, 0, dpr, 0, 0); };
-window.addEventListener('resize', resize); resize();
+(() => {
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  let W = 0, H = 0, dpr = 1;
 
-/* State & Parameters */
-let mode = 'arc', baseCol = '#00f3ff', rainbow = false, godMode = false;
-let volt = 80, chaos = 1.0, fork = 0.55, grav = 1.5, tScale = 1.0;
-let hold = false, mx = W/2, my = H/2, shake = 0, flash = 0, tick = 0;
-let holdCharge = 0, singAngle = 0;
-let sparks = [], nodes = [], targets = [], waves = [], bhDebris = [];
+  const resize = () => {
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    W = canvas.offsetWidth; H = canvas.offsetHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+  window.addEventListener('resize', resize);
+  resize();
 
-/* Parallax Background Stars */
-const stars = Array.from({length: 70}, () => ({ x: Math.random()*2000, y: Math.random()*1200, z: Math.random()*2 + 0.5 }));
+  /* Pre-rendered Glow Sprites for Zero-Lag 60FPS Bloom */
+  const spriteCache = {};
+  function getGlow(hex) {
+    if (spriteCache[hex]) return spriteCache[hex];
+    const s = document.createElement('canvas');
+    s.width = s.height = 128;
+    const g = s.getContext('2d');
+    const grad = g.createRadialGradient(64, 64, 2, 64, 64, 62);
+    grad.addColorStop(0, '#ffffff');
+    grad.addColorStop(0.22, hex);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 128, 128);
+    return (spriteCache[hex] = s);
+  }
 
-/* Cached Radial Glow Sprite for 60FPS Bloom */
-const glowCache = {};
-function getGlow(col) {
-  if (glowCache[col]) return glowCache[col];
-  const oc = document.createElement('canvas'); oc.width = oc.height = 128;
-  const ox = oc.getContext('2d'), g = ox.createRadialGradient(64,64,2,64,64,62);
-  g.addColorStop(0, '#fff'); g.addColorStop(0.22, col); g.addColorStop(1, 'transparent');
-  ox.fillStyle = g; ox.fillRect(0,0,128,128);
-  return glowCache[col] = oc;
-}
-const activeCol = (shift = 0) => rainbow ? `hsl(${(tick * 3 + shift) % 360}, 100%, 58%)` : baseCol;
+  /* State & Parameters */
+  const P = {
+    weapon: 'arc', volt: 90, chaos: 1.1, fork: 0.65, chain: 280,
+    grav: 1.5, time: 1.0, trail: 0.78, palette: 'cyan',
+    godMode: false, holding: false, charge: 0, shake: 0, tick: 0
+  };
+  const mouse = { x: W * 0.5, y: H * 0.5 };
+  let sparks = [], waves = [], nodes = [], towers = [], targets = [], debris = [];
+  const stars = Array.from({ length: 75 }, () => ({
+    x: Math.random(), y: Math.random(), z: Math.random() * 1.8 + 0.4
+  }));
 
-/* Web Audio Synth */
-let actx = null, audioOn = false;
-document.getElementById('audBtn').onclick = e => {
-  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-  audioOn = !audioOn; e.target.textContent = `AUDIO: ${audioOn ? 'ON' : 'OFF'}`;
-};
-function beep(freq, dur, type = 'sawtooth', vol = 0.06) {
-  if (!audioOn || !actx) return;
-  const o = actx.createOscillator(), g = actx.createGain();
-  o.type = type; o.frequency.setValueAtTime(freq, actx.currentTime);
-  o.frequency.exponentialRampToValueAtTime(30, actx.currentTime + dur);
-  g.gain.setValueAtTime(vol, actx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
-  o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + dur);
-}
+  const PALETTES = {
+    cyan: ['#00f3ff', '#38bdf8'],
+    purple: ['#b829ea', '#e879f9'],
+    pink: ['#ff007f', '#fb7185'],
+    amber: ['#ffbe0b', '#fb923c'],
+    emerald: ['#10b981', '#6ee7b7']
+  };
 
-/* Multi-Pass Plasma Bolt Renderer */
-function bolt(x1, y1, x2, y2, disp, w = 2, depth = 0, col = activeCol()) {
-  const pts = [{x: x1, y: y1}, {x: x2, y: y2}];
-  let d = disp * chaos;
-  for (let i = 0; i < 4; i++) {
-    for (let j = pts.length - 1; j > 0; j--) {
-      const mx = (pts[j-1].x + pts[j].x)/2 + (Math.random()-0.5)*d;
-      const my = (pts[j-1].y + pts[j].y)/2 + (Math.random()-0.5)*d;
-      pts.splice(j, 0, {x: mx, y: my});
-      if (depth === 0 && i === 1 && Math.random() < fork * 0.45) {
-        const ang = Math.atan2(y2-y1, x2-x1) + (Math.random()-0.5)*1.4;
-        const len = Math.hypot(x2-x1, y2-y1) * (0.25 + Math.random()*0.25);
-        bolt(mx, my, mx + Math.cos(ang)*len, my + Math.sin(ang)*len, disp*0.45, w*0.55, 1, col);
+  function getColors(offset = 0) {
+    if (P.palette === 'rainbow') {
+      const h1 = (P.tick * 4 + offset) % 360;
+      const h2 = (h1 + 55) % 360;
+      return [`hsl(${h1},100%,58%)`, `hsl(${h2},100%,68%)`];
+    }
+    return PALETTES[P.palette] || PALETTES.cyan;
+  }
+
+  /* Procedural Web Audio Synthesizer */
+  let audioCtx = null, audioOn = false;
+  function zapSound(freq = 160, dur = 0.09, type = 'sawtooth', vol = 0.08) {
+    if (!audioOn) return;
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq + Math.random() * 90, audioCtx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(38, audioCtx.currentTime + dur);
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  }
+
+  /* Banner Alert */
+  let bannerTimer = null;
+  function showBanner(txt, col = '#ff007f') {
+    const b = document.getElementById('banner');
+    b.textContent = txt;
+    b.style.borderColor = col;
+    b.classList.add('show');
+    clearTimeout(bannerTimer);
+    bannerTimer = setTimeout(() => b.classList.remove('show'), 2400);
+  }
+
+  /* 4-Pass Plasma Lightning + Dendrite Branching */
+  function drawLightning(x1, y1, x2, y2, disp, width = 2.2, depth = 0) {
+    const [c1, c2] = getColors(depth * 35);
+    const pts = [{ x: x1, y: y1 }];
+    const steps = 10;
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len, ny = dx / len;
+
+    for (let i = 1; i < steps; i++) {
+      const t = i / steps;
+      const env = Math.sin(t * Math.PI);
+      const off = (Math.random() - 0.5) * disp * P.chaos * env;
+      const px = x1 + dx * t + nx * off;
+      const py = y1 + dy * t + ny * off;
+      pts.push({ x: px, y: py });
+
+      if (depth === 0 && Math.random() < P.fork * 0.28) {
+        const ang = Math.atan2(dy, dx) + (Math.random() - 0.5) * 1.4;
+        const blen = len * (0.22 + Math.random() * 0.25);
+        drawLightning(px, py, px + Math.cos(ang) * blen, py + Math.sin(ang) * blen, disp * 0.45, width * 0.55, 1);
       }
     }
-    d *= 0.52;
-  }
-  X.save(); X.globalCompositeOperation = 'lighter'; X.lineCap = 'round'; X.lineJoin = 'round';
-  X.beginPath(); pts.forEach((p, idx) => idx ? X.lineTo(p.x, p.y) : X.moveTo(p.x, p.y));
-  X.strokeStyle = col; X.globalAlpha = 0.25; X.lineWidth = w * 5.5; X.stroke();
-  X.globalAlpha = 0.65; X.lineWidth = w * 2.4; X.stroke();
-  X.strokeStyle = '#fff'; X.globalAlpha = 0.95; X.lineWidth = w * 0.85; X.stroke();
-  X.restore();
-}
+    pts.push({ x: x2, y: y2 });
 
-function addSparks(x, y, n = 10, col = activeCol()) {
-  for (let i = 0; i < n && sparks.length < 320; i++) {
-    const a = Math.random()*6.28, s = Math.random()*7 + 2;
-    sparks.push({x, y, vx: Math.cos(a)*s, vy: Math.sin(a)*s, life: 1, col});
-  }
-}
-function addWave(x, y, maxR, col = activeCol(), lw = 3) { waves.push({x, y, r: 8, maxR, col, lw}); }
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
 
-/* Relativistic Singularity Renderer (Upgraded) */
-function drawSingularity(cx, cy, charge, scale = 1, colShift = 0) {
-  const c1 = activeCol(colShift), c2 = rainbow ? activeCol(colShift + 140) : '#ff007f';
-  const pulse = 1 + Math.sin(tick * 0.18) * 0.06 + charge * 0.35;
-  const rCore = (24 + charge * 14) * scale * pulse;
-  const tilt = -0.32 + Math.sin(tick * 0.03) * 0.06;
+    const trace = () => {
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    };
 
-  X.save();
-  X.globalCompositeOperation = 'lighter';
+    /* Pass 1: Outer Aura */
+    trace(); ctx.strokeStyle = c1; ctx.globalAlpha = 0.22; ctx.lineWidth = width * 6.5; ctx.stroke();
+    /* Pass 2: Mid Neon Sheath */
+    trace(); ctx.strokeStyle = c2; ctx.globalAlpha = 0.55; ctx.lineWidth = width * 2.6; ctx.stroke();
+    /* Pass 3: White-Hot Core */
+    trace(); ctx.strokeStyle = '#ffffff'; ctx.globalAlpha = 0.95; ctx.lineWidth = width * 0.85; ctx.stroke();
 
-  /* 1. Einstein Gravitational Lensing Halo */
-  const lens = X.createRadialGradient(cx, cy, rCore * 0.9, cx, cy, rCore * 5.2);
-  lens.addColorStop(0, '#fff');
-  lens.addColorStop(0.16, c1);
-  lens.addColorStop(0.42, c2);
-  lens.addColorStop(1, 'transparent');
-  X.fillStyle = lens; X.globalAlpha = 0.45 + charge * 0.25;
-  X.beginPath(); X.arc(cx, cy, rCore * 5.2, 0, 6.28); X.fill();
-
-  /* 2. Polar Relativistic Jets with Core Beams */
-  const jetH = (160 + volt * 1.4 + charge * 130) * scale;
-  X.save(); X.translate(cx, cy); X.rotate(tilt);
-  const jg = X.createLinearGradient(0, -jetH, 0, jetH);
-  jg.addColorStop(0, 'transparent'); jg.addColorStop(0.35, c1);
-  jg.addColorStop(0.5, '#fff'); jg.addColorStop(0.65, c2); jg.addColorStop(1, 'transparent');
-  X.fillStyle = jg; X.globalAlpha = 0.65;
-  X.beginPath(); X.moveTo(0, 0); X.lineTo(-14*scale, -jetH); X.lineTo(14*scale, -jetH); X.closePath(); X.fill();
-  X.beginPath(); X.moveTo(0, 0); X.lineTo(-14*scale, jetH); X.lineTo(14*scale, jetH); X.closePath(); X.fill();
-  /* Needle Core Jet */
-  X.fillStyle = '#fff'; X.globalAlpha = 0.9;
-  X.fillRect(-1.5*scale, -jetH*0.85, 3*scale, jetH*1.7);
-
-  /* 3. Back Half of Warped Accretion Disk (Gravitational Top Arch) */
-  for (let i = 0; i < 6; i++) {
-    const rx = rCore * (2.1 + i * 0.58), ry = rx * 0.27;
-    X.strokeStyle = i % 2 === 0 ? c1 : c2;
-    X.lineWidth = (5.5 - i * 0.65) * scale;
-    X.globalAlpha = 0.72 - i * 0.08;
-    X.beginPath(); X.ellipse(0, 0, rx, ry, 0, Math.PI, Math.PI * 2); X.stroke();
-  }
-  /* Gravitational Lensed Upper Einstein Ring */
-  X.strokeStyle = '#fff'; X.lineWidth = 2.5 * scale; X.globalAlpha = 0.75;
-  X.beginPath(); X.arc(0, -rCore * 0.15, rCore * 1.65, Math.PI * 1.08, Math.PI * 1.92); X.stroke();
-  X.restore();
-
-  /* 4. Pitch-Black Event Horizon & Blazing Photon Sphere */
-  X.globalCompositeOperation = 'source-over';
-  X.fillStyle = '#000';
-  X.beginPath(); X.arc(cx, cy, rCore, 0, 6.28); X.fill();
-
-  X.globalCompositeOperation = 'lighter';
-  X.strokeStyle = '#fff'; X.lineWidth = 3 * scale; X.globalAlpha = 0.95;
-  X.beginPath(); X.arc(cx, cy, rCore + 1.5, 0, 6.28); X.stroke();
-  X.strokeStyle = c1; X.lineWidth = 7 * scale; X.globalAlpha = 0.5;
-  X.beginPath(); X.arc(cx, cy, rCore + 4, 0, 6.28); X.stroke();
-
-  /* 5. Front Half of Accretion Disk & Doppler-Boosted Plasma Hotspots */
-  X.save(); X.translate(cx, cy); X.rotate(tilt);
-  for (let i = 0; i < 6; i++) {
-    const rx = rCore * (2.1 + i * 0.58), ry = rx * 0.27;
-    X.strokeStyle = i === 0 ? '#fff' : (i % 2 === 0 ? c1 : c2);
-    X.lineWidth = (6 - i * 0.65) * scale;
-    X.globalAlpha = 0.85 - i * 0.09;
-    X.beginPath(); X.ellipse(0, 0, rx, ry, 0, 0, Math.PI); X.stroke();
-  }
-  /* Orbiting Plasma Knots */
-  for (let k = 0; k < 14; k++) {
-    const a = singAngle * (1.4 + (k % 3) * 0.4) + k * 0.45;
-    const dist = rCore * (1.7 + (k % 5) * 0.62);
-    const kx = Math.cos(a) * dist, ky = Math.sin(a) * dist * 0.27;
-    const doppler = Math.cos(a) < 0 ? 1.45 : 0.7; /* Relativistic beaming on approaching side */
-    X.drawImage(getGlow(k % 2 ? c1 : c2), kx - 12*doppler, ky - 12*doppler, 24*doppler, 24*doppler);
-  }
-  X.restore();
-
-  /* 6. Logarithmic Spiral Lightning Filaments */
-  const arms = 5 + Math.floor(charge * 4);
-  for (let s = 0; s < arms; s++) {
-    const baseA = singAngle * 1.8 + (s * 6.28 / arms);
-    const rStart = rCore * (4.4 + Math.sin(tick*0.1 + s)*0.6);
-    let px = cx + Math.cos(baseA) * rStart, py = cy + Math.sin(baseA) * rStart;
-    X.beginPath(); X.moveTo(px, py);
-    for (let step = 1; step <= 10; step++) {
-      const f = 1 - step / 10;
-      const r = rCore + (rStart - rCore) * f;
-      const a = baseA + step * 0.34 + (Math.random() - 0.5) * 0.22 * chaos;
-      X.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+    if (depth === 0 && P.palette !== 'rainbow') {
+      const sp = getGlow(c1);
+      ctx.globalAlpha = 0.7;
+      ctx.drawImage(sp, x2 - 22, y2 - 22, 44, 44);
     }
-    X.strokeStyle = s % 2 ? c1 : c2; X.lineWidth = 2.4 * scale; X.globalAlpha = 0.75; X.stroke();
-    X.strokeStyle = '#fff'; X.lineWidth = 0.9 * scale; X.stroke();
+    ctx.restore();
   }
 
-  /* 7. Accretion Debris Streamers */
-  if (bhDebris.length < 48 && Math.random() < 0.7) {
-    const a = Math.random() * 6.28, r = rCore * (4.5 + Math.random() * 2.5);
-    bhDebris.push({ a, r, vr: 2.2 + Math.random()*2.5, va: 0.08 + Math.random()*0.06, col: Math.random() < 0.5 ? c1 : c2 });
-  }
-  for (let i = bhDebris.length - 1; i >= 0; i--) {
-    const p = bhDebris[i];
-    const ox = cx + Math.cos(p.a) * p.r, oy = cy + Math.sin(p.a) * p.r;
-    p.r -= p.vr * tScale * (1 + grav * 0.3);
-    p.a += p.va * tScale * (140 / Math.max(30, p.r));
-    const nx = cx + Math.cos(p.a) * p.r, ny = cy + Math.sin(p.a) * p.r;
-    X.strokeStyle = p.col; X.lineWidth = 2; X.globalAlpha = Math.min(1, (p.r - rCore) / 40);
-    X.beginPath(); X.moveTo(ox, oy); X.lineTo(nx, ny); X.stroke();
-    if (p.r <= rCore * 1.05) { bhDebris.splice(i, 1); addSparks(nx, ny, 2, p.col); }
-  }
-
-  X.restore();
-}
-
-/* Tesla 3D Toroid Renderer */
-function drawTesla(cx, cy) {
-  const col = activeCol();
-  X.save(); X.globalCompositeOperation = 'lighter';
-  for (let i = 0; i < 4; i++) {
-    const y = cy + 28 - i * 8;
-    X.strokeStyle = col; X.lineWidth = 3; X.beginPath(); X.ellipse(cx, y, 16, 5, 0, 0, 6.28); X.stroke();
-  }
-  X.strokeStyle = '#fff'; X.lineWidth = 3.5; X.beginPath(); X.ellipse(cx, cy - 8, 24, 8, 0, 0, 6.28); X.stroke();
-  X.drawImage(getGlow(col), cx - 45, cy - 53, 90, 90);
-  for (let k = 0; k < 5; k++) {
-    const a = tick * 0.09 + k * 1.256, ox = cx + Math.cos(a) * 34, oy = cy - 8 + Math.sin(a) * 11;
-    X.drawImage(getGlow(col), ox - 12, oy - 12, 24, 24);
-  }
-  X.restore();
-}
-
-/* Weighted Boss & Target Spawning (1/10 Boss, 1/2 Mini-Boss) */
-function spawnEntity() {
-  const roll = Math.random();
-  let type = 'cap', hp = 50, sh = 0, r = 16, col = '#38bdf8', label = '';
-  if (roll < 0.10) { type = 'boss'; hp = 550; sh = 200; r = 36; col = '#ff007f'; label = 'OMEGA DREADNOUGHT DETECTED'; }
-  else if (roll < 0.60) { type = 'mini'; hp = 190; sh = 65; r = 24; col = '#ffbe0b'; label = 'VANGUARD WARDEN INBOUND'; }
-  targets.push({ x: 80 + Math.random()*(W-160), y: 80 + Math.random()*(H-160), vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2, type, hp, maxHp: hp, sh, maxSh: sh, r, col });
-  if (label) {
-    const b = document.getElementById('banner'); b.textContent = label; b.style.opacity = 1;
-    setTimeout(() => b.style.opacity = 0, 2200);
-    beep(140, 0.45, 'sawtooth', 0.1);
-  }
-}
-
-function damageTargets(x, y, rad, dmg) {
-  for (let i = targets.length - 1; i >= 0; i--) {
-    const t = targets[i], d = Math.hypot(t.x - x, t.y - y);
-    if (d < rad + t.r) {
-      const mult = godMode ? 25 : 1;
-      if (t.sh > 0) t.sh = Math.max(0, t.sh - dmg * mult);
-      else t.hp -= dmg * mult;
-      if (t.hp <= 0) {
-        addWave(t.x, t.y, t.r * 5, t.col, 4); addSparks(t.x, t.y, t.type === 'boss' ? 60 : 25, t.col);
-        shake = Math.max(shake, t.type === 'boss' ? 22 : 10); beep(90, 0.35, 'square', 0.12);
-        targets.splice(i, 1);
-      }
+  function addSparks(x, y, n = 10, spd = 6) {
+    const [c1] = getColors();
+    for (let i = 0; i < n && sparks.length < 280; i++) {
+      const a = Math.random() * Math.PI * 2, v = (Math.random() * 0.7 + 0.3) * spd;
+      sparks.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, col: c1 });
     }
   }
-}
 
-/* Weapon Selection & Actions */
-function setMode(m) {
-  mode = m;
-  document.querySelectorAll('.w-btn').forEach(b => b.classList.toggle('active', b.dataset.m === m));
-  document.getElementById('hudMode').textContent = `SYS: ${m.toUpperCase()} // HOLD LMB`;
-}
-document.getElementById('wGrid').onclick = e => { const b = e.target.closest('.w-btn'); if (b) setMode(b.dataset.m); };
-
-function triggerOverdrive() {
-  shake = 20; flash = 0.35; beep(220, 0.4, 'sawtooth', 0.1);
-  for (let i = 0; i < 14; i++) {
-    const tx = Math.random()*W, ty = Math.random()*H;
-    bolt(W/2, H/2, tx, ty, volt*1.4, 2.5, 0, activeCol(i*25));
-    damageTargets(tx, ty, 70, volt * 0.8);
+  function addWave(x, y, maxR = 140, width = 3) {
+    const [c1] = getColors();
+    waves.push({ x, y, r: 8, maxR, width, life: 1, col: c1 });
   }
-  addWave(W/2, H/2, Math.max(W,H)*0.6, activeCol(), 5);
-}
-function triggerOrbital() {
-  shake = 26; flash = 0.45; beep(110, 0.5, 'square', 0.12);
-  bolt(mx, 0, mx, H, volt*1.3, 5.5, 0, activeCol());
-  addWave(mx, my, 240, activeCol(), 5); addSparks(mx, my, 55); damageTargets(mx, my, 180, volt * 2.2);
-}
 
-document.getElementById('bOver').onclick = triggerOverdrive;
-document.getElementById('bOrb').onclick = triggerOrbital;
-document.getElementById('bSpawn').onclick = spawnEntity;
-document.getElementById('bPurge').onclick = () => { targets = []; nodes = []; sparks = []; waves = []; bhDebris = []; };
-
-/* Sliders & Secret Dev Codes */
-const bindSl = (id, vid, fn) => document.getElementById(id).oninput = e => { document.getElementById(vid).textContent = fn(+e.target.value); };
-bindSl('sVolt', 'vVolt', v => { volt = v; return godMode ? '999.9 GW' : (v * 0.015).toFixed(2) + ' GW'; });
-bindSl('sChaos', 'vChaos', v => { chaos = v/100; return v + '%'; });
-bindSl('sFork', 'vFork', v => { fork = v/100; return v + '%'; });
-bindSl('sGrav', 'vGrav', v => { grav = v/100; return grav.toFixed(2) + ' G'; });
-bindSl('sTime', 'vTime', v => { tScale = v/100; return tScale.toFixed(2) + 'x'; });
-document.getElementById('selColor').onchange = e => { rainbow = e.target.value === 'rainbow'; if (!rainbow) baseCol = e.target.value; };
-
-function unlockBtn(m, title, sub, hk) {
-  if (document.querySelector(`[data-m="${m}"]`)) return;
-  const b = document.createElement('button'); b.className = 'w-btn secret'; b.dataset.m = m;
-  b.innerHTML = `<span class="hk">${hk}</span><b>${title}</b><small>${sub}</small>`;
-  document.getElementById('wGrid').appendChild(b);
-}
-
-function execCode() {
-  const val = document.getElementById('codeIn').value.trim(), msg = document.getElementById('codeMsg');
-  if (val === 'RainbowDEVblu') {
-    rainbow = true;
-    if (!document.querySelector('option[value="rainbow"]')) {
-      const o = new Option('NEON RAINBOW // DEV', 'rainbow'); document.getElementById('selColor').add(o);
+  /* Weighted Target & Boss Spawner (1/10 Boss, 1/2 Mini-Boss, 4/10 Standard) */
+  function spawnEntity() {
+    if (targets.length >= 14) return;
+    const roll = Math.random();
+    let tier = 'std', r = 16, hp = 50, sp = 0, name = 'CAPACITOR';
+    if (roll < 0.10) {
+      tier = 'boss'; r = 38; hp = 600; sp = 220; name = 'OMEGA DREADNOUGHT';
+      showBanner('WARNING: OMEGA DREADNOUGHT BOSS [1/10]', '#ff007f');
+      zapSound(75, 0.35, 'sawtooth', 0.14);
+    } else if (roll < 0.60) {
+      tier = 'mini'; r = 25; hp = 210; sp = 75; name = 'VANGUARD WARDEN';
+      showBanner('ALERT: VANGUARD MINI-BOSS [1/2]', '#ffbe0b');
     }
-    document.getElementById('selColor').value = 'rainbow';
-    msg.textContent = 'UNLOCKED: NEON RAINBOW SPECTRUM';
-  } else if (val === 'gengen123') {
-    unlockBtn('gengen', 'GENGEN-123 OMEGA FUSION', 'Singularity + Tesla + Arc Lance', '5');
-    setMode('gengen'); msg.textContent = 'UNLOCKED: GENGEN-123 TRI-FUSION';
-  } else if (val === 'zayonisthebest') {
-    godMode = true; rainbow = true; volt = 150;
-    document.getElementById('vVolt').textContent = '999.9 GW';
-    unlockBtn('zayon', 'ZAYON SUPREME OVERLORD', 'Dual Singularities + God Voltage', '6');
-    setMode('zayon'); msg.textContent = 'GOD TIER ACTIVE: ZAYON OVERLORD';
-  } else { msg.textContent = 'INVALID OVERRIDE KEY'; }
-  document.getElementById('codeIn').value = '';
-}
-document.getElementById('codeBtn').onclick = execCode;
-document.getElementById('codeIn').onkeydown = e => { if (e.key === 'Enter') execCode(); };
-
-/* Input & Hotkeys */
-C.onpointerdown = e => {
-  hold = true; mx = e.offsetX; my = e.offsetY;
-  if (mode === 'orb') { nodes.push({x: mx, y: my}); addWave(mx, my, 65, activeCol(), 2); beep(520, 0.12, 'sine'); }
-};
-C.onpointermove = e => { mx = e.offsetX; my = e.offsetY; };
-window.onpointerup = () => {
-  if (hold && (mode === 'singularity' || mode === 'gengen' || mode === 'zayon')) {
-    /* Supernova Collapse Blast on Release */
-    const power = 1 + holdCharge * 1.4;
-    shake = 24 * power; flash = 0.4; beep(75, 0.55, 'sawtooth', 0.14);
-    addWave(mx, my, 340 * power, activeCol(), 6);
-    addWave(mx, my, 210 * power, '#fff', 3);
-    for (let i = 0; i < 12; i++) {
-      const a = (i / 12) * 6.28 + Math.random()*0.2;
-      bolt(mx, my, mx + Math.cos(a)*280*power, my + Math.sin(a)*280*power, volt*1.2, 2.2, 0, activeCol(i*30));
-    }
-    addSparks(mx, my, 65); damageTargets(mx, my, 260 * power, volt * 2.5 * power);
+    const pad = 70;
+    targets.push({
+      x: pad + Math.random() * (W - pad * 2),
+      y: pad + Math.random() * (H - pad * 2),
+      vx: (Math.random() - 0.5) * 1.6,
+      vy: (Math.random() - 0.5) * 1.6,
+      r, hp, maxHp: hp, sp, maxSp: sp, tier, name, rot: 0
+    });
   }
-  hold = false; holdCharge = 0;
-};
-window.onkeydown = e => {
-  if (document.activeElement.tagName === 'INPUT') return;
-  const k = e.key.toLowerCase();
-  if (k === '1') setMode('arc'); else if (k === '2') setMode('tesla');
-  else if (k === '3') setMode('orb'); else if (k === '4') setMode('singularity');
-  else if (k === '5' && document.querySelector('[data-m="gengen"]')) setMode('gengen');
-  else if (k === '6' && document.querySelector('[data-m="zayon"]')) setMode('zayon');
-  else if (k === ' ') { e.preventDefault(); triggerOverdrive(); }
-  else if (k === 'o') triggerOrbital(); else if (k === 'b') spawnEntity();
-  else if (k === 'c') document.getElementById('bPurge').click();
-};
 
-/* Main 60FPS Simulation Loop */
-let lastT = performance.now(), fps = 60;
-function loop(now) {
-  const dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
-  fps = Math.round(fps * 0.9 + (1 / Math.max(0.001, dt)) * 0.1);
-  tick += tScale; singAngle += 0.055 * tScale * (1 + holdCharge * 1.5);
-
-  X.save();
-  X.fillStyle = 'rgba(2, 3, 8, 0.28)'; X.fillRect(0, 0, W, H);
-
-  /* Parallax Starfield & Cyber Grid */
-  X.fillStyle = 'rgba(148, 163, 184, 0.35)';
-  stars.forEach(s => { s.x = (s.x - 0.15 * s.z * tScale + W) % W; X.fillRect(s.x % W, s.y % H, s.z, s.z); });
-  X.strokeStyle = 'rgba(0, 243, 255, 0.035)'; X.lineWidth = 1;
-  for (let x = 0; x < W; x += 48) { X.beginPath(); X.moveTo(x,0); X.lineTo(x,H); X.stroke(); }
-  for (let y = 0; y < H; y += 48) { X.beginPath(); X.moveTo(0,y); X.lineTo(W,y); X.stroke(); }
-
-  if (shake > 0.2) { X.translate((Math.random()-0.5)*shake, (Math.random()-0.5)*shake); shake *= 0.88; }
-
-  /* Persistent Plasma Nodes */
-  nodes.forEach((n, i) => {
-    X.drawImage(getGlow(activeCol(i*20)), n.x - 24, n.y - 24, 48, 48);
-    if (nodes[i+1] && Math.random() < 0.65) {
-      bolt(n.x, n.y, nodes[i+1].x, nodes[i+1].y, volt*0.65, 1.8, 0, activeCol(i*20));
-      damageTargets((n.x+nodes[i+1].x)/2, (n.y+nodes[i+1].y)/2, 60, volt*0.04);
+  function damageTarget(t, amt) {
+    const mult = P.godMode ? 99 : (P.volt / 65);
+    let dmg = amt * mult;
+    if (t.sp > 0) {
+      const absorb = Math.min(t.sp, dmg);
+      t.sp -= absorb; dmg -= absorb;
     }
-  });
-
-  /* Active Weapons */
-  if (hold) {
-    holdCharge = Math.min(1, holdCharge + 0.016 * tScale);
-    if (tick % 4 < 1) beep(180 + holdCharge * 240, 0.08, 'sawtooth', 0.03);
-
-    if (mode === 'arc') {
-      bolt(W/2, H/2, mx, my, volt, 2.4);
-      addSparks(mx, my, 3); damageTargets(mx, my, 45, volt * 0.08);
-    } else if (mode === 'tesla') {
-      drawTesla(mx, my);
-      targets.forEach(t => {
-        if (Math.hypot(t.x - mx, t.y - my) < 280) {
-          bolt(mx, my - 8, t.x, t.y, volt * 0.75, 2);
-          damageTargets(t.x, t.y, 30, volt * 0.09);
+    t.hp -= dmg;
+    if (t.hp <= 0) {
+      const idx = targets.indexOf(t);
+      if (idx > -1) targets.splice(idx, 1);
+      P.shake = Math.max(P.shake, t.tier === 'boss' ? 24 : t.tier === 'mini' ? 14 : 7);
+      addWave(t.x, t.y, t.r * 5.5, t.tier === 'boss' ? 6 : 3);
+      addSparks(t.x, t.y, t.tier === 'boss' ? 55 : 22, t.tier === 'boss' ? 11 : 7);
+      zapSound(90, 0.22, 'square', 0.12);
+      /* Chain Detonation to Neighbors */
+      targets.forEach(o => {
+        if (Math.hypot(o.x - t.x, o.y - t.y) < P.chain * 0.85) {
+          drawLightning(t.x, t.y, o.x, o.y, 55, 2.2);
+          o.hp -= 35 * mult;
         }
       });
+    }
+  }
+
+  /* 3D-Style Tesla Coil Renderer */
+  function renderTesla(x, y, scale = 1) {
+    const [c1, c2] = getColors(20);
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(scale, scale);
+
+    /* Expanding EM Field Rings */
+    const pulse = (P.tick * 0.04) % 1;
+    ctx.strokeStyle = c1; ctx.lineWidth = 1.5; ctx.globalAlpha = (1 - pulse) * 0.55;
+    ctx.beginPath(); ctx.ellipse(0, 0, 25 + pulse * 95, 10 + pulse * 38, 0, 0, Math.PI * 2); ctx.stroke();
+
+    /* Stacked Copper/Titanium Windings */
+    ctx.globalAlpha = 1;
+    for (let i = -3; i <= 3; i++) {
+      ctx.strokeStyle = i % 2 === 0 ? c1 : '#94a3b8';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.ellipse(0, i * 4, 15 - Math.abs(i), 5, 0, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    /* Orbiting Corona Nodes */
+    for (let i = 0; i < 4; i++) {
+      const a = P.tick * 0.09 + (i * Math.PI) / 2;
+      const ox = Math.cos(a) * 28, oy = Math.sin(a) * 12 - 14;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(ox, oy, 2.6, 0, Math.PI * 2); ctx.fill();
+      if (Math.random() < 0.45) drawLightning(x, y - 14, x + ox, y + oy, 18, 1.2, 1);
+    }
+    ctx.restore();
+
+    /* Auto-Snap Chain Lightning to Hostiles */
+    let snapped = 0;
+    targets.forEach(t => {
+      if (Math.hypot(t.x - x, t.y - y) <= P.chain * scale) {
+        drawLightning(x, y - 14, t.x, t.y, P.volt * 0.65, 2.0);
+        damageTarget(t, 2.6 * scale);
+        snapped++;
+      }
+    });
+    if (snapped === 0) {
       for (let i = 0; i < 3; i++) {
-        const a = Math.random()*6.28, r = 90 + Math.random()*110;
-        bolt(mx, my - 8, mx + Math.cos(a)*r, my + Math.sin(a)*r, volt*0.6, 1.3);
+        const a = Math.random() * Math.PI * 2, r = P.chain * 0.55 * scale;
+        drawLightning(x, y - 14, x + Math.cos(a) * r, y + Math.sin(a) * r, 45, 1.5);
       }
-    } else if (mode === 'singularity') {
-      shake = Math.max(shake, 3 + holdCharge * 5);
-      drawSingularity(mx, my, holdCharge, 1);
+    }
+  }
+
+  /* Relativistic Singularity Black Hole Renderer */
+  function renderSingularity(x, y, scale = 1) {
+    const [c1, c2] = getColors();
+    const chargeBoost = 1 + Math.min(P.charge, 90) * 0.008;
+    const coreR = 22 * scale * chargeBoost;
+    const tilt = -0.32;
+
+    /* Gravitational Pull on Targets & Debris */
+    targets.forEach(t => {
+      const dx = x - t.x, dy = y - t.y, d = Math.hypot(dx, dy) || 1;
+      if (d < P.chain * 1.45) {
+        const pull = (P.grav * 2.4 * scale) / Math.max(d * 0.04, 1);
+        t.vx += (dx / d) * pull; t.vy += (dy / d) * pull;
+        if (d < coreR + t.r + 18) damageTarget(t, 4.2 * scale);
+      }
+    });
+
+    if (debris.length < 48 && Math.random() < 0.65) {
+      const a = Math.random() * Math.PI * 2, rad = coreR * (3.5 + Math.random() * 3.5);
+      debris.push({ x: x + Math.cos(a) * rad, y: y + Math.sin(a) * rad, cx: x, cy: y, a, rad, life: 1, col: c2 });
+    }
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.globalCompositeOperation = 'lighter';
+
+    /* 1. Relativistic Polar Jets */
+    ctx.save();
+    ctx.rotate(tilt);
+    const jetLen = (150 + P.volt * 0.85) * scale * chargeBoost;
+    const jGrad = ctx.createLinearGradient(0, -jetLen, 0, jetLen);
+    jGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    jGrad.addColorStop(0.35, c1);
+    jGrad.addColorStop(0.5, '#ffffff');
+    jGrad.addColorStop(0.65, c2);
+    jGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = jGrad;
+    ctx.globalAlpha = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(-4 * scale, 0); ctx.lineTo(-18 * scale, -jetLen); ctx.lineTo(18 * scale, -jetLen);
+    ctx.lineTo(4 * scale, 0); ctx.lineTo(18 * scale, jetLen); ctx.lineTo(-18 * scale, jetLen);
+    ctx.closePath(); ctx.fill();
+    /* Needle Core Beam */
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.2 * scale; ctx.globalAlpha = 0.9;
+    ctx.beginPath(); ctx.moveTo(0, -jetLen * 0.9); ctx.lineTo(0, jetLen * 0.9); ctx.stroke();
+    ctx.restore();
+
+    /* 2. Upper Einstein Gravitational Lensing Arch */
+    ctx.strokeStyle = c2; ctx.lineWidth = 5 * scale; ctx.globalAlpha = 0.55;
+    ctx.beginPath(); ctx.arc(0, -2 * scale, coreR * 1.48, Math.PI * 1.08, Math.PI * 1.92); ctx.stroke();
+
+    /* 3. Back Accretion Disk */
+    ctx.save();
+    ctx.rotate(tilt);
+    for (let i = 0; i < 4; i++) {
+      const rx = coreR * (2.1 + i * 0.68), ry = rx * 0.3;
+      ctx.strokeStyle = i % 2 === 0 ? c1 : c2;
+      ctx.lineWidth = (4.5 - i * 0.7) * scale;
+      ctx.globalAlpha = 0.65 - i * 0.1;
+      ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, Math.PI, Math.PI * 2); ctx.stroke();
+    }
+    ctx.restore();
+
+    /* 4. Pitch-Black Event Horizon + Blazing Photon Sphere */
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000000';
+    ctx.beginPath(); ctx.arc(0, 0, coreR, 0, Math.PI * 2); ctx.fill();
+
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.6 * scale;
+    ctx.beginPath(); ctx.arc(0, 0, coreR + 1.5, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = c1; ctx.lineWidth = 6 * scale; ctx.globalAlpha = 0.55;
+    ctx.beginPath(); ctx.arc(0, 0, coreR + 4, 0, Math.PI * 2); ctx.stroke();
+
+    /* 5. Front Accretion Disk + Relativistic Doppler Hotspots */
+    ctx.save();
+    ctx.rotate(tilt);
+    for (let i = 0; i < 4; i++) {
+      const rx = coreR * (2.1 + i * 0.68), ry = rx * 0.3;
+      ctx.strokeStyle = i === 0 ? '#ffffff' : (i % 2 === 0 ? c1 : c2);
+      ctx.lineWidth = (5 - i * 0.75) * scale;
+      ctx.globalAlpha = 0.85 - i * 0.12;
+      ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI); ctx.stroke();
+
+      const ha = P.tick * (0.12 - i * 0.015) + i * 1.7;
+      const hx = Math.cos(ha) * rx, hy = Math.sin(ha) * ry;
+      ctx.fillStyle = '#ffffff'; ctx.globalAlpha = hx < 0 ? 0.95 : 0.45;
+      ctx.beginPath(); ctx.arc(hx, hy, (3.2 - i * 0.4) * scale, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+    ctx.restore();
+
+    /* 6. Inward Spiral Lightning Filaments */
+    if (Math.random() < 0.75) {
+      const sa = Math.random() * Math.PI * 2;
+      const sr = coreR * 4.4;
+      const sx = x + Math.cos(sa) * sr, sy = y + Math.sin(sa) * sr;
+      const mx = x + Math.cos(sa + 0.75) * (sr * 0.52), my = y + Math.sin(sa + 0.75) * (sr * 0.52);
+      drawLightning(sx, sy, mx, my, 24, 1.5, 1);
+      drawLightning(mx, my, x + Math.cos(sa + 1.4) * coreR, y + Math.sin(sa + 1.4) * coreR, 16, 1.5, 1);
+    }
+  }
+
+  /* Special Triggers */
+  function triggerOverdrive() {
+    P.shake = 22;
+    zapSound(110, 0.28, 'sawtooth', 0.15);
+    addWave(W / 2, H / 2, Math.max(W, H) * 0.6, 5);
+    addSparks(W / 2, H / 2, 55, 12);
+    for (let i = 0; i < 16; i++) {
+      const a = (i / 16) * Math.PI * 2 + Math.random() * 0.2;
+      const r = Math.max(W, H) * 0.55;
+      drawLightning(W / 2, H / 2, W / 2 + Math.cos(a) * r, H / 2 + Math.sin(a) * r, P.volt * 1.1, 2.8);
+    }
+    targets.slice().forEach(t => damageTarget(t, 95));
+  }
+
+  function triggerOrbital() {
+    const tx = mouse.x, ty = mouse.y;
+    P.shake = 26;
+    zapSound(68, 0.35, 'square', 0.16);
+    addWave(tx, ty, 260, 6);
+    addSparks(tx, ty, 65, 13);
+    for (let i = -2; i <= 2; i++) {
+      drawLightning(tx + i * 16, 0, tx + i * 5, ty, P.volt * 0.7, i === 0 ? 4.5 : 2.0);
+    }
+    targets.slice().forEach(t => {
+      if (Math.hypot(t.x - tx, t.y - ty) < 190) damageTarget(t, 160);
+    });
+  }
+
+  /* UI & Secret Dev Code Wiring */
+  function setWeapon(w) {
+    P.weapon = w;
+    document.querySelectorAll('.w-btn').forEach(b => b.classList.toggle('active', b.dataset.w === w));
+    const activeBtn = document.querySelector(`.w-btn[data-w="${w}"]`);
+    if (activeBtn) document.getElementById('hudW').textContent = activeBtn.querySelector('span').textContent;
+  }
+  document.getElementById('wGrid').onclick = e => {
+    const btn = e.target.closest('.w-btn');
+    if (btn) setWeapon(btn.dataset.w);
+  };
+
+  const bindSlider = (id, vid, key, fmt, div = 1) => {
+    const el = document.getElementById(id), out = document.getElementById(vid);
+    el.oninput = () => {
+      P[key] = +el.value / div;
+      out.textContent = fmt(P[key]);
+      if (key === 'volt') {
+        const gw = P.godMode ? '999.9 GW' : (P.volt * 0.016).toFixed(2) + ' GW';
+        out.textContent = gw;
+        document.getElementById('hudPow').textContent = gw;
+      }
+    };
+  };
+  bindSlider('sVolt', 'vVolt', 'volt', v => (v * 0.016).toFixed(2) + ' GW');
+  bindSlider('sChaos', 'vChaos', 'chaos', v => Math.round(v * 100) + '%', 100);
+  bindSlider('sFork', 'vFork', 'fork', v => Math.round(v * 100) + '%', 100);
+  bindSlider('sChain', 'vChain', 'chain', v => Math.round(v) + ' PX');
+  bindSlider('sGrav', 'vGrav', 'grav', v => v.toFixed(2) + ' G', 100);
+  bindSlider('sTime', 'vTime', 'time', v => v.toFixed(2) + ' X', 100);
+  bindSlider('sTrail', 'vTrail', 'trail', v => Math.round(v * 100) + '%', 100);
+
+  document.getElementById('selColor').onchange = e => { P.palette = e.target.value; };
+  document.getElementById('actOverdrive').onclick = triggerOverdrive;
+  document.getElementById('actOrbital').onclick = triggerOrbital;
+  document.getElementById('actTower').onclick = () => {
+    if (towers.length >= 6) towers.shift();
+    towers.push({ x: mouse.x, y: mouse.y });
+    addWave(mouse.x, mouse.y, 70, 2);
+  };
+  document.getElementById('actSpawn').onclick = spawnEntity;
+  document.getElementById('actPurge').onclick = () => {
+    nodes = []; towers = []; targets = []; sparks = []; waves = []; debris = [];
+  };
+  document.getElementById('actAudio').onclick = e => {
+    audioOn = !audioOn;
+    e.target.textContent = audioOn ? 'AUDIO: ON' : 'AUDIO: OFF';
+  };
+
+  function redeemCode() {
+    const inp = document.getElementById('codeInput');
+    const msg = document.getElementById('codeMsg');
+    const code = inp.value.trim();
+    if (code === 'RainbowDEVblu') {
+      const sel = document.getElementById('selColor');
+      if (!sel.querySelector('option[value="rainbow"]')) {
+        const opt = document.createElement('option');
+        opt.value = 'rainbow'; opt.textContent = 'NEON RAINBOW // DEV OVERRIDE';
+        sel.appendChild(opt);
+      }
+      sel.value = 'rainbow'; P.palette = 'rainbow';
+      msg.style.color = '#38bdf8'; msg.textContent = 'UNLOCKED: NEON RAINBOW SPECTRUM';
+      showBanner('DEV OVERRIDE: NEON RAINBOW ACTIVE', '#00f3ff');
+      zapSound(320, 0.2, 'sine', 0.12);
+    } else if (code === 'gengen123') {
+      document.getElementById('btnGengen').classList.add('unlocked');
+      setWeapon('gengen');
+      msg.style.color = '#f472b6'; msg.textContent = 'UNLOCKED: GENGEN-123 OMEGA TRI-FUSION';
+      showBanner('WEAPON UNLOCKED: GENGEN-123 TRI-FUSION', '#ff007f');
+      zapSound(260, 0.25, 'sawtooth', 0.14);
+    } else if (code === 'zayonisthebest') {
+      P.godMode = true;
+      document.getElementById('btnZayon').classList.add('unlocked');
+      document.getElementById('btnGengen').classList.add('unlocked');
+      setWeapon('zayon');
+      const sel = document.getElementById('selColor');
+      if (!sel.querySelector('option[value="rainbow"]')) {
+        const opt = document.createElement('option');
+        opt.value = 'rainbow'; opt.textContent = 'NEON RAINBOW // DEV OVERRIDE';
+        sel.appendChild(opt);
+      }
+      sel.value = 'rainbow'; P.palette = 'rainbow';
+      document.getElementById('vVolt').textContent = '999.9 GW';
+      document.getElementById('hudPow').textContent = '999.9 GW';
+      msg.style.color = '#fbbf24'; msg.textContent = 'GOD TIER: ZAYON SUPREME OVERLORD ACTIVE';
+      showBanner('ZAYON GOD MODE // 999.9 GW ENGAGED', '#ffbe0b');
+      triggerOverdrive();
+    } else {
+      msg.style.color = '#f87171'; msg.textContent = 'ACCESS DENIED: INVALID KEY';
+    }
+    inp.value = '';
+  }
+  document.getElementById('codeBtn').onclick = redeemCode;
+  document.getElementById('codeInput').onkeydown = e => { if (e.key === 'Enter') redeemCode(); };
+
+  /* Pointer & Keyboard Controls */
+  canvas.onpointerdown = e => {
+    P.holding = true; P.charge = 0;
+    mouse.x = e.offsetX; mouse.y = e.offsetY;
+    if (P.weapon === 'orb') {
+      if (nodes.length >= 10) nodes.shift();
+      nodes.push({ x: mouse.x, y: mouse.y });
+      addWave(mouse.x, mouse.y, 65, 2);
+      zapSound(240, 0.08, 'sine', 0.09);
+    }
+  };
+  canvas.onpointermove = e => { mouse.x = e.offsetX; mouse.y = e.offsetY; };
+  window.onpointerup = () => {
+    if (P.holding && (P.weapon === 'singularity' || P.weapon === 'gengen' || P.weapon === 'zayon') && P.charge > 12) {
+      /* Supernova Collapse on Release */
+      const blastR = Math.min(340, 110 + P.charge * 2.2);
+      P.shake = 20;
+      addWave(mouse.x, mouse.y, blastR, 5);
+      addSparks(mouse.x, mouse.y, 48, 11);
+      zapSound(62, 0.32, 'sawtooth', 0.16);
+      for (let i = 0; i < 12; i++) {
+        const a = (i / 12) * Math.PI * 2;
+        drawLightning(mouse.x, mouse.y, mouse.x + Math.cos(a) * blastR, mouse.y + Math.sin(a) * blastR, 65, 2.4);
+      }
+      targets.slice().forEach(t => {
+        if (Math.hypot(t.x - mouse.x, t.y - mouse.y) < blastR) damageTarget(t, 120);
+      });
+    }
+    P.holding = false; P.charge = 0;
+  };
+
+  window.onkeydown = e => {
+    if (document.activeElement.tagName === 'INPUT') return;
+    const k = e.key.toLowerCase();
+    if (k === '1') setWeapon('arc');
+    else if (k === '2') setWeapon('tesla');
+    else if (k === '3') setWeapon('orb');
+    else if (k === '4') setWeapon('singularity');
+    else if (k === '5' && document.getElementById('btnGengen').classList.contains('unlocked')) setWeapon('gengen');
+    else if (k === '6' && document.getElementById('btnZayon').classList.contains('unlocked')) setWeapon('zayon');
+    else if (k === ' ') { e.preventDefault(); triggerOverdrive(); }
+    else if (k === 'o') triggerOrbital();
+    else if (k === 't') document.getElementById('actTower').click();
+    else if (k === 'b') spawnEntity();
+    else if (k === 'c') document.getElementById('actPurge').click();
+  };
+
+  /* Seed Initial Hostiles */
+  for (let i = 0; i < 4; i++) spawnEntity();
+
+  /* Main 60FPS Simulation Loop */
+  let lastFps = performance.now(), frames = 0;
+  function frame(now) {
+    frames++;
+    if (now - lastFps >= 500) {
+      document.getElementById('hudFps').textContent = Math.round((frames * 1000) / (now - lastFps));
+      document.getElementById('hudEnt').textContent = targets.length;
+      frames = 0; lastFps = now;
+    }
+
+    P.tick += P.time;
+    ctx.save();
+
+    /* Motion Trail Persistence */
+    ctx.fillStyle = `rgba(2, 3, 8, ${1 - P.trail * 0.88})`;
+    ctx.fillRect(0, 0, W, H);
+
+    if (P.shake > 0.2) {
+      ctx.translate((Math.random() - 0.5) * P.shake, (Math.random() - 0.5) * P.shake);
+      P.shake *= 0.86;
+    }
+
+    /* Parallax Starfield & Cyber Grid */
+    const [c1, c2] = getColors();
+    ctx.fillStyle = '#94a3b8';
+    stars.forEach(s => {
+      s.x = (s.x + 0.00025 * s.z * P.time) % 1;
+      ctx.globalAlpha = 0.25 * s.z;
+      ctx.fillRect(s.x * W, s.y * H, s.z, s.z);
+    });
+    ctx.globalAlpha = 1;
+
+    ctx.strokeStyle = 'rgba(0, 243, 255, 0.045)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let x = 0; x < W; x += 48) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+    for (let y = 0; y < H; y += 48) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+    ctx.stroke();
+
+    /* Render Linked Plasma Nodes */
+    nodes.forEach((n, i) => {
+      ctx.fillStyle = c1;
+      ctx.beginPath(); ctx.arc(n.x, n.y, 6, 0, Math.PI * 2); ctx.fill();
+      if (nodes[i + 1]) {
+        drawLightning(n.x, n.y, nodes[i + 1].x, nodes[i + 1].y, P.volt * 0.55, 1.8);
+      }
       targets.forEach(t => {
-        const dx = mx - t.x, dy = my - t.y, d = Math.max(25, Math.hypot(dx, dy));
-        if (d < 420) {
-          t.vx += (dx / d) * grav * 0.45 * tScale; t.vy += (dy / d) * grav * 0.45 * tScale;
-          if (d < 130) damageTargets(t.x, t.y, 20, volt * 0.12);
+        if (Math.hypot(t.x - n.x, t.y - n.y) < P.chain * 0.7 && Math.random() < 0.35) {
+          drawLightning(n.x, n.y, t.x, t.y, 40, 1.5);
+          damageTarget(t, 1.4);
         }
       });
-    } else if (mode === 'gengen') {
-      shake = Math.max(shake, 5);
-      drawSingularity(mx, my, holdCharge, 1.15);
-      drawTesla(mx, my);
-      bolt(W/2, H/2, mx, my, volt*1.1, 2.6, 0, activeCol(90));
-      damageTargets(mx, my, 160, volt * 0.22);
-    } else if (mode === 'zayon') {
-      shake = Math.max(shake, 7);
-      const ox = Math.cos(tick * 0.08) * 95, oy = Math.sin(tick * 0.08) * 95;
-      drawSingularity(mx + ox, my + oy, holdCharge, 0.85, 0);
-      drawSingularity(mx - ox, my - oy, holdCharge, 0.85, 180);
-      bolt(mx + ox, my + oy, mx - ox, my - oy, volt * 1.2, 3, 0, activeCol(60));
-      bolt(mx, 0, mx, my, volt, 2.8, 0, activeCol(120));
-      damageTargets(mx, my, 240, volt * 0.45);
+    });
+
+    /* Render Autonomous Tesla Towers */
+    towers.forEach(tw => renderTesla(tw.x, tw.y, 0.72));
+
+    /* Update & Render Hostiles / Bosses */
+    targets.forEach(t => {
+      t.x += t.vx * P.time; t.y += t.vy * P.time; t.rot += 0.02 * P.time;
+      if (t.x < t.r + 12 || t.x > W - t.r - 12) t.vx *= -1;
+      if (t.y < t.r + 48 || t.y > H - t.r - 12) t.vy *= -1;
+      t.vx *= 0.985; t.vy *= 0.985;
+
+      const sides = t.tier === 'boss' ? 8 : t.tier === 'mini' ? 6 : 4;
+      const col = t.tier === 'boss' ? '#ff007f' : t.tier === 'mini' ? '#ffbe0b' : '#38bdf8';
+
+      ctx.save();
+      ctx.translate(t.x, t.y);
+      ctx.rotate(t.rot);
+      ctx.strokeStyle = col; ctx.lineWidth = t.tier === 'boss' ? 3 : 2;
+      ctx.beginPath();
+      for (let i = 0; i <= sides; i++) {
+        const a = (i / sides) * Math.PI * 2;
+        const px = Math.cos(a) * t.r, py = Math.sin(a) * t.r;
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      if (t.sp > 0) {
+        ctx.strokeStyle = '#00f3ff'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+        ctx.beginPath(); ctx.arc(0, 0, t.r + 7, 0, Math.PI * 2); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.restore();
+
+      /* Health Bar */
+      const bw = t.r * 2;
+      ctx.fillStyle = 'rgba(15,23,42,0.85)';
+      ctx.fillRect(t.x - t.r, t.y - t.r - 12, bw, 4);
+      ctx.fillStyle = col;
+      ctx.fillRect(t.x - t.r, t.y - t.r - 12, bw * Math.max(0, t.hp / t.maxHp), 4);
+    });
+
+    /* Active Weapon Firing */
+    if (P.holding) {
+      P.charge += P.time;
+      if (Math.random() < 0.35) zapSound(150, 0.06, 'sawtooth', 0.05);
+
+      if (P.weapon === 'arc') {
+        drawLightning(W * 0.5, H * 0.5, mouse.x, mouse.y, P.volt * 0.9, 2.6);
+        addSparks(mouse.x, mouse.y, 3, 5);
+        targets.forEach(t => {
+          if (Math.hypot(t.x - mouse.x, t.y - mouse.y) < t.r + 36) damageTarget(t, 4.5);
+        });
+      } else if (P.weapon === 'tesla') {
+        renderTesla(mouse.x, mouse.y, 1.0);
+      } else if (P.weapon === 'singularity') {
+        P.shake = Math.max(P.shake, 3.2);
+        renderSingularity(mouse.x, mouse.y, 1.0);
+      } else if (P.weapon === 'gengen') {
+        P.shake = Math.max(P.shake, 5.5);
+        renderSingularity(mouse.x, mouse.y, 0.95);
+        renderTesla(mouse.x, mouse.y - 42, 0.85);
+        drawLightning(W * 0.5, H * 0.5, mouse.x, mouse.y, P.volt, 2.8);
+      } else if (P.weapon === 'zayon') {
+        P.shake = Math.max(P.shake, 8.0);
+        const oa = P.tick * 0.07;
+        const x1 = mouse.x + Math.cos(oa) * 68, y1 = mouse.y + Math.sin(oa) * 68;
+        const x2 = mouse.x - Math.cos(oa) * 68, y2 = mouse.y - Math.sin(oa) * 68;
+        renderSingularity(x1, y1, 0.78);
+        renderSingularity(x2, y2, 0.78);
+        drawLightning(x1, y1, x2, y2, 55, 3.0);
+        drawLightning(mouse.x + (Math.random() - 0.5) * 90, 0, mouse.x, mouse.y, P.volt, 3.2);
+        renderTesla(mouse.x, mouse.y, 1.15);
+      }
     }
+
+    /* Update & Render Accretion Debris, Shockwaves & Sparks */
+    debris = debris.filter(d => d.life > 0.05);
+    debris.forEach(d => {
+      d.a += 0.14 * P.time;
+      d.rad *= 0.94;
+      d.life *= 0.94;
+      ctx.fillStyle = d.col; ctx.globalAlpha = d.life;
+      ctx.fillRect(d.cx + Math.cos(d.a) * d.rad, d.cy + Math.sin(d.a) * d.rad, 2.5, 2.5);
+    });
+
+    waves = waves.filter(w => w.life > 0.04);
+    waves.forEach(w => {
+      w.r += (w.maxR - w.r) * 0.14 * P.time;
+      w.life *= 0.91;
+      ctx.strokeStyle = w.col; ctx.globalAlpha = w.life; ctx.lineWidth = w.width;
+      ctx.beginPath(); ctx.arc(w.x, w.y, w.r, 0, Math.PI * 2); ctx.stroke();
+    });
+
+    sparks = sparks.filter(s => s.life > 0.05);
+    sparks.forEach(s => {
+      s.x += s.vx * P.time; s.y += s.vy * P.time; s.vy += 0.12 * P.time; s.life *= 0.92;
+      ctx.fillStyle = s.col; ctx.globalAlpha = s.life;
+      ctx.fillRect(s.x, s.y, 2.5, 2.5);
+    });
+
+    ctx.restore();
+    requestAnimationFrame(frame);
   }
-
-  /* Update & Render Bosses / Targets */
-  targets.forEach(t => {
-    t.x += t.vx * tScale; t.y += t.vy * tScale;
-    if (t.x < t.r || t.x > W - t.r) t.vx *= -1;
-    if (t.y < t.r || t.y > H - t.r) t.vy *= -1;
-    t.vx *= 0.99; t.vy *= 0.99;
-
-    X.save(); X.translate(t.x, t.y);
-    X.strokeStyle = t.col; X.lineWidth = t.type === 'boss' ? 3.5 : 2;
-    const sides = t.type === 'boss' ? 8 : (t.type === 'mini' ? 6 : 4);
-    X.beginPath();
-    for (let s = 0; s <= sides; s++) {
-      const a = tick * 0.03 + (s * 6.28 / sides);
-      s ? X.lineTo(Math.cos(a)*t.r, Math.sin(a)*t.r) : X.moveTo(Math.cos(a)*t.r, Math.sin(a)*t.r);
-    }
-    X.stroke();
-    if (t.sh > 0) {
-      X.strokeStyle = '#38bdf8'; X.lineWidth = 2; X.globalAlpha = 0.65;
-      X.beginPath(); X.arc(0, 0, t.r + 7, 0, 6.28 * (t.sh / t.maxSh)); X.stroke();
-    }
-    /* HP Bar */
-    X.globalAlpha = 0.9; X.fillStyle = '#0f172a'; X.fillRect(-t.r, -t.r - 12, t.r*2, 4);
-    X.fillStyle = t.col; X.fillRect(-t.r, -t.r - 12, t.r*2 * (t.hp / t.maxHp), 4);
-    X.restore();
-  });
-
-  /* Shockwaves & Sparks */
-  for (let i = waves.length - 1; i >= 0; i--) {
-    const w = waves[i]; w.r += (w.maxR - w.r) * 0.14 * tScale + 2;
-    const a = 1 - w.r / w.maxR;
-    if (a <= 0.03) { waves.splice(i, 1); continue; }
-    X.save(); X.globalCompositeOperation = 'lighter'; X.strokeStyle = w.col;
-    X.globalAlpha = a; X.lineWidth = w.lw; X.beginPath(); X.arc(w.x, w.y, w.r, 0, 6.28); X.stroke(); X.restore();
-  }
-  for (let i = sparks.length - 1; i >= 0; i--) {
-    const s = sparks[i]; s.x += s.vx * tScale; s.y += s.vy * tScale; s.vy += 0.15 * tScale; s.life *= 0.92;
-    if (s.life < 0.05) { sparks.splice(i, 1); continue; }
-    X.fillStyle = s.col; X.globalAlpha = s.life; X.fillRect(s.x, s.y, 2.5, 2.5);
-  }
-
-  if (flash > 0.01) { X.fillStyle = `rgba(255,255,255,${flash})`; X.fillRect(0,0,W,H); flash *= 0.82; }
-  X.restore();
-
-  if (Math.floor(tick) % 10 === 0) document.getElementById('hudStats').textContent = `FPS: ${fps} | ENTITIES: ${targets.length}`;
-  requestAnimationFrame(loop);
-}
-for (let i = 0; i < 3; i++) spawnEntity();
-requestAnimationFrame(loop);
+  requestAnimationFrame(frame);
+})();
 </script>
 </body>
 </html>
