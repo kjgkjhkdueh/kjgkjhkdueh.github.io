@@ -2,1004 +2,698 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>DISCHARGE MATRIX // CYBERPUNK OVERDRIVE v26</title>
+<title>DISCHARGE MATRIX // APEX X20 OVERCLOCK</title>
 <style>
   :root {
-    --cp-yellow: #fcee09;
-    --cp-cyan: #00f0ff;
-    --cp-red: #ff003c;
-    --cp-purple: #b829ea;
-    --cp-bg: #05060a;
-    --cp-panel: #0a0c14;
-    --cp-card: #0e121e;
-    --cut-lg: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
-    --cut-sm: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    --cyan: #00f3ff; --purple: #b829ea; --pink: #ff007f; --amber: #ffbe0b; --green: #10b981;
+    --bg: #02040a; --panel: rgba(6, 11, 25, 0.94); --card: rgba(10, 18, 38, 0.85);
+    --cut: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-
   body {
-    background: var(--cp-bg);
-    color: #e2e8f0;
-    height: 100vh;
-    display: flex;
-    overflow: hidden;
-    font-family: 'Segoe UI', 'Consolas', monospace, sans-serif;
+    background: var(--bg); color: #e2e8f0; height: 100vh; display: flex; overflow: hidden;
+    font: 600 13px/1.3 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
-
-  /* Subtle CRT Scanline Overlay */
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 90;
-    background: repeating-linear-gradient(0deg, rgba(0, 240, 255, 0.018) 0px, rgba(0, 240, 255, 0.018) 1px, transparent 1px, transparent 3px);
-  }
-
-  /* CYBERPUNK SIDEBAR */
   #sidebar {
-    width: 375px;
-    background: linear-gradient(180deg, #090b12 0%, #040508 100%);
-    border-right: 2px solid var(--cp-yellow);
-    box-shadow: 6px 0 30px rgba(252, 238, 9, 0.12), inset -1px 0 15px rgba(0, 240, 255, 0.12);
-    padding: 14px;
-    overflow-y: auto;
-    z-index: 20;
-    position: relative;
+    width: 360px; padding: 14px; overflow-y: auto; z-index: 20; position: relative;
+    background: linear-gradient(180deg, rgba(6, 11, 24, 0.98), rgba(2, 4, 12, 0.99));
+    border-right: 1px solid rgba(0, 243, 255, 0.4);
+    box-shadow: 12px 0 40px rgba(0, 0, 0, 0.95), inset -2px 0 24px rgba(0, 243, 255, 0.08);
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: linear-gradient(var(--cyan), var(--purple)); }
+
+  .header-card {
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(184, 41, 234, 0.1));
+    border: 1px solid rgba(0, 243, 255, 0.35); padding: 10px 12px; margin-bottom: 10px;
+    clip-path: var(--cut); position: relative; overflow: hidden;
+  }
+  .header-card::before {
+    content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    animation: scanline 3s linear infinite;
+  }
+  @keyframes scanline { to { left: 200%; } }
+  .header-top { display: flex; justify-content: space-between; align-items: center; }
+  h1 {
+    font: 900 15px 'Consolas', 'Courier New', monospace; letter-spacing: 1.5px; text-transform: uppercase;
+    background: linear-gradient(90deg, var(--cyan), #a855f7, var(--pink), var(--cyan)) 0/200%;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    animation: flow 4s linear infinite;
+  }
+  @keyframes flow { to { background-position: 200% center; } }
+  .badge {
+    font: 800 9px monospace; letter-spacing: 1px; color: #f3e8ff; padding: 2px 7px;
+    background: rgba(184, 41, 234, 0.25); border: 1px solid var(--purple); border-radius: 3px;
+  }
+  .sub { font-size: 10.5px; color: #7dd3fc; letter-spacing: 0.8px; margin-top: 3px; opacity: 0.85; }
+
+  .armor-panel {
+    background: var(--card); border: 1px solid rgba(0, 243, 255, 0.2);
+    border-left: 3px solid var(--cyan); padding: 10px; margin-bottom: 10px;
+    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.5);
+  }
+  .armor-panel.overclock {
+    display: none; border-left-color: var(--pink);
+    border-color: rgba(255, 0, 127, 0.45);
+    background: linear-gradient(180deg, rgba(25, 10, 42, 0.9), rgba(10, 18, 38, 0.9));
+  }
+  .armor-panel.overclock.unlocked { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+  .panel-head {
+    font: 700 10px monospace; color: var(--cyan); letter-spacing: 1.2px; text-transform: uppercase;
+    margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
   }
 
-  #sidebar::-webkit-scrollbar { width: 5px; }
-  #sidebar::-webkit-scrollbar-track { background: #05060a; }
-  #sidebar::-webkit-scrollbar-thumb { background: var(--cp-yellow); }
+  .weapon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+  .w-btn {
+    background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(71, 85, 105, 0.6); color: #cbd5e1;
+    padding: 7px 8px; text-align: left; cursor: pointer; clip-path: var(--cut);
+    transition: 0.14s ease; position: relative;
+  }
+  .w-btn:hover { border-color: var(--cyan); color: #fff; background: rgba(0, 243, 255, 0.12); }
+  .w-btn.active {
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.24), rgba(184, 41, 234, 0.22));
+    border-color: var(--cyan); color: #fff; box-shadow: inset 0 0 14px rgba(0, 243, 255, 0.25);
+  }
+  .w-btn.secret { display: none; grid-column: span 2; border-color: rgba(255, 190, 11, 0.5); }
+  .w-btn.secret.unlocked { display: block; }
+  .w-title { font: 800 11px monospace; display: flex; justify-content: space-between; }
+  .w-key { color: var(--cyan); font-size: 10px; }
+  .w-desc { font-size: 10px; color: #94a3b8; margin-top: 2px; }
 
-  /* Cyberpunk Header Banner */
-  .cp-header {
-    background: var(--cp-yellow);
-    color: #05060a;
-    padding: 10px 12px;
-    clip-path: var(--cut-lg);
-    margin-bottom: 12px;
-    position: relative;
-    box-shadow: 0 0 20px rgba(252, 238, 9, 0.35);
+  .act-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .act-btn {
+    font: 800 10px monospace; letter-spacing: 0.6px; padding: 8px 6px; color: #fff;
+    border: 1px solid rgba(0, 243, 255, 0.5); background: rgba(12, 24, 48, 0.9);
+    cursor: pointer; clip-path: var(--cut); transition: 0.15s; text-align: center;
   }
-  .cp-header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 9px;
-    font-weight: 900;
-    letter-spacing: 1.5px;
-    border-bottom: 1px solid rgba(0,0,0,0.25);
-    padding-bottom: 3px;
-    margin-bottom: 4px;
-  }
-  .cp-header h1 {
-    font-size: 16px;
-    font-weight: 900;
-    letter-spacing: 1.8px;
-    text-transform: uppercase;
-  }
-  .cp-tag {
-    background: #05060a;
-    color: var(--cp-yellow);
-    padding: 1px 6px;
-    font-size: 9px;
-    font-weight: 800;
-  }
+  .act-btn:hover { transform: translateY(-1px); box-shadow: 0 0 15px rgba(0, 243, 255, 0.45); border-color: var(--cyan); }
+  .act-btn.primary { background: linear-gradient(135deg, #0284c7, #4f46e5); }
+  .act-btn.orbital { background: linear-gradient(135deg, #be185d, #7e22ce); border-color: #f472b6; }
+  .act-btn.boss { background: linear-gradient(135deg, #b45309, #dc2626); border-color: var(--amber); }
+  .act-btn.danger { background: rgba(127, 29, 29, 0.7); border-color: #ef4444; color: #fecaca; }
 
-  /* Modular Armor Sections */
-  .cp-module {
-    background: var(--cp-panel);
-    border: 1px solid rgba(0, 240, 255, 0.25);
-    border-left: 3px solid var(--cp-cyan);
-    clip-path: var(--cut-sm);
-    padding: 10px 11px;
-    margin-bottom: 11px;
-    position: relative;
-  }
-  .cp-module.yellow-accent { border-left-color: var(--cp-yellow); border-color: rgba(252, 238, 9, 0.3); }
-  .cp-module.red-accent { border-left-color: var(--cp-red); border-color: rgba(255, 0, 60, 0.35); }
-
-  .module-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: 1.6px;
-    color: var(--cp-cyan);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    padding-bottom: 4px;
-    border-bottom: 1px dashed rgba(0, 240, 255, 0.2);
-  }
-  .yellow-accent .module-head { color: var(--cp-yellow); border-bottom-color: rgba(252, 238, 9, 0.25); }
-  .red-accent .module-head { color: var(--cp-red); border-bottom-color: rgba(255, 0, 60, 0.25); }
-
-  /* Cyberpunk Weapon Selection Cards */
-  .weapon-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 7px;
-  }
-  .w-card {
-    background: var(--cp-card);
-    border: 1px solid rgba(0, 240, 255, 0.28);
-    clip-path: var(--cut-sm);
-    padding: 8px 9px;
-    text-align: left;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.14s ease;
-    color: #cbd5e1;
-  }
-  .w-card:hover {
-    border-color: var(--cp-cyan);
-    background: rgba(0, 240, 255, 0.12);
-    transform: translateY(-1px);
-  }
-  .w-card.active {
-    background: linear-gradient(135deg, rgba(252, 238, 9, 0.22), rgba(0, 240, 255, 0.18));
-    border: 1px solid var(--cp-yellow);
-    box-shadow: inset 0 0 14px rgba(252, 238, 9, 0.25), 0 0 12px rgba(252, 238, 9, 0.2);
-    color: #fff;
-  }
-  .w-card.active::before {
-    content: "EQUIPPED";
-    position: absolute;
-    top: 0; right: 0;
-    background: var(--cp-yellow);
-    color: #05060a;
-    font-size: 7.5px;
-    font-weight: 900;
-    padding: 1px 5px;
-    letter-spacing: 0.8px;
-  }
-  .w-card .w-key {
-    display: inline-block;
-    background: rgba(0, 240, 255, 0.18);
-    color: var(--cp-cyan);
-    border: 1px solid var(--cp-cyan);
-    font-size: 9px;
-    font-weight: 900;
-    padding: 0 4px;
-    margin-bottom: 3px;
-  }
-  .w-card.active .w-key {
-    background: var(--cp-yellow);
-    color: #05060a;
-    border-color: var(--cp-yellow);
-  }
-  .w-card .w-name {
-    display: block;
-    font-size: 11.5px;
-    font-weight: 900;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-  }
-  .w-card .w-sub {
-    display: block;
-    font-size: 9px;
-    color: #7dd3fc;
-    margin-top: 2px;
-  }
-  .w-card.secret {
-    grid-column: span 2;
-    border-color: var(--cp-purple);
-    background: linear-gradient(90deg, rgba(184, 41, 234, 0.18), rgba(255, 0, 60, 0.15));
-  }
-
-  /* Tactical Action Buttons */
-  .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
-  .cp-btn {
-    background: #111625;
-    border: 1px solid var(--cp-cyan);
-    color: var(--cp-cyan);
-    clip-path: var(--cut-sm);
-    padding: 7px 8px;
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: 0.14s;
-  }
-  .cp-btn:hover { background: var(--cp-cyan); color: #05060a; box-shadow: 0 0 14px var(--cp-cyan); }
-  .cp-btn.warn { border-color: var(--cp-yellow); color: var(--cp-yellow); }
-  .cp-btn.warn:hover { background: var(--cp-yellow); color: #05060a; box-shadow: 0 0 14px var(--cp-yellow); }
-  .cp-btn.danger { border-color: var(--cp-red); color: var(--cp-red); }
-  .cp-btn.danger:hover { background: var(--cp-red); color: #fff; box-shadow: 0 0 14px var(--cp-red); }
-
-  /* Cyberpunk Sliders */
   .stat-row { margin-bottom: 8px; }
-  .stat-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.8px;
-    margin-bottom: 3px;
-    color: #94a3b8;
-  }
+  .stat-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; font-size: 11px; color: #94a3b8; }
   .stat-val {
-    background: rgba(0, 240, 255, 0.12);
-    border: 1px solid rgba(0, 240, 255, 0.4);
-    color: var(--cp-cyan);
-    padding: 0 5px;
-    font-size: 9.5px;
+    font: 700 10.5px monospace; color: var(--cyan); background: rgba(0, 243, 255, 0.1);
+    border: 1px solid rgba(0, 243, 255, 0.3); padding: 1px 6px; border-radius: 3px;
   }
-  .dev-stat .stat-val {
-    background: rgba(252, 238, 9, 0.14);
-    border-color: var(--cp-yellow);
-    color: var(--cp-yellow);
-  }
+  .overclock .stat-val { color: #f472b6; border-color: rgba(244, 114, 182, 0.4); background: rgba(244, 114, 182, 0.1); }
 
   input[type="range"] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 5px;
-    background: #141a2b;
-    border: 1px solid rgba(0, 240, 255, 0.3);
-    outline: none;
+    -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; outline: none;
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.4), rgba(184, 41, 234, 0.4));
   }
   input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 11px;
-    height: 14px;
-    background: var(--cp-yellow);
-    border: 1px solid #05060a;
-    cursor: pointer;
-    box-shadow: 0 0 8px var(--cp-yellow);
+    -webkit-appearance: none; width: 12px; height: 12px; background: var(--cyan);
+    transform: rotate(45deg); cursor: pointer; border: 1px solid #fff; box-shadow: 0 0 8px var(--cyan);
   }
+  .overclock input[type="range"]::-webkit-slider-thumb { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
 
-  select, .code-input {
-    width: 100%;
-    background: #070910;
-    color: var(--cp-yellow);
-    border: 1px solid var(--cp-yellow);
-    padding: 6px 8px;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    outline: none;
+  select, input[type="text"] {
+    width: 100%; background: #050a18; color: #e2e8f0; padding: 6px 8px;
+    border: 1px solid rgba(0, 243, 255, 0.35); font: 700 11.5px monospace; outline: none; border-radius: 3px;
   }
-  .code-bar { display: flex; gap: 6px; margin-top: 6px; }
-  .code-bar button {
-    background: var(--cp-yellow);
-    color: #05060a;
-    border: none;
-    padding: 0 12px;
-    font-weight: 900;
-    font-size: 10px;
-    letter-spacing: 1px;
-    cursor: pointer;
-    clip-path: var(--cut-sm);
+  .code-row { display: flex; gap: 6px; margin-top: 4px; }
+  .code-row button {
+    padding: 0 12px; background: linear-gradient(135deg, #0284c7, #7e22ce); color: #fff;
+    border: 1px solid var(--cyan); font: 800 10px monospace; cursor: pointer; clip-path: var(--cut);
   }
-  .code-bar button:hover { background: var(--cp-cyan); }
+  #code-msg { font: 700 10px monospace; margin-top: 5px; color: #64748b; min-height: 13px; }
 
-  #devStatsDrawer {
-    display: none;
-    margin-top: 9px;
-    padding-top: 8px;
-    border-top: 1px dashed var(--cp-yellow);
-  }
-  #devStatsDrawer.unlocked { display: block; }
-
-  /* Viewport & Floating HUD */
   #viewport {
-    flex: 1;
-    position: relative;
-    cursor: crosshair;
-    overflow: hidden;
-    background: radial-gradient(circle at 50% 45%, #0c1224 0%, #030408 90%);
+    flex: 1; position: relative; cursor: crosshair; overflow: hidden;
+    background: radial-gradient(circle at 50% 30%, #09122b 0%, var(--bg) 88%),
+                linear-gradient(rgba(0, 243, 255, 0.035) 1px, transparent 1px) 0 0/44px 44px,
+                linear-gradient(90deg, rgba(0, 243, 255, 0.035) 1px, transparent 1px) 0 0/44px 44px;
   }
-  .hud-bar {
-    position: absolute;
-    top: 12px; left: 14px; right: 14px;
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none;
-    z-index: 15;
+  #top-hud {
+    position: absolute; top: 12px; left: 16px; right: 16px; display: flex;
+    justify-content: space-between; pointer-events: none; z-index: 10;
   }
   .hud-pill {
-    background: rgba(8, 11, 19, 0.88);
-    border: 1px solid var(--cp-cyan);
-    border-left: 3px solid var(--cp-yellow);
-    clip-path: var(--cut-sm);
-    padding: 5px 11px;
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: 1.2px;
-    color: var(--cp-cyan);
+    background: rgba(6, 11, 25, 0.85); border: 1px solid rgba(0, 243, 255, 0.35);
+    padding: 5px 12px; font: 700 10.5px monospace; color: #7dd3fc; letter-spacing: 1px;
+    clip-path: var(--cut);
   }
-  #alertBanner {
-    position: absolute;
-    top: 48px; left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 0, 60, 0.92);
-    color: #fff;
-    border: 1px solid var(--cp-yellow);
-    padding: 4px 16px;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    clip-path: var(--cut-sm);
-    opacity: 0;
-    transition: opacity 0.25s;
-    pointer-events: none;
-    z-index: 16;
+  #banner {
+    position: absolute; top: 52px; left: 50%; transform: translateX(-50%);
+    font: 900 13px monospace; letter-spacing: 2px; color: var(--amber);
+    text-shadow: 0 0 14px rgba(255, 190, 11, 0.8); pointer-events: none; opacity: 0; transition: 0.25s;
+  }
+  #xp-hud {
+    position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+    width: 390px; background: rgba(6, 11, 25, 0.9); border: 1px solid rgba(0, 243, 255, 0.4);
+    padding: 8px 14px; clip-path: var(--cut); pointer-events: none; z-index: 15;
+    box-shadow: 0 0 22px rgba(0, 0, 0, 0.85);
+  }
+  .xp-top { display: flex; justify-content: space-between; font: 800 10.5px monospace; margin-bottom: 5px; letter-spacing: 1px; }
+  .xp-track { width: 100%; height: 7px; background: #0f172a; border-radius: 3px; overflow: hidden; border: 1px solid rgba(0, 243, 255, 0.25); }
+  #xp-fill {
+    width: 0%; height: 100%; transition: width 0.2s ease;
+    background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
+    box-shadow: 0 0 10px var(--cyan);
   }
   canvas { display: block; width: 100%; height: 100%; }
 </style>
 </head>
 <body>
-
-<aside id="sidebar">
-  <div class="cp-header">
-    <div class="cp-header-top">
-      <span>ARASAKA // MILITECH BLACKWALL OS</span>
-      <span class="cp-tag">V26.0</span>
-    </div>
-    <h1>DISCHARGE MATRIX</h1>
-  </div>
-
-  <!-- 01 WEAPON SELECTION -->
-  <div class="cp-module yellow-accent">
-    <div class="module-head">
-      <span>01 // CYBER-ARMAMENT SELECT</span>
-      <span id="activeTag">ARC RAIL</span>
-    </div>
-    <div class="weapon-grid" id="weaponGrid">
-      <button class="w-card active" data-w="arc">
-        <span class="w-key">01</span>
-        <span class="w-name">Arc Railgun</span>
-        <span class="w-sub">Hyper-Lance + Helix</span>
-      </button>
-      <button class="w-card" data-w="tesla">
-        <span class="w-key">02</span>
-        <span class="w-name">Tesla Spire</span>
-        <span class="w-sub">3D Toroid + Chain</span>
-      </button>
-      <button class="w-card" data-w="orb">
-        <span class="w-key">03</span>
-        <span class="w-name">Prism Pylon</span>
-        <span class="w-sub">Laser Mesh + Pulse</span>
-      </button>
-      <button class="w-card" data-w="singularity">
-        <span class="w-key">04</span>
-        <span class="w-name">Singularity</span>
-        <span class="w-sub">Black Hole + Jets</span>
-      </button>
-    </div>
-    <div class="action-row">
-      <button class="cp-btn warn" id="btnOverdrive">OVERDRIVE [SPC]</button>
-      <button class="cp-btn" id="btnOrbital">ORBITAL [O]</button>
-      <button class="cp-btn" id="btnTower">DEPLOY COIL [T]</button>
-      <button class="cp-btn danger" id="btnSpawn">SPAWN BOSS [B]</button>
-    </div>
-  </div>
-
-  <!-- 02 MATRIX PARAMETERS -->
-  <div class="cp-module">
-    <div class="module-head">
-      <span>02 // MATRIX PARAMETERS</span>
-      <span id="powerReadout">1.20 GW</span>
-    </div>
-    <div class="stat-row">
-      <div class="stat-meta"><span>CORE VOLTAGE</span><span class="stat-val" id="vVolt">75%</span></div>
-      <input type="range" id="sVolt" min="15" max="150" value="75">
-    </div>
-    <div class="stat-row">
-      <div class="stat-meta"><span>ARC CHAOS</span><span class="stat-val" id="vChaos">65%</span></div>
-      <input type="range" id="sChaos" min="10" max="160" value="65">
-    </div>
-    <div class="stat-row">
-      <div class="stat-meta"><span>DENDRITE FORKS</span><span class="stat-val" id="vFork">55%</span></div>
-      <input type="range" id="sFork" min="0" max="100" value="55">
-    </div>
-    <div class="stat-row">
-      <div class="stat-meta"><span>GRAVITY WELL</span><span class="stat-val" id="vGrav">1.20 G</span></div>
-      <input type="range" id="sGrav" min="10" max="300" value="120">
-    </div>
-    <div class="stat-row">
-      <div class="stat-meta"><span>TIME DILATION</span><span class="stat-val" id="vTime">1.00x</span></div>
-      <input type="range" id="sTime" min="20" max="160" value="100">
-    </div>
-    <div class="stat-row" style="margin-bottom:0;">
-      <div class="stat-meta"><span>ION SPECTRUM</span></div>
-      <select id="selColor">
-        <option value="#00f0ff">CYBER CYAN // ICE</option>
-        <option value="#fcee09">NIGHT CITY YELLOW // VOLT</option>
-        <option value="#ff003c">CRIMSON RED // BLACKWALL</option>
-        <option value="#b829ea">NETRUNNER VIOLET // VOID</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- 03 DEV OVERRIDE & RAINBOWDEVBLU EXPANSION -->
-  <div class="cp-module red-accent">
-    <div class="module-head">
-      <span>03 // DEV OVERRIDE TERMINAL</span>
-      <span id="codeStatus">LOCKED</span>
-    </div>
-    <div class="code-bar">
-      <input type="text" class="code-input" id="codeInput" placeholder="ENTER OVERRIDE KEY...">
-      <button id="btnRedeem">EXEC</button>
-    </div>
-    <div class="action-row" style="margin-top:7px;">
-      <button class="cp-btn" id="btnAudio">AUDIO: OFF</button>
-      <button class="cp-btn danger" id="btnPurge">PURGE GRID [C]</button>
+  <aside id="sidebar">
+    <div class="header-card">
+      <div class="header-top">
+        <h1>Discharge Matrix</h1>
+        <span class="badge">APEX X20</span>
+      </div>
+      <div class="sub">HIGH-VOLTAGE PLASMA &amp; SINGULARITY ENGINE</div>
     </div>
 
-    <!-- 5 EXTRA STAT CONTROLS UNLOCKED BY RainbowDEVblu -->
-    <div id="devStatsDrawer">
-      <div class="module-head" style="color:var(--cp-yellow); margin-bottom:6px;">
-        <span>RAINBOWDEVBLU // +5 OVERCLOCK STATS</span>
-        <span>ACTIVE</span>
+    <div class="armor-panel">
+      <div class="panel-head"><span>01 // Weapon Systems</span><span>[1-6]</span></div>
+      <div class="weapon-grid" id="weapons">
+        <button class="w-btn active" data-w="arc">
+          <div class="w-title"><span>ARC LANCE</span><span class="w-key">1</span></div>
+          <div class="w-desc">Core plasma beam</div>
+        </button>
+        <button class="w-btn" data-w="tesla">
+          <div class="w-title"><span>TESLA TOROID</span><span class="w-key">2</span></div>
+          <div class="w-desc">3D coil + chain arcs</div>
+        </button>
+        <button class="w-btn" data-w="orb">
+          <div class="w-title"><span>PLASMA NODES</span><span class="w-key">3</span></div>
+          <div class="w-desc">Linked pylon grid</div>
+        </button>
+        <button class="w-btn" data-w="singularity">
+          <div class="w-title"><span>SINGULARITY</span><span class="w-key">4</span></div>
+          <div class="w-desc">Relativistic black hole</div>
+        </button>
+        <button class="w-btn secret" id="btn-gengen" data-w="gengen">
+          <div class="w-title"><span>GENGEN-123 OMEGA TRI-FUSION</span><span class="w-key">5</span></div>
+          <div class="w-desc">Singularity + Tesla + Core Arcs</div>
+        </button>
+        <button class="w-btn secret" id="btn-zayon" data-w="zayon">
+          <div class="w-title"><span>ZAYON SUPREME OVERLORD</span><span class="w-key">6</span></div>
+          <div class="w-desc">Dual Singularities + God Voltage</div>
+        </button>
       </div>
-      <div class="stat-row dev-stat">
-        <div class="stat-meta"><span>1. BEAM AMPLIFIER</span><span class="stat-val" id="vAmp">1.0x</span></div>
-        <input type="range" id="sAmp" min="50" max="300" value="100">
-      </div>
-      <div class="stat-row dev-stat">
-        <div class="stat-meta"><span>2. CHAIN SNAP RADIUS</span><span class="stat-val" id="vChain">240 px</span></div>
-        <input type="range" id="sChain" min="80" max="550" value="240">
-      </div>
-      <div class="stat-row dev-stat">
-        <div class="stat-meta"><span>3. ORBITAL SPIN RATE</span><span class="stat-val" id="vSpin">1.0x</span></div>
-        <input type="range" id="sSpin" min="10" max="400" value="100">
-      </div>
-      <div class="stat-row dev-stat">
-        <div class="stat-meta"><span>4. SUPERNOVA BLAST</span><span class="stat-val" id="vNova">1.0x</span></div>
-        <input type="range" id="sNova" min="50" max="300" value="100">
-      </div>
-      <div class="stat-row dev-stat" style="margin-bottom:0;">
-        <div class="stat-meta"><span>5. RAINBOW CYCLE HZ</span><span class="stat-val" id="vHue">1.0x</span></div>
-        <input type="range" id="sHue" min="10" max="400" value="100">
+      <div class="act-grid">
+        <button class="act-btn primary" id="act-overdrive">OVERDRIVE [SPC]</button>
+        <button class="act-btn orbital" id="act-orbital">ORBITAL [O]</button>
+        <button class="act-btn boss" id="act-spawn">SPAWN BOSS [B]</button>
+        <button class="act-btn danger" id="act-purge">PURGE [C]</button>
       </div>
     </div>
-  </div>
-</aside>
 
-<main id="viewport">
-  <div class="hud-bar">
-    <div class="hud-pill" id="hudWeapon">SYSTEM: ARC RAILGUN // HOLD LMB TO FIRE</div>
-    <div class="hud-pill" id="hudStats">ENTITIES: 0 // 60 FPS</div>
-  </div>
-  <div id="alertBanner">WARNING // BOSS DETECTED</div>
-  <canvas id="sim"></canvas>
-</main>
+    <div class="armor-panel">
+      <div class="panel-head"><span>02 // Matrix Parameters</span><span id="fps-read">60 FPS</span></div>
+      <div class="stat-row">
+        <div class="stat-top"><span>CORE VOLTAGE</span><span class="stat-val" id="v-volt">1.35 GW</span></div>
+        <input type="range" id="s-volt" min="20" max="150" value="85">
+      </div>
+      <div class="stat-row">
+        <div class="stat-top"><span>ARC CHAOS</span><span class="stat-val" id="v-chaos">105%</span></div>
+        <input type="range" id="s-chaos" min="20" max="220" value="105">
+      </div>
+      <div class="stat-row">
+        <div class="stat-top"><span>DENDRITE FORKS</span><span class="stat-val" id="v-fork">60%</span></div>
+        <input type="range" id="s-fork" min="0" max="100" value="60">
+      </div>
+      <div class="stat-row">
+        <div class="stat-top"><span>CHAIN RADIUS</span><span class="stat-val" id="v-chain">280 PX</span></div>
+        <input type="range" id="s-chain" min="80" max="500" value="280">
+      </div>
+      <div class="stat-row">
+        <div class="stat-top"><span>GRAVITY WELL</span><span class="stat-val" id="v-grav">1.40 G</span></div>
+        <input type="range" id="s-grav" min="0" max="300" value="140">
+      </div>
+      <div class="stat-row">
+        <div class="stat-top"><span>TIME DILATION</span><span class="stat-val" id="v-time">1.00 X</span></div>
+        <input type="range" id="s-time" min="20" max="150" value="100">
+      </div>
+      <div class="stat-row">
+        <div class="stat-top"><span>ION SPECTRUM</span></div>
+        <select id="sel-color">
+          <option value="#00f3ff">CYAN // IONIZED PLASMA</option>
+          <option value="#b829ea">PURPLE // VOID ANTIMATTER</option>
+          <option value="#ff007f">PINK // HYPERNOVA SURGE</option>
+          <option value="#ffbe0b">AMBER // SOLAR CORONA</option>
+          <option value="#10b981">EMERALD // GAMMA FLUX</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="armor-panel overclock" id="rainbow-panel">
+      <div class="panel-head"><span style="color:#f472b6">03 // RainbowDEV Overclock</span><span style="color:#f472b6">+5 STATS</span></div>
+      <div class="stat-row">
+        <div class="stat-top"><span>BEAM AMPLIFIER</span><span class="stat-val" id="v-amp">1.50 X</span></div>
+        <input type="range" id="s-amp" min="50" max="300" value="150">
+      </div>
+      <div class="stat-row">
+        <div class="stat-top"><span>ORBITAL SPIN RATE</span><span class="stat-val" id="v-spin">1.40 X</span></div>
+        <input type="range" id="s-spin" min="20" max="350" value="140">
+      </div>
+      <div class="stat-row">
+        <div class="stat-top"><span>SUPERNOVA BLAST</span><span class="stat-val" id="v-nova">160%</span></div>
+        <input type="range" id="s-nova" min="50" max="300" value="160">
+      </div>
+      <div class="stat-row">
+        <div class="stat-top"><span>SPARK DENSITY</span><span class="stat-val" id="v-spark">150%</span></div>
+        <input type="range" id="s-spark" min="20" max="300" value="150">
+      </div>
+      <div class="stat-row">
+        <div class="stat-top"><span>RAINBOW CYCLE HZ</span><span class="stat-val" id="v-hue">2.0 HZ</span></div>
+        <input type="range" id="s-hue" min="5" max="80" value="20">
+      </div>
+    </div>
+
+    <div class="armor-panel">
+      <div class="panel-head"><span>04 // Dev Override Terminal</span><span id="audio-btn" style="cursor:pointer;color:#00f3ff">AUDIO: OFF</span></div>
+      <div class="code-row">
+        <input type="text" id="code-in" placeholder="ENTER DEV CODE...">
+        <button id="code-exec">EXEC</button>
+      </div>
+      <div id="code-msg">AWAITING OVERRIDE KEY...</div>
+    </div>
+  </aside>
+
+  <main id="viewport">
+    <div id="top-hud">
+      <div class="hud-pill" id="hud-mode">SYS: ARC LANCE // HOLD LMB</div>
+      <div class="hud-pill" id="hud-ent">ENTITIES: 0 // KILLS: 0</div>
+    </div>
+    <div id="banner">OMEGA DREADNOUGHT DETECTED</div>
+    <div id="xp-hud">
+      <div class="xp-top">
+        <span style="color:var(--cyan)" id="xp-lvl">RANK 01 // INITIATE</span>
+        <span style="color:#c4b5fd" id="xp-val">0 / 100 XP</span>
+      </div>
+      <div class="xp-track"><div id="xp-fill"></div></div>
+    </div>
+    <canvas id="sim"></canvas>
+  </main>
 
 <script>
-const canvas = document.getElementById('sim'), ctx = canvas.getContext('2d');
-let W = 0, H = 0, tick = 0, shake = 0, charge = 0;
-let weapon = 'arc', baseColor = '#00f0ff', rainbowMode = false, godMode = false;
-let holding = false, mouse = { x: 0, y: 0 };
+  const cv = document.getElementById('sim'), ctx = cv.getContext('2d');
+  let W, H, weapon = 'arc', baseColor = '#00f3ff', rainbow = false, godMode = false;
+  let holding = false, shake = 0, tick = 0, kills = 0, actx = null, audioOn = false;
+  let mouse = { x: 0, y: 0 }, sparks = [], nodes = [], targets = [], rings = [];
+  let xp = 0, nextXp = 100, rank = 1;
+  const ranks = ['INITIATE', 'CONDUCTOR', 'ARC WARDEN', 'PLASMA LORD', 'SINGULARITY', 'APEX OVERLORD'];
 
-/* Core + 5 RainbowDEVblu Bonus Stats */
-const cfg = {
-  volt: 75, chaos: 65, fork: 55, grav: 1.2, time: 1.0,
-  amp: 1.0, chain: 240, spin: 1.0, nova: 1.0, hueRate: 1.0
-};
+  const cfg = { volt: 85, chaos: 1.05, fork: 0.6, chain: 280, grav: 1.4, time: 1.0, amp: 1.0, spin: 1.0, nova: 1.0, spark: 1.0, hueHz: 2.0 };
 
-let sparks = [], waves = [], nodes = [], towers = [], targets = [];
-
-function resize() {
-  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-  W = canvas.offsetWidth; H = canvas.offsetHeight;
-  canvas.width = W * dpr; canvas.height = H * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-window.addEventListener('resize', resize);
-resize();
-
-/* Web Audio Procedural Synth */
-let audioCtx = null, audioOn = false;
-function playZap(freq = 160, dur = 0.08, type = 'sawtooth', vol = 0.06) {
-  if (!audioOn) return;
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + dur);
-  g.gain.setValueAtTime(vol, audioCtx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-  osc.connect(g); g.connect(audioCtx.destination);
-  osc.start(); osc.stop(audioCtx.currentTime + dur);
-}
-
-function getCol(offset = 0) {
-  if (rainbowMode) return `hsl(${(tick * 3 * cfg.hueRate + offset) % 360}, 100%, 58%)`;
-  return baseColor;
-}
-
-function showAlert(msg, col = '#ff003c') {
-  const b = document.getElementById('alertBanner');
-  b.textContent = msg; b.style.background = col; b.style.opacity = '1';
-  clearTimeout(b._t); b._t = setTimeout(() => b.style.opacity = '0', 2400);
-}
-
-/* Clean Multi-Pass Cyber Lightning */
-function drawLightning(x1, y1, x2, y2, disp, width = 2, col = getCol()) {
-  const steps = 12;
-  const pts = [{ x: x1, y: y1 }];
-  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
-  const nx = -dy / len, ny = dx / len;
-  for (let i = 1; i < steps; i++) {
-    const t = i / steps;
-    const env = Math.sin(t * Math.PI);
-    const off = (Math.random() - 0.5) * disp * env;
-    pts.push({ x: x1 + dx * t + nx * off, y: y1 + dy * t + ny * off });
-  }
-  pts.push({ x: x2, y: y2 });
-
-  ctx.save();
-  ctx.globalCompositeOperation = 'lighter';
-  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-
-  /* Outer Neon Glow */
-  ctx.beginPath();
-  pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
-  ctx.strokeStyle = col;
-  ctx.lineWidth = width * 4.2 * cfg.amp;
-  ctx.globalAlpha = 0.28;
-  ctx.stroke();
-
-  /* White-Hot Core */
-  ctx.lineWidth = Math.max(1.2, width * 0.85 * cfg.amp);
-  ctx.strokeStyle = '#ffffff';
-  ctx.globalAlpha = 0.95;
-  ctx.stroke();
-
-  /* Crisp Dendrite Forks */
-  if (cfg.fork > 5 && disp > 14) {
-    for (let i = 2; i < pts.length - 2; i += 3) {
-      if (Math.random() * 100 < cfg.fork) {
-        const p = pts[i];
-        const ang = Math.atan2(dy, dx) + (Math.random() - 0.5) * 1.4;
-        const flen = len * (0.18 + Math.random() * 0.2);
-        const fx = p.x + Math.cos(ang) * flen, fy = p.y + Math.sin(ang) * flen;
-        ctx.beginPath(); ctx.moveTo(p.x, p.y);
-        ctx.lineTo((p.x + fx) / 2 + (Math.random() - 0.5) * 16, (p.y + fy) / 2 + (Math.random() - 0.5) * 16);
-        ctx.lineTo(fx, fy);
-        ctx.strokeStyle = col; ctx.lineWidth = width * 1.3; ctx.globalAlpha = 0.65; ctx.stroke();
-      }
-    }
-  }
-  ctx.restore();
-}
-
-function addSparks(x, y, n = 8, col = getCol()) {
-  for (let i = 0; i < n && sparks.length < 240; i++) {
-    const a = Math.random() * Math.PI * 2, s = 1.5 + Math.random() * 5.5;
-    sparks.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 1, col });
-  }
-}
-
-function addWave(x, y, maxR, col = getCol()) {
-  waves.push({ x, y, r: 8, maxR: maxR * cfg.nova, life: 1, col });
-}
-
-/* Weighted Boss & Target Spawner (1/10 Boss, 1/2 Mini-Boss) */
-function spawnEntity() {
-  const roll = Math.random();
-  let kind = 'cap', hp = 50, maxHp = 50, r = 16, col = '#00f0ff';
-  if (roll < 0.10) {
-    kind = 'boss'; hp = 600; maxHp = 600; r = 38; col = '#ff003c';
-    showAlert('WARNING // OMEGA DREADNOUGHT BOSS [1/10]', '#ff003c');
-  } else if (roll < 0.60) {
-    kind = 'mini'; hp = 210; maxHp = 210; r = 25; col = '#fcee09';
-    showAlert('ALERT // VANGUARD MINI-BOSS [1/2]', '#b45309');
-  }
-  targets.push({
-    x: 80 + Math.random() * (W - 160),
-    y: 80 + Math.random() * (H - 160),
-    vx: (Math.random() - 0.5) * 2.2,
-    vy: (Math.random() - 0.5) * 2.2,
-    kind, hp, maxHp, r, col, ang: 0
-  });
-}
-
-function damageAt(x, y, radius, dmg) {
-  for (let i = targets.length - 1; i >= 0; i--) {
-    const t = targets[i];
-    if (Math.hypot(t.x - x, t.y - y) <= radius + t.r) {
-      t.hp -= dmg * (godMode ? 12 : 1) * cfg.amp;
-      if (t.hp <= 0) {
-        addSparks(t.x, t.y, t.kind === 'boss' ? 50 : 22, t.col);
-        addWave(t.x, t.y, t.r * 5, t.col);
-        shake = Math.max(shake, t.kind === 'boss' ? 18 : 8);
-        playZap(90, 0.25, 'square', 0.1);
-        targets.splice(i, 1);
-      }
-    }
-  }
-}
-
-/* SUPER-COOL WEAPON RENDERERS */
-function renderArcRailgun(tx, ty) {
-  const cx = W / 2, cy = H / 2, col = getCol();
-  const dx = tx - cx, dy = ty - cy, dist = Math.hypot(dx, dy) || 1, ang = Math.atan2(dy, dx);
-
-  /* Core Emitter Ring */
-  ctx.save();
-  ctx.translate(cx, cy); ctx.rotate(ang);
-  ctx.strokeStyle = col; ctx.lineWidth = 2;
-  ctx.strokeRect(-14, -14, 28, 28);
-  ctx.rotate(tick * 0.08 * cfg.spin);
-  ctx.strokeStyle = '#fcee09';
-  ctx.strokeRect(-10, -10, 20, 20);
-  ctx.restore();
-
-  /* Main Rail Beam + Dual Helical Plasma Ribbons */
-  drawLightning(cx, cy, tx, ty, cfg.chaos * 0.75, 2.6, col);
-  ctx.save();
-  ctx.globalCompositeOperation = 'lighter';
-  for (let strand = -1; strand <= 1; strand += 2) {
-    ctx.beginPath();
-    for (let i = 0; i <= 24; i++) {
-      const f = i / 24;
-      const wave = Math.sin(f * 14 - tick * 0.25 * cfg.spin) * 14 * strand * cfg.amp;
-      const px = cx + dx * f + (-dy / dist) * wave;
-      const py = cy + dy * f + (dx / dist) * wave;
-      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-    }
-    ctx.strokeStyle = strand === 1 ? col : '#fcee09';
-    ctx.lineWidth = 1.8;
-    ctx.stroke();
-  }
-  ctx.restore();
-
-  addSparks(tx, ty, 3, col);
-  damageAt(tx, ty, 36, 3.2);
-}
-
-function renderTeslaSpire(x, y, powerScale = 1) {
-  const col = getCol(30);
-  ctx.save();
-  ctx.translate(x, y);
-
-  /* Sleek Cybernetic Copper/Neon Toroid Coil */
-  for (let i = 0; i < 4; i++) {
-    const r = (22 - i * 4) * powerScale;
-    ctx.beginPath();
-    ctx.ellipse(0, i * 4 - 6, r, r * 0.42, 0, 0, Math.PI * 2);
-    ctx.strokeStyle = i % 2 === 0 ? col : '#fcee09';
-    ctx.lineWidth = 2.2;
-    ctx.stroke();
-  }
-
-  /* 4 Orbiting Corona Satellites */
-  for (let k = 0; k < 4; k++) {
-    const a = tick * 0.07 * cfg.spin + (k * Math.PI) / 2;
-    const ox = Math.cos(a) * 32 * powerScale, oy = Math.sin(a) * 16 * powerScale;
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(ox, oy, 2.8, 0, Math.PI * 2); ctx.fill();
-    if (Math.random() < 0.35) drawLightning(0, -6, ox, oy, 14, 1.2, col);
-  }
-  ctx.restore();
-
-  /* Snap Chain Lightning to Targets in Range */
-  targets.forEach(t => {
-    if (Math.hypot(t.x - x, t.y - y) < cfg.chain) {
-      drawLightning(x, y - 6, t.x, t.y, cfg.chaos * 0.65, 1.8, col);
-      damageAt(t.x, t.y, 12, 1.9 * powerScale);
-    }
-  });
-}
-
-function renderSingularity(x, y, scale = 1) {
-  const col1 = getCol(0), col2 = getCol(140);
-  const rad = (24 + charge * 14) * scale * cfg.amp;
-
-  ctx.save();
-  ctx.translate(x, y);
-
-  /* Relativistic Polar Jets */
-  ctx.save();
-  ctx.rotate(-0.28);
-  ctx.globalCompositeOperation = 'lighter';
-  const jetLen = (150 + charge * 110) * scale * cfg.amp;
-  const grad = ctx.createLinearGradient(0, -jetLen, 0, jetLen);
-  grad.addColorStop(0, 'transparent');
-  grad.addColorStop(0.5, col1);
-  grad.addColorStop(1, 'transparent');
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  ctx.moveTo(-5, 0); ctx.lineTo(0, -jetLen); ctx.lineTo(5, 0);
-  ctx.lineTo(0, jetLen); ctx.closePath();
-  ctx.fill();
-  ctx.restore();
-
-  /* 3D Tilted Accretion Rings */
-  for (let r = 0; r < 3; r++) {
-    ctx.save();
-    ctx.rotate(-0.28 + Math.sin(tick * 0.03 + r) * 0.06);
-    ctx.beginPath();
-    ctx.ellipse(0, 0, rad * (2.1 + r * 0.55), rad * (0.55 + r * 0.14), 0, 0, Math.PI * 2);
-    ctx.strokeStyle = r === 1 ? '#fcee09' : (r === 0 ? col1 : col2);
-    ctx.lineWidth = 2.4 - r * 0.4;
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  /* Event Horizon Core + Photon Sphere */
-  ctx.beginPath(); ctx.arc(0, 0, rad, 0, Math.PI * 2);
-  ctx.fillStyle = '#020306'; ctx.fill();
-  ctx.lineWidth = 3; ctx.strokeStyle = '#ffffff'; ctx.stroke();
-
-  /* Curved Inward Spiral Arcs */
-  for (let s = 0; s < 3; s++) {
-    const a0 = tick * 0.09 * cfg.spin + s * 2.1;
-    const sx = Math.cos(a0) * rad * 3.4, sy = Math.sin(a0) * rad * 3.4;
-    drawLightning(sx, sy, Math.cos(a0 + 1.2) * rad, Math.sin(a0 + 1.2) * rad, 24, 1.5, col1);
-  }
-  ctx.restore();
-
-  /* Gravitational Pull on Entities */
-  targets.forEach(t => {
-    const dx = x - t.x, dy = y - t.y, d = Math.hypot(dx, dy) || 1;
-    if (d < 420) {
-      t.vx += (dx / d) * 0.22 * cfg.grav;
-      t.vy += (dy / d) * 0.22 * cfg.grav;
-    }
-  });
-  damageAt(x, y, rad * 2.2, 3.8 * scale);
-}
-
-/* Main Loop */
-function loop() {
-  tick += cfg.time;
-  ctx.fillStyle = 'rgba(4, 5, 10, 0.26)';
-  ctx.fillRect(0, 0, W, H);
-
-  /* Subtle Cyber Grid */
-  ctx.strokeStyle = 'rgba(0, 240, 255, 0.04)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  for (let gx = 0; gx < W; gx += 48) { ctx.moveTo(gx, 0); ctx.lineTo(gx, H); }
-  for (let gy = 0; gy < H; gy += 48) { ctx.moveTo(0, gy); ctx.lineTo(W, gy); }
-  ctx.stroke();
-
-  ctx.save();
-  if (shake > 0.2) {
-    ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
-    shake *= 0.88;
-  }
-
-  /* Render Prism Pylon Nodes & Laser Lattice */
-  nodes.forEach((n, idx) => {
-    const col = getCol(idx * 40);
-    ctx.save();
-    ctx.translate(n.x, n.y); ctx.rotate(tick * 0.04 * cfg.spin);
-    ctx.strokeStyle = col; ctx.lineWidth = 2;
-    ctx.strokeRect(-10, -10, 20, 20);
-    ctx.rotate(Math.PI / 4); ctx.strokeStyle = '#fcee09';
-    ctx.strokeRect(-7, -7, 14, 14);
-    ctx.restore();
-
-    if (nodes[idx + 1]) {
-      drawLightning(n.x, n.y, nodes[idx + 1].x, nodes[idx + 1].y, cfg.chaos * 0.4, 1.6, col);
-    }
-    if (Math.floor(tick) % 45 === 0) damageAt(n.x, n.y, 70, 2.5);
-  });
-
-  /* Render Deployed Tesla Towers */
-  towers.forEach(tw => renderTeslaSpire(tw.x, tw.y, 0.85));
-
-  /* Render Targets & Bosses */
-  targets.forEach(t => {
-    t.x += t.vx * cfg.time; t.y += t.vy * cfg.time; t.ang += 0.03 * cfg.time;
-    if (t.x < t.r || t.x > W - t.r) t.vx *= -1;
-    if (t.y < t.r || t.y > H - t.r) t.vy *= -1;
-
-    ctx.save();
-    ctx.translate(t.x, t.y);
-    ctx.save(); ctx.rotate(t.ang);
-    ctx.strokeStyle = t.col; ctx.lineWidth = t.kind === 'boss' ? 3 : 2;
-    const sides = t.kind === 'boss' ? 8 : (t.kind === 'mini' ? 6 : 4);
-    ctx.beginPath();
-    for (let s = 0; s <= sides; s++) {
-      const a = (s / sides) * Math.PI * 2;
-      s === 0 ? ctx.moveTo(Math.cos(a) * t.r, Math.sin(a) * t.r) : ctx.lineTo(Math.cos(a) * t.r, Math.sin(a) * t.r);
-    }
-    ctx.stroke();
-    ctx.restore();
-
-    /* Cyber HP Bar */
-    const bw = t.r * 2.1;
-    ctx.fillStyle = '#090d16'; ctx.fillRect(-bw / 2, -t.r - 12, bw, 5);
-    ctx.fillStyle = t.col; ctx.fillRect(-bw / 2, -t.r - 12, bw * Math.max(0, t.hp / t.maxHp), 5);
-    ctx.restore();
-  });
-
-  /* Active Weapon Firing */
-  if (holding) {
-    charge = Math.min(1.4, charge + 0.025 * cfg.time);
-    if (Math.random() < 0.35) playZap(190 + Math.random() * 120, 0.06);
-    if (weapon === 'arc') renderArcRailgun(mouse.x, mouse.y);
-    else if (weapon === 'tesla') renderTeslaSpire(mouse.x, mouse.y, 1.15);
-    else if (weapon === 'singularity') renderSingularity(mouse.x, mouse.y, 1.0);
-    else if (weapon === 'zayon') {
-      renderArcRailgun(mouse.x, mouse.y);
-      renderSingularity(mouse.x + Math.cos(tick * 0.08) * 75, mouse.y + Math.sin(tick * 0.08) * 75, 0.65);
-      renderSingularity(mouse.x - Math.cos(tick * 0.08) * 75, mouse.y - Math.sin(tick * 0.08) * 75, 0.65);
-      renderTeslaSpire(mouse.x, mouse.y, 1.0);
-    }
-  } else {
-    charge *= 0.9;
-  }
-
-  /* Shockwaves & Sparks */
-  waves = waves.filter(w => w.life > 0.03);
-  waves.forEach(w => {
-    w.r += (w.maxR - w.r) * 0.14; w.life *= 0.91;
-    ctx.beginPath(); ctx.arc(w.x, w.y, w.r, 0, Math.PI * 2);
-    ctx.strokeStyle = w.col; ctx.globalAlpha = w.life; ctx.lineWidth = 2.5; ctx.stroke();
-    ctx.globalAlpha = 1;
-  });
-
-  sparks = sparks.filter(s => s.life > 0.04);
-  sparks.forEach(s => {
-    s.x += s.vx * cfg.time; s.y += s.vy * cfg.time; s.life *= 0.92;
-    ctx.fillStyle = s.col; ctx.globalAlpha = s.life;
-    ctx.fillRect(s.x, s.y, 2.5, 2.5);
-  });
-  ctx.globalAlpha = 1;
-  ctx.restore();
-
-  document.getElementById('hudStats').textContent = `ENTITIES: ${targets.length} // ${godMode ? 'GOD MODE' : '60 FPS'}`;
-  requestAnimationFrame(loop);
-}
-
-/* UI & Controls Wiring */
-function selectWeapon(id) {
-  weapon = id;
-  document.querySelectorAll('.w-card').forEach(c => c.classList.toggle('active', c.dataset.w === id));
-  const label = id.toUpperCase();
-  document.getElementById('activeTag').textContent = label;
-  document.getElementById('hudWeapon').textContent = `SYSTEM: ${label} // HOLD LMB TO FIRE`;
-}
-
-document.getElementById('weaponGrid').addEventListener('click', e => {
-  const card = e.target.closest('.w-card');
-  if (card) selectWeapon(card.dataset.w);
-});
-
-function bindSlider(id, valId, key, scale, fmt) {
-  document.getElementById(id).oninput = e => {
-    const raw = +e.target.value;
-    cfg[key] = raw * scale;
-    document.getElementById(valId).textContent = fmt(raw);
-    if (key === 'volt') {
-      document.getElementById('powerReadout').textContent = godMode ? '999.9 GW' : (raw * 0.016).toFixed(2) + ' GW';
-    }
+  const resize = () => {
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    W = cv.offsetWidth; H = cv.offsetHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   };
-}
-bindSlider('sVolt', 'vVolt', 'volt', 1, v => v + '%');
-bindSlider('sChaos', 'vChaos', 'chaos', 1, v => v + '%');
-bindSlider('sFork', 'vFork', 'fork', 1, v => v + '%');
-bindSlider('sGrav', 'vGrav', 'grav', 0.01, v => (v * 0.01).toFixed(2) + ' G');
-bindSlider('sTime', 'vTime', 'time', 0.01, v => (v * 0.01).toFixed(2) + 'x');
+  window.addEventListener('resize', resize); resize();
 
-/* 5 Bonus RainbowDEVblu Sliders */
-bindSlider('sAmp', 'vAmp', 'amp', 0.01, v => (v * 0.01).toFixed(2) + 'x');
-bindSlider('sChain', 'vChain', 'chain', 1, v => v + ' px');
-bindSlider('sSpin', 'vSpin', 'spin', 0.01, v => (v * 0.01).toFixed(2) + 'x');
-bindSlider('sNova', 'vNova', 'nova', 0.01, v => (v * 0.01).toFixed(2) + 'x');
-bindSlider('sHue', 'vHue', 'hueRate', 0.01, v => (v * 0.01).toFixed(2) + 'x');
+  const getColor = (offset = 0) => rainbow ? `hsl(${(tick * cfg.hueHz + offset) % 360}, 100%, 58%)` : baseColor;
 
-document.getElementById('selColor').onchange = e => {
-  if (e.target.value === 'rainbow') { rainbowMode = true; }
-  else { rainbowMode = false; baseColor = e.target.value; }
-};
-
-function triggerOverdrive() {
-  shake = 18; playZap(110, 0.3, 'sawtooth', 0.12);
-  for (let i = 0; i < 12; i++) {
-    const tx = Math.random() * W, ty = Math.random() * H;
-    drawLightning(W / 2, H / 2, tx, ty, cfg.chaos * 1.4, 2.6, getCol(i * 25));
-    addSparks(tx, ty, 10, getCol(i * 25));
+  function beep(freq, dur = 0.08, type = 'sawtooth', vol = 0.06) {
+    if (!audioOn) return;
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
+    o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + dur);
   }
-  addWave(W / 2, H / 2, 340, getCol());
-  damageAt(W / 2, H / 2, 450, 45);
-}
 
-function triggerOrbital() {
-  const tx = mouse.x || W / 2;
-  shake = 22; playZap(75, 0.35, 'square', 0.14);
-  drawLightning(tx, 0, tx, H, cfg.chaos * 1.1, 5.5, getCol());
-  addWave(tx, H * 0.85, 280, getCol());
-  addSparks(tx, H * 0.85, 45, getCol());
-  damageAt(tx, mouse.y || H / 2, 180, 95);
-}
+  function alertBanner(txt, col = '#ffbe0b') {
+    const b = document.getElementById('banner');
+    b.textContent = txt; b.style.color = col; b.style.opacity = 1;
+    clearTimeout(b._t); b._t = setTimeout(() => b.style.opacity = 0, 2200);
+  }
 
-document.getElementById('btnOverdrive').onclick = triggerOverdrive;
-document.getElementById('btnOrbital').onclick = triggerOrbital;
-document.getElementById('btnTower').onclick = () => towers.push({ x: mouse.x || W / 2, y: mouse.y || H / 2 });
-document.getElementById('btnSpawn').onclick = spawnEntity;
-document.getElementById('btnPurge').onclick = () => { nodes = []; towers = []; targets = []; sparks = []; waves = []; };
-
-document.getElementById('btnAudio').onclick = e => {
-  audioOn = !audioOn;
-  e.target.textContent = audioOn ? 'AUDIO: ON' : 'AUDIO: OFF';
-};
-
-/* Secret Code Execution (RainbowDEVblu & zayonisthebest) */
-function execCode() {
-  const raw = document.getElementById('codeInput').value.trim();
-  const code = raw.toLowerCase();
-  if (code === 'rainbowdevblu') {
-    rainbowMode = true;
-    document.getElementById('devStatsDrawer').classList.add('unlocked');
-    document.getElementById('codeStatus').textContent = 'RAINBOW +5 STATS';
-    const sel = document.getElementById('selColor');
-    if (!sel.querySelector('option[value="rainbow"]')) {
-      const opt = document.createElement('option');
-      opt.value = 'rainbow'; opt.textContent = 'NEON RAINBOW // DEV OVERRIDE';
-      sel.appendChild(opt);
+  function addXp(amt) {
+    xp += amt;
+    while (xp >= nextXp) {
+      xp -= nextXp; rank++; nextXp = Math.round(nextXp * 1.45);
+      rings.push({ x: W / 2, y: H / 2, r: 10, max: 420, col: '#00f3ff', a: 1 });
+      alertBanner(`RANK UP! LEVEL ${rank}`, '#00f3ff');
+      beep(520, 0.25, 'triangle', 0.1);
     }
-    sel.value = 'rainbow';
-    showAlert('RAINBOWDEVBLU UNLOCKED // +5 OVERCLOCK STATS ADDED', '#b829ea');
-    triggerOverdrive();
-  } else if (code === 'zayonisthebest') {
-    godMode = true; rainbowMode = true;
-    document.getElementById('codeStatus').textContent = 'ZAYON GOD TIER';
-    document.getElementById('powerReadout').textContent = '999.9 GW';
-    if (!document.querySelector('.w-card[data-w="zayon"]')) {
-      const btn = document.createElement('button');
-      btn.className = 'w-card secret'; btn.dataset.w = 'zayon';
-      btn.innerHTML = '<span class="w-key">05</span><span class="w-name">ZAYON SUPREME OVERLORD</span><span class="w-sub">Dual Singularities + Railgun + Tesla</span>';
-      document.getElementById('weaponGrid').appendChild(btn);
+    const title = ranks[Math.min(rank - 1, ranks.length - 1)];
+    document.getElementById('xp-lvl').textContent = `RANK ${String(rank).padStart(2, '0')} // ${title}`;
+    document.getElementById('xp-val').textContent = `${xp} / ${nextXp} XP`;
+    document.getElementById('xp-fill').style.width = `${(xp / nextXp) * 100}%`;
+  }
+
+  function drawBolt(x1, y1, x2, y2, disp, width = 2, depth = 0) {
+    const col = getColor(depth * 45);
+    const pts = [{ x: x1, y: y1 }];
+    const steps = 6;
+    for (let i = 1; i < steps; i++) {
+      const t = i / steps;
+      pts.push({
+        x: x1 + (x2 - x1) * t + (Math.random() - 0.5) * disp * cfg.chaos,
+        y: y1 + (y2 - y1) * t + (Math.random() - 0.5) * disp * cfg.chaos
+      });
     }
-    selectWeapon('zayon');
-    showAlert('ZAYONISTHEBEST // SUPREME OVERLORD EQUIPPED', '#fcee09');
-    triggerOverdrive();
-  } else {
-    showAlert('INVALID OVERRIDE KEY', '#ff003c');
-  }
-  document.getElementById('codeInput').value = '';
-}
-document.getElementById('btnRedeem').onclick = execCode;
-document.getElementById('codeInput').onkeydown = e => { if (e.key === 'Enter') execCode(); };
+    pts.push({ x: x2, y: y2 });
 
-canvas.onpointerdown = e => {
-  holding = true; mouse = { x: e.offsetX, y: e.offsetY };
-  if (weapon === 'orb') {
-    nodes.push({ x: mouse.x, y: mouse.y });
-    addWave(mouse.x, mouse.y, 75, getCol());
-  }
-};
-canvas.onpointermove = e => mouse = { x: e.offsetX, y: e.offsetY };
-window.onpointerup = () => {
-  if (holding && (weapon === 'singularity' || weapon === 'zayon') && charge > 0.35) {
-    addWave(mouse.x, mouse.y, 260 * charge, getCol());
-    addSparks(mouse.x, mouse.y, 35, getCol());
-    damageAt(mouse.x, mouse.y, 240 * charge, 80);
-    shake = 16; playZap(65, 0.35, 'sawtooth', 0.14);
-  }
-  holding = false;
-};
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+    ctx.strokeStyle = col; ctx.lineWidth = width * 4.2 * cfg.amp; ctx.globalAlpha = 0.25; ctx.stroke();
+    ctx.lineWidth = width * 1.9 * cfg.amp; ctx.globalAlpha = 0.65; ctx.stroke();
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = width * 0.75; ctx.globalAlpha = 0.95; ctx.stroke();
+    ctx.restore();
 
-window.onkeydown = e => {
-  if (document.activeElement.tagName === 'INPUT') return;
-  if (e.key === '1') selectWeapon('arc');
-  if (e.key === '2') selectWeapon('tesla');
-  if (e.key === '3') selectWeapon('orb');
-  if (e.key === '4') selectWeapon('singularity');
-  if (e.key === '5' && document.querySelector('.w-card[data-w="zayon"]')) selectWeapon('zayon');
-  if (e.code === 'Space') { e.preventDefault(); triggerOverdrive(); }
-  if (e.key.toLowerCase() === 'o') triggerOrbital();
-  if (e.key.toLowerCase() === 't') towers.push({ x: mouse.x || W / 2, y: mouse.y || H / 2 });
-  if (e.key.toLowerCase() === 'b') spawnEntity();
-  if (e.key.toLowerCase() === 'c') document.getElementById('btnPurge').click();
-};
+    if (depth === 0 && Math.random() < cfg.fork) {
+      const mid = pts[Math.floor(pts.length / 2)];
+      const ang = Math.atan2(y2 - y1, x2 - x1) + (Math.random() - 0.5) * 1.3;
+      const len = Math.hypot(x2 - x1, y2 - y1) * 0.42;
+      drawBolt(mid.x, mid.y, mid.x + Math.cos(ang) * len, mid.y + Math.sin(ang) * len, disp * 0.5, width * 0.55, 1);
+    }
+  }
 
-/* Spawn initial entities & start loop */
-spawnEntity(); spawnEntity();
-loop();
+  function spawnSparks(x, y, n = 10) {
+    const total = Math.min(28, Math.round(n * cfg.spark));
+    for (let i = 0; i < total; i++) {
+      if (sparks.length > 260) break;
+      const a = Math.random() * Math.PI * 2, s = Math.random() * 5 + 1.5;
+      sparks.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 1, col: getColor(i * 15) });
+    }
+  }
+
+  function drawSingularity(cx, cy, scale = 1) {
+    const col = getColor(), r = 24 * scale;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.globalCompositeOperation = 'lighter';
+
+    /* Relativistic Polar Jets */
+    ctx.save();
+    ctx.rotate(Math.sin(tick * 0.02 * cfg.spin) * 0.22);
+    const jetLen = (150 + cfg.volt * 0.9) * scale;
+    const jg = ctx.createLinearGradient(0, -jetLen, 0, jetLen);
+    jg.addColorStop(0, 'transparent'); jg.addColorStop(0.5, col); jg.addColorStop(1, 'transparent');
+    ctx.fillStyle = jg;
+    ctx.beginPath(); ctx.moveTo(-4 * scale, 0); ctx.lineTo(0, -jetLen); ctx.lineTo(4 * scale, 0);
+    ctx.lineTo(0, jetLen); ctx.closePath(); ctx.fill();
+
+    /* Tilted Accretion Disk */
+    ctx.rotate(tick * 0.04 * cfg.spin);
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r * (2.3 + i * 0.65), r * (0.65 + i * 0.18), i * 0.4, 0, Math.PI * 2);
+      ctx.strokeStyle = getColor(i * 50); ctx.lineWidth = 2.5 - i * 0.5; ctx.stroke();
+    }
+    ctx.restore();
+
+    /* Photon Ring & Event Horizon */
+    ctx.beginPath(); ctx.arc(0, 0, r * 1.25, 0, Math.PI * 2);
+    ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.stroke();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fillStyle = '#000'; ctx.fill();
+    ctx.restore();
+
+    for (let i = 0; i < 4; i++) {
+      const a = tick * 0.08 * cfg.spin + (i * Math.PI) / 2;
+      const dist = 110 * scale;
+      drawBolt(cx + Math.cos(a) * dist, cy + Math.sin(a) * dist, cx, cy, 28, 1.5, 1);
+    }
+  }
+
+  function spawnEntity() {
+    const roll = Math.random();
+    let type = 'cap', hp = 45, r = 15, col = '#38bdf8', xpVal = 20;
+    if (roll < 0.10) {
+      type = 'boss'; hp = 550; r = 34; col = '#ff007f'; xpVal = 250;
+      alertBanner('WARNING: OMEGA DREADNOUGHT BOSS [1/10]', '#ff007f');
+    } else if (roll < 0.60) {
+      type = 'mini'; hp = 180; r = 23; col = '#ffbe0b'; xpVal = 75;
+      alertBanner('ALERT: VANGUARD MINI-BOSS [1/2]', '#ffbe0b');
+    }
+    targets.push({
+      x: 80 + Math.random() * (W - 160), y: 80 + Math.random() * (H - 160),
+      vx: (Math.random() - 0.5) * 2.2, vy: (Math.random() - 0.5) * 2.2,
+      hp, maxHp: hp, r, col, type, xpVal
+    });
+  }
+
+  function damageNear(x, y, rad, dmg) {
+    targets.forEach(t => {
+      if (Math.hypot(t.x - x, t.y - y) < rad + t.r) {
+        t.hp -= dmg * (godMode ? 12 : 1) * (cfg.volt / 85);
+        if (Math.random() < 0.35) drawBolt(x, y, t.x, t.y, 20, 1.4, 1);
+      }
+    });
+  }
+
+  function selectWeapon(w) {
+    weapon = w;
+    document.querySelectorAll('.w-btn').forEach(b => b.classList.toggle('active', b.dataset.w === w));
+    document.getElementById('hud-mode').textContent = `SYS: ${w.toUpperCase()} // HOLD LMB`;
+  }
+
+  document.querySelectorAll('.w-btn').forEach(b => b.onclick = () => selectWeapon(b.dataset.w));
+
+  const bindSlider = (id, key, fmt) => {
+    const el = document.getElementById('s-' + id), out = document.getElementById('v-' + id);
+    el.oninput = () => {
+      const v = +el.value;
+      cfg[key] = key === 'volt' ? v : v / 100;
+      if (key === 'hueHz') cfg.hueHz = v / 10;
+      out.textContent = fmt(v);
+    };
+  };
+  bindSlider('volt', 'volt', v => godMode ? '999.9 GW' : (v * 0.016).toFixed(2) + ' GW');
+  bindSlider('chaos', 'chaos', v => v + '%');
+  bindSlider('fork', 'fork', v => v + '%');
+  bindSlider('chain', 'chain', v => v + ' PX');
+  bindSlider('grav', 'grav', v => (v / 100).toFixed(2) + ' G');
+  bindSlider('time', 'time', v => (v / 100).toFixed(2) + ' X');
+  bindSlider('amp', 'amp', v => (v / 100).toFixed(2) + ' X');
+  bindSlider('spin', 'spin', v => (v / 100).toFixed(2) + ' X');
+  bindSlider('nova', 'nova', v => v + '%');
+  bindSlider('spark', 'spark', v => v + '%');
+  bindSlider('hue', 'hueHz', v => (v / 10).toFixed(1) + ' HZ');
+
+  document.getElementById('sel-color').onchange = e => {
+    if (e.target.value === 'rainbow') { rainbow = true; }
+    else { rainbow = false; baseColor = e.target.value; }
+  };
+
+  function redeemCode() {
+    const val = document.getElementById('code-in').value.trim();
+    const msg = document.getElementById('code-msg');
+    if (val === 'RainbowDEVblu') {
+      rainbow = true;
+      document.getElementById('rainbow-panel').classList.add('unlocked');
+      const sel = document.getElementById('sel-color');
+      if (!sel.querySelector('option[value="rainbow"]')) {
+        const opt = document.createElement('option');
+        opt.value = 'rainbow'; opt.textContent = 'NEON RAINBOW // DEV OVERRIDE';
+        sel.appendChild(opt);
+      }
+      sel.value = 'rainbow';
+      cfg.amp = 1.5; cfg.spin = 1.4; cfg.nova = 1.6; cfg.spark = 1.5;
+      msg.style.color = '#f472b6'; msg.textContent = 'UNLOCKED: NEON RAINBOW + 5 OVERCLOCK STATS!';
+      alertBanner('RAINBOW DEV OVERCLOCK UNLOCKED', '#f472b6');
+      beep(680, 0.25, 'sine', 0.1);
+    } else if (val === 'gengen123') {
+      document.getElementById('btn-gengen').classList.add('unlocked');
+      selectWeapon('gengen');
+      msg.style.color = '#ffbe0b'; msg.textContent = 'UNLOCKED: GENGEN-123 OMEGA TRI-FUSION!';
+      alertBanner('GENGEN-123 TRI-FUSION EQUIPPED', '#ffbe0b');
+    } else if (val === 'zayonisthebest') {
+      godMode = true; rainbow = true;
+      document.getElementById('btn-gengen').classList.add('unlocked');
+      document.getElementById('btn-zayon').classList.add('unlocked');
+      document.getElementById('v-volt').textContent = '999.9 GW';
+      selectWeapon('zayon');
+      msg.style.color = '#00f3ff'; msg.textContent = 'GOD MODE ACTIVE: ZAYON SUPREME OVERLORD!';
+      alertBanner('ZAYON GOD TIER ACTIVATED [999.9 GW]', '#00f3ff');
+    } else {
+      msg.style.color = '#ef4444'; msg.textContent = 'INVALID OVERRIDE SEQUENCE';
+    }
+    document.getElementById('code-in').value = '';
+  }
+  document.getElementById('code-exec').onclick = redeemCode;
+  document.getElementById('code-in').onkeydown = e => { if (e.key === 'Enter') redeemCode(); };
+
+  document.getElementById('act-overdrive').onclick = () => {
+    shake = 16; beep(140, 0.3, 'sawtooth', 0.12);
+    for (let i = 0; i < 12; i++) {
+      const tx = Math.random() * W, ty = Math.random() * H;
+      drawBolt(W / 2, H / 2, tx, ty, 55, 2.4);
+      damageNear(tx, ty, 120, 45);
+    }
+    rings.push({ x: W / 2, y: H / 2, r: 10, max: 500 * cfg.nova, col: getColor(), a: 1 });
+    spawnSparks(W / 2, H / 2, 24);
+  };
+
+  document.getElementById('act-orbital').onclick = () => {
+    const tx = mouse.x || W / 2; shake = 22; beep(90, 0.4, 'square', 0.12);
+    drawBolt(tx, 0, tx, H, 40, 4.5);
+    rings.push({ x: tx, y: mouse.y || H * 0.7, r: 10, max: 320 * cfg.nova, col: getColor(), a: 1 });
+    damageNear(tx, mouse.y || H * 0.7, 220, 140);
+    spawnSparks(tx, mouse.y || H * 0.7, 26);
+  };
+
+  document.getElementById('act-spawn').onclick = spawnEntity;
+  document.getElementById('act-purge').onclick = () => { sparks = []; nodes = []; targets = []; rings = []; };
+  document.getElementById('audio-btn').onclick = e => { audioOn = !audioOn; e.target.textContent = `AUDIO: ${audioOn ? 'ON' : 'OFF'}`; };
+
+  cv.onpointerdown = e => {
+    holding = true; mouse = { x: e.offsetX, y: e.offsetY };
+    if (weapon === 'orb') { nodes.push({ x: mouse.x, y: mouse.y }); if (nodes.length > 10) nodes.shift(); }
+  };
+  cv.onpointermove = e => mouse = { x: e.offsetX, y: e.offsetY };
+  window.onpointerup = () => {
+    if (holding && (weapon === 'singularity' || weapon === 'gengen' || weapon === 'zayon')) {
+      shake = 18; beep(110, 0.35, 'sawtooth', 0.1);
+      rings.push({ x: mouse.x, y: mouse.y, r: 15, max: 360 * cfg.nova, col: getColor(), a: 1 });
+      damageNear(mouse.x, mouse.y, 260 * cfg.nova, 110);
+      spawnSparks(mouse.x, mouse.y, 25);
+    }
+    holding = false;
+  };
+
+  window.onkeydown = e => {
+    if (document.activeElement.tagName === 'INPUT') return;
+    const k = e.key.toLowerCase();
+    if (k === '1') selectWeapon('arc');
+    if (k === '2') selectWeapon('tesla');
+    if (k === '3') selectWeapon('orb');
+    if (k === '4') selectWeapon('singularity');
+    if (k === '5' && document.getElementById('btn-gengen').classList.contains('unlocked')) selectWeapon('gengen');
+    if (k === '6' && document.getElementById('btn-zayon').classList.contains('unlocked')) selectWeapon('zayon');
+    if (e.code === 'Space') { e.preventDefault(); document.getElementById('act-overdrive').click(); }
+    if (k === 'o') document.getElementById('act-orbital').click();
+    if (k === 'b') spawnEntity();
+    if (k === 'c') document.getElementById('act-purge').click();
+  };
+
+  function loop() {
+    tick += cfg.time;
+    ctx.save();
+    ctx.fillStyle = 'rgba(2, 4, 10, 0.28)';
+    ctx.fillRect(0, 0, W, H);
+
+    if (shake > 0.2) {
+      ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
+      shake *= 0.86;
+    }
+
+    /* Linked Plasma Nodes */
+    nodes.forEach((n, i) => {
+      const col = getColor(i * 30);
+      ctx.beginPath(); ctx.arc(n.x, n.y, 7, 0, Math.PI * 2);
+      ctx.fillStyle = col; ctx.fill();
+      if (nodes[i + 1]) {
+        drawBolt(n.x, n.y, nodes[i + 1].x, nodes[i + 1].y, 24, 1.8);
+        damageNear((n.x + nodes[i + 1].x) / 2, (n.y + nodes[i + 1].y) / 2, 45, 1.5);
+      }
+    });
+
+    /* Active Weapon Firing */
+    if (holding) {
+      if (Math.random() < 0.25) beep(220 + Math.random() * 180, 0.05);
+      if (weapon === 'arc') {
+        drawBolt(W / 2, H / 2, mouse.x, mouse.y, 42, 2.5);
+        spawnSparks(mouse.x, mouse.y, 4);
+        damageNear(mouse.x, mouse.y, 45, 4.5);
+      } else if (weapon === 'tesla') {
+        ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 14, 0, Math.PI * 2);
+        ctx.strokeStyle = getColor(); ctx.lineWidth = 3; ctx.stroke();
+        targets.forEach(t => {
+          if (Math.hypot(t.x - mouse.x, t.y - mouse.y) < cfg.chain) {
+            drawBolt(mouse.x, mouse.y, t.x, t.y, 32, 2.0);
+            t.hp -= 3.8 * (godMode ? 10 : 1);
+          }
+        });
+        for (let i = 0; i < 3; i++) {
+          const a = tick * 0.1 * cfg.spin + i * 2.1;
+          drawBolt(mouse.x, mouse.y, mouse.x + Math.cos(a) * 90, mouse.y + Math.sin(a) * 90, 22, 1.4, 1);
+        }
+      } else if (weapon === 'singularity') {
+        shake = Math.max(shake, 3);
+        drawSingularity(mouse.x, mouse.y, 1.0);
+        damageNear(mouse.x, mouse.y, 130, 5.5);
+      } else if (weapon === 'gengen') {
+        shake = Math.max(shake, 5);
+        drawSingularity(mouse.x, mouse.y, 1.15);
+        drawBolt(W / 2, H / 2, mouse.x, mouse.y, 45, 2.6);
+        targets.forEach(t => {
+          if (Math.hypot(t.x - mouse.x, t.y - mouse.y) < cfg.chain) {
+            drawBolt(mouse.x, mouse.y, t.x, t.y, 30, 2.0);
+            t.hp -= 6.5;
+          }
+        });
+      } else if (weapon === 'zayon') {
+        shake = Math.max(shake, 7);
+        const a = tick * 0.06 * cfg.spin;
+        const x1 = mouse.x + Math.cos(a) * 68, y1 = mouse.y + Math.sin(a) * 68;
+        const x2 = mouse.x - Math.cos(a) * 68, y2 = mouse.y - Math.sin(a) * 68;
+        drawSingularity(x1, y1, 0.85);
+        drawSingularity(x2, y2, 0.85);
+        drawBolt(x1, y1, x2, y2, 36, 2.8);
+        drawBolt(W / 2, H / 2, mouse.x, mouse.y, 45, 2.6);
+        damageNear(mouse.x, mouse.y, 180, 18);
+      }
+    }
+
+    /* Update & Draw Targets / Bosses */
+    targets = targets.filter(t => {
+      if (holding && ['singularity', 'gengen', 'zayon'].includes(weapon)) {
+        const dx = mouse.x - t.x, dy = mouse.y - t.y, d = Math.max(30, Math.hypot(dx, dy));
+        t.vx += (dx / d) * 0.22 * cfg.grav * cfg.time;
+        t.vy += (dy / d) * 0.22 * cfg.grav * cfg.time;
+      }
+      t.x += t.vx * cfg.time; t.y += t.vy * cfg.time;
+      if (t.x < t.r || t.x > W - t.r) t.vx *= -1;
+      if (t.y < t.r || t.y > H - t.r) t.vy *= -1;
+
+      ctx.beginPath(); ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
+      ctx.strokeStyle = t.col; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.fillStyle = 'rgba(10, 18, 38, 0.8)'; ctx.fill();
+
+      const bw = t.r * 2.2;
+      ctx.fillStyle = '#0f172a'; ctx.fillRect(t.x - bw / 2, t.y - t.r - 10, bw, 4);
+      ctx.fillStyle = t.col; ctx.fillRect(t.x - bw / 2, t.y - t.r - 10, bw * Math.max(0, t.hp / t.maxHp), 4);
+
+      if (t.hp <= 0) {
+        kills++; addXp(t.xpVal); spawnSparks(t.x, t.y, 22);
+        rings.push({ x: t.x, y: t.y, r: 8, max: t.r * 5, col: t.col, a: 1 });
+        beep(180, 0.2, 'sawtooth', 0.1);
+        return false;
+      }
+      return true;
+    });
+
+    /* Expanding Shockwaves */
+    rings = rings.filter(rg => {
+      rg.r += (rg.max - rg.r) * 0.12 * cfg.time; rg.a *= 0.92;
+      ctx.beginPath(); ctx.arc(rg.x, rg.y, rg.r, 0, Math.PI * 2);
+      ctx.strokeStyle = rg.col; ctx.globalAlpha = rg.a; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.globalAlpha = 1;
+      return rg.a > 0.04;
+    });
+
+    /* Sparks */
+    sparks = sparks.filter(s => {
+      s.x += s.vx * cfg.time; s.y += s.vy * cfg.time; s.life *= 0.92;
+      ctx.fillStyle = s.col; ctx.globalAlpha = s.life;
+      ctx.fillRect(s.x, s.y, 2.5, 2.5); ctx.globalAlpha = 1;
+      return s.life > 0.05;
+    });
+
+    document.getElementById('hud-ent').textContent = `ENTITIES: ${targets.length} // KILLS: ${kills}`;
+    ctx.restore();
+    requestAnimationFrame(loop);
+  }
+  loop();
 </script>
 </body>
 </html>
