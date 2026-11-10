@@ -5,7 +5,7 @@
 <title>DISCHARGE MATRIX // APEX X25</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-  body { background: #030610; color: #e2e8f0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; overflow: hidden; display: flex; height: 100vh; }
+  body { background: #030610; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; display: flex; height: 100vh; }
 
   #sidebar {
     width: 315px; height: 100vh; background: linear-gradient(180deg, #060b19 0%, #040814 100%);
@@ -17,33 +17,33 @@
 
   .brand { border-bottom: 1px solid rgba(0,243,255,0.2); padding-bottom: 9px; }
   .brand-top { display: flex; justify-content: space-between; align-items: center; }
-  .brand h1 { font-family: 'Consolas', 'Courier New', monospace; font-size: 16px; font-weight: 900; letter-spacing: 1.2px; color: #fff; text-shadow: 0 0 10px rgba(0,243,255,0.5); }
-  .badge { background: linear-gradient(90deg, #b829ea, #ff007f); font-family: 'Consolas', monospace; font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 3px; color: #fff; letter-spacing: 1px; }
-  .brand-sub { font-size: 10px; letter-spacing: 1.4px; color: #64748b; font-weight: 700; margin-top: 3px; }
+  .brand h1 { font-size: 16px; font-weight: 900; letter-spacing: 1.5px; color: #fff; text-shadow: 0 0 10px rgba(0,243,255,0.5); }
+  .badge { background: linear-gradient(90deg, #b829ea, #ff007f); font-size: 9px; font-weight: 900; padding: 2px 7px; border-radius: 3px; color: #fff; letter-spacing: 1px; }
+  .brand-sub { font-size: 10px; letter-spacing: 1.5px; color: #64748b; font-weight: 700; margin-top: 2px; }
 
   .panel { background: rgba(10, 17, 36, 0.78); border: 1px solid rgba(0, 243, 255, 0.18); border-left: 3px solid #00f3ff; border-radius: 4px; padding: 10px; }
   .panel.overclock { border-left-color: #ff007f; border-color: rgba(255, 0, 127, 0.35); display: none; }
   .panel.overclock.active { display: block; }
-  .panel-hdr { display: flex; justify-content: space-between; align-items: center; font-family: 'Consolas', monospace; font-size: 10.5px; font-weight: 700; color: #00f3ff; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .panel-hdr { display: flex; justify-content: space-between; align-items: center; font-size: 10px; font-weight: 800; color: #00f3ff; letter-spacing: 1px; margin-bottom: 8px; }
   .panel.overclock .panel-hdr { color: #ff4da6; }
 
   .w-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
   .w-btn {
     background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(100, 116, 139, 0.35); border-radius: 4px;
-    padding: 7px 8px; text-align: left; cursor: pointer; transition: 0.15s; position: relative; color: #cbd5e1;
+    padding: 7px 8px; text-align: left; cursor: pointer; transition: 0.15s; color: #cbd5e1;
   }
   .w-btn:hover { border-color: #00f3ff; background: rgba(0, 243, 255, 0.08); }
   .w-btn.active { border-color: #00f3ff; background: rgba(0, 243, 255, 0.16); box-shadow: inset 0 0 12px rgba(0,243,255,0.25); color: #fff; }
   .w-btn.full { grid-column: span 2; display: none; border-color: rgba(255,0,127,0.5); }
   .w-btn.full.unlocked { display: block; }
   .w-btn.full.active { border-color: #ff007f; background: rgba(255,0,127,0.18); box-shadow: inset 0 0 14px rgba(255,0,127,0.3); }
-  .w-title { font-family: 'Consolas', monospace; font-size: 11px; font-weight: 700; display: flex; justify-content: space-between; }
-  .w-key { color: #00f3ff; font-size: 10px; }
-  .w-sub { font-size: 10.5px; color: #94a3b8; margin-top: 2px; }
+  .w-title { font-size: 10.5px; font-weight: 800; display: flex; justify-content: space-between; }
+  .w-key { color: #00f3ff; font-size: 9.5px; }
+  .w-sub { font-size: 10.5px; color: #94a3b8; margin-top: 1px; }
 
   .act-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
   .act-btn {
-    font-family: 'Consolas', monospace; font-size: 10px; font-weight: 700; padding: 6px; border-radius: 3px;
+    font-size: 9.5px; font-weight: 800; padding: 6px; border-radius: 3px;
     border: 1px solid #00f3ff; background: rgba(0,243,255,0.1); color: #00f3ff; cursor: pointer; letter-spacing: 0.5px; transition: 0.15s;
   }
   .act-btn:hover { background: rgba(0,243,255,0.25); color: #fff; }
@@ -56,8 +56,8 @@
 
   .stat-row { margin-bottom: 7px; }
   .stat-row:last-child { margin-bottom: 0; }
-  .stat-top { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; color: #cbd5e1; margin-bottom: 3px; }
-  .stat-val { font-family: 'Consolas', monospace; font-size: 10px; color: #00f3ff; background: rgba(0,243,255,0.1); border: 1px solid rgba(0,243,255,0.35); padding: 1px 6px; border-radius: 3px; }
+  .stat-top { display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; font-weight: 700; color: #cbd5e1; margin-bottom: 3px; }
+  .stat-val { font-size: 9.5px; font-weight: 800; color: #00f3ff; background: rgba(0,243,255,0.1); border: 1px solid rgba(0,243,255,0.35); padding: 1px 6px; border-radius: 3px; }
   .panel.overclock .stat-val { color: #ff4da6; background: rgba(255,0,127,0.12); border-color: rgba(255,0,127,0.4); }
 
   input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; background: #1e293b; border-radius: 2px; outline: none; }
@@ -69,10 +69,10 @@
 
   select, input[type=text] {
     width: 100%; background: #060d1f; border: 1px solid rgba(0,243,255,0.35); color: #fff;
-    font-family: 'Consolas', monospace; font-size: 10.5px; padding: 6px 8px; border-radius: 3px; outline: none;
+    font-size: 10px; font-weight: 700; padding: 6px 8px; border-radius: 3px; outline: none;
   }
   .code-box { display: flex; gap: 5px; }
-  .code-btn { background: #00f3ff; color: #030610; font-family: 'Consolas', monospace; font-size: 10.5px; font-weight: 900; border: none; padding: 0 10px; border-radius: 3px; cursor: pointer; }
+  .code-btn { background: #00f3ff; color: #030610; font-size: 10px; font-weight: 900; border: none; padding: 0 10px; border-radius: 3px; cursor: pointer; }
   .code-btn:hover { background: #7dd3fc; }
   #code-msg { font-size: 10.5px; font-weight: 700; margin-top: 4px; color: #34d399; min-height: 14px; }
 
@@ -81,15 +81,15 @@
 
   .hud-pill {
     position: absolute; top: 14px; background: rgba(6, 11, 25, 0.88); border: 1px solid rgba(0,243,255,0.35);
-    padding: 6px 14px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 11px; font-weight: 700;
-    color: #00f3ff; letter-spacing: 0.8px; pointer-events: none; box-shadow: 0 0 15px rgba(0,0,0,0.7);
+    padding: 6px 14px; border-radius: 4px; font-size: 10.5px; font-weight: 800;
+    color: #00f3ff; letter-spacing: 1px; pointer-events: none; box-shadow: 0 0 15px rgba(0,0,0,0.7);
   }
   #hud-left { left: 16px; }
   #hud-right { right: 16px; }
   #banner {
-    position: absolute; top: 52px; left: 50%; transform: translateX(-50%); background: rgba(255, 0, 127, 0.22);
-    border: 1px solid #ff007f; color: #fff; font-family: 'Consolas', monospace; font-size: 11px; font-weight: 700;
-    padding: 5px 16px; border-radius: 4px; letter-spacing: 1.2px; opacity: 0; transition: opacity 0.25s; pointer-events: none;
+    position: absolute; top: 52px; left: 50%; transform: translateX(-50%); background: rgba(255, 0, 127, 0.2);
+    border: 1px solid #ff007f; color: #fff; font-size: 11px; font-weight: 800;
+    padding: 5px 16px; border-radius: 4px; letter-spacing: 1.5px; opacity: 0; transition: opacity 0.25s; pointer-events: none;
   }
 
   #xp-hud {
@@ -97,8 +97,8 @@
     background: rgba(6, 11, 25, 0.9); border: 1px solid rgba(0, 243, 255, 0.4); border-radius: 5px;
     padding: 8px 14px; pointer-events: none; box-shadow: 0 0 20px rgba(0, 0, 0, 0.85);
   }
-  .xp-top { display: flex; justify-content: space-between; font-family: 'Consolas', monospace; font-size: 10.5px; font-weight: 700; margin-bottom: 5px; }
-  #xp-rank { color: #00f3ff; letter-spacing: 0.8px; }
+  .xp-top { display: flex; justify-content: space-between; font-size: 10px; font-weight: 800; margin-bottom: 5px; }
+  #xp-rank { color: #00f3ff; letter-spacing: 1px; }
   #xp-nums { color: #94a3b8; }
   .xp-track { width: 100%; height: 7px; background: #0f172a; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); }
   #xp-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #00f3ff, #b829ea, #ff007f); transition: width 0.2s ease-out; }
@@ -173,7 +173,7 @@
       <div class="stat-top"><span>TIME DILATION</span><span class="stat-val" id="v-time">1.00x</span></div>
       <input type="range" id="s-time" min="20" max="200" value="100" oninput="syncStats()">
     </div>
-    <div class="stat-row" style="margin-top:8px;">
+    <div class="stat-row">
       <div class="stat-top"><span>ION SPECTRUM</span></div>
       <select id="sel-color" onchange="setSpectrum(this.value)">
         <option value="cyan">CYAN // ION DISCHARGE</option>
@@ -188,7 +188,7 @@
     <div class="panel-hdr"><span>03 // RAINBOWDEV OVERCLOCK</span><span>+5 STATS</span></div>
     <div class="stat-row">
       <div class="stat-top"><span>BEAM AMPLIFIER</span><span class="stat-val" id="v-amp">1.0x</span></div>
-      <input type="range" id="s-amp" min="5" max="35" value="10" oninput="syncStats()">
+      <input type="range" id="s-amp" min="5" max="30" value="10" oninput="syncStats()">
     </div>
     <div class="stat-row">
       <div class="stat-top"><span>CHAIN SNAP RADIUS</span><span class="stat-val" id="v-chain">240 PX</span></div>
@@ -248,7 +248,6 @@ let stats = { volt: 120, chaos: 1, fork: 0.55, grav: 1.5, time: 1, amp: 1, chain
 
 let xp = 0, nextXp = 100, lvl = 1;
 const ranks = ['INITIATE', 'CONDUCTOR', 'ARC SPECIALIST', 'PLASMA WARDEN', 'VOID ARCHITECT', 'APEX OVERLORD'];
-
 function addXp(amt) {
   xp += amt;
   while (xp >= nextXp) {
@@ -283,29 +282,17 @@ function getCol(offset = 0) {
   return palettes[spectrum] || palettes.cyan;
 }
 
+function toggleAudio() {
+  audioOn = !audioOn;
+  document.getElementById('aud-toggle').textContent = audioOn ? 'AUDIO: ON' : 'AUDIO: OFF';
+  if (audioOn && !actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
 function showBanner(txt) {
   const b = document.getElementById('banner');
   b.textContent = txt; b.style.opacity = 1;
   clearTimeout(b._t);
   b._t = setTimeout(() => b.style.opacity = 0, 2200);
-}
-
-function toggleAudio() {
-  audioOn = !audioOn;
-  if (audioOn && !actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-  document.getElementById('aud-toggle').textContent = audioOn ? 'AUDIO: ON' : 'AUDIO: OFF';
-}
-
-function playTone(freq, dur = 0.08, type = 'sawtooth', vol = 0.04) {
-  if (!audioOn || !actx) return;
-  try {
-    const o = actx.createOscillator(), g = actx.createGain();
-    o.type = type; o.frequency.setValueAtTime(freq, actx.currentTime);
-    g.gain.setValueAtTime(vol, actx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
-    o.connect(g); g.connect(actx.destination);
-    o.start(); o.stop(actx.currentTime + dur);
-  } catch (e) {}
 }
 
 function syncStats() {
@@ -359,20 +346,17 @@ function redeemCode() {
     document.getElementById('overclock-panel').classList.add('active');
     msg.textContent = 'UNLOCKED: NEON RAINBOW + 5 OVERCLOCK STATS';
     showBanner('DEV OVERRIDE // +5 OVERCLOCK STATS ACTIVE');
-    playTone(520, 0.2, 'sine', 0.08);
   } else if (code === 'gengen123') {
     document.getElementById('w5-btn').classList.add('unlocked');
     setWeapon(5);
     msg.textContent = 'UNLOCKED: GENGEN-123 OMEGA FUSION';
     showBanner('OMEGA TRI-FUSION EQUIPPED');
-    playTone(440, 0.2, 'triangle', 0.08);
   } else if (code === 'zayonisthebest') {
     zayonGod = true;
     document.getElementById('w6-btn').classList.add('unlocked');
     setWeapon(6); syncStats();
     msg.textContent = 'GOD MODE: 999.9 GW + ZAYON OVERLORD';
     showBanner('ZAYON SUPREME OVERLORD ACTIVATED');
-    playTone(660, 0.25, 'sawtooth', 0.08);
   } else {
     msg.style.color = '#f87171';
     msg.textContent = 'INVALID OVERRIDE KEY';
@@ -401,7 +385,6 @@ function spawnEntity(x, y) {
 
 function triggerOverdrive() {
   shake = 14;
-  playTone(180, 0.25, 'sawtooth', 0.08);
   const c = getCol();
   shockwaves.push({ x: mouse.x, y: mouse.y, r: 10, max: 420 * stats.nova, col: c.mid, a: 1 });
   for (let i = 0; i < 14; i++) {
@@ -413,7 +396,6 @@ function triggerOverdrive() {
 
 function triggerOrbital() {
   shake = 18;
-  playTone(110, 0.35, 'square', 0.08);
   const c = getCol(90);
   orbitalBeams.push({ x: mouse.x, life: 1, col: c });
   shockwaves.push({ x: mouse.x, y: mouse.y, r: 15, max: 350 * stats.nova, col: c.mid, a: 1 });
@@ -428,7 +410,6 @@ function damageTarget(t, dmg) {
   if (t.hp <= 0 && !t.dead) {
     t.dead = true;
     addXp(t.xpVal);
-    playTone(140, 0.15, 'triangle', 0.06);
     shockwaves.push({ x: t.x, y: t.y, r: 8, max: t.rad * 4 * stats.nova, col: t.col, a: 1 });
     for (let i = 0; i < 18; i++) {
       const a = Math.random() * Math.PI * 2, s = Math.random() * 5 + 2;
@@ -468,11 +449,11 @@ function drawBolt(x1, y1, x2, y2, col, width = 2.4, depth = 0) {
   ctx.strokeStyle = col.glow; ctx.lineWidth = width * 4.5 * stats.amp; ctx.globalAlpha = 0.28; ctx.stroke();
 
   ctx.strokeStyle = col.mid; ctx.lineWidth = width * 2.1 * stats.amp; ctx.globalAlpha = 0.75; ctx.stroke();
-
   ctx.strokeStyle = col.core; ctx.lineWidth = width * 0.85; ctx.globalAlpha = 0.95; ctx.stroke();
   ctx.restore();
 }
 
+/* Original Singularity geometry & animations, colored Orange with Blue top-to-bottom light */
 function drawSingularity(sx, sy, scale) {
   ctx.save();
   ctx.translate(sx, sy);
@@ -481,13 +462,13 @@ function drawSingularity(sx, sy, scale) {
   const rCore = 24 * scale;
   const spin = tick * 0.045 * stats.spin;
 
-  // Blue Top-to-Bottom Polar Light Beams
+  // Blue top-to-bottom polar light jets
   const jetLen = (230 + scale * 130) * stats.amp;
   const jetGrad = ctx.createLinearGradient(0, -jetLen, 0, jetLen);
   jetGrad.addColorStop(0, 'rgba(0, 170, 255, 0)');
-  jetGrad.addColorStop(0.35, 'rgba(0, 170, 255, 0.58)');
+  jetGrad.addColorStop(0.35, 'rgba(0, 170, 255, 0.55)');
   jetGrad.addColorStop(0.5, 'rgba(186, 230, 253, 0.95)');
-  jetGrad.addColorStop(0.65, 'rgba(0, 170, 255, 0.58)');
+  jetGrad.addColorStop(0.65, 'rgba(0, 170, 255, 0.55)');
   jetGrad.addColorStop(1, 'rgba(0, 170, 255, 0)');
 
   ctx.fillStyle = jetGrad;
@@ -500,7 +481,7 @@ function drawSingularity(sx, sy, scale) {
   ctx.lineWidth = 3 * scale;
   ctx.beginPath(); ctx.moveTo(0, -jetLen * 0.92); ctx.lineTo(0, jetLen * 0.92); ctx.stroke();
 
-  // Orange Tilted Accretion Disk Rings
+  // Orange tilted accretion rings
   ctx.save();
   ctx.rotate(-0.32);
   for (let i = 0; i < 4; i++) {
@@ -515,7 +496,7 @@ function drawSingularity(sx, sy, scale) {
   }
   ctx.restore();
 
-  // Inward Orange Spiral Filaments
+  // Orange inward spiral filaments
   for (let i = 0; i < 6; i++) {
     const baseA = spin * 1.4 + (i * Math.PI) / 3;
     ctx.beginPath();
@@ -532,7 +513,7 @@ function drawSingularity(sx, sy, scale) {
     ctx.stroke();
   }
 
-  // Pitch-Black Event Horizon + Orange Rim
+  // Event horizon + Orange photon ring
   ctx.globalCompositeOperation = 'source-over';
   ctx.beginPath(); ctx.arc(0, 0, rCore, 0, Math.PI * 2);
   ctx.fillStyle = '#010205'; ctx.fill();
@@ -569,7 +550,6 @@ canvas.addEventListener('mousedown', e => {
     pylons.push({ x: mouse.x, y: mouse.y, pulse: 0 });
     if (pylons.length > 8) pylons.shift();
     shockwaves.push({ x: mouse.x, y: mouse.y, r: 4, max: 60, col: getCol().mid, a: 0.9 });
-    playTone(320, 0.08, 'sine', 0.05);
   }
 });
 window.addEventListener('mouseup', () => {
@@ -578,7 +558,6 @@ window.addEventListener('mouseup', () => {
     shockwaves.push({ x: mouse.x, y: mouse.y, r: 12, max: blast, col: '#ff8800', a: 1 });
     shockwaves.push({ x: mouse.x, y: mouse.y, r: 6, max: blast * 0.72, col: '#00aaff', a: 1 });
     shake = 16;
-    playTone(95, 0.3, 'sawtooth', 0.09);
     targets.forEach(t => {
       if (Math.hypot(t.x - mouse.x, t.y - mouse.y) < blast) damageTarget(t, stats.volt * 2.5);
     });
@@ -652,7 +631,6 @@ function loop(now) {
   if (mouse.down) {
     charge = Math.min(1.5, charge + 0.025 * stats.time);
     const originX = W / 2, originY = H / 2;
-    if (Math.random() < 0.25) playTone(160 + Math.random() * 140, 0.05, 'sawtooth', 0.02);
 
     if (weapon === 1) {
       drawBolt(originX, originY, mouse.x, mouse.y, col, 3.2);
