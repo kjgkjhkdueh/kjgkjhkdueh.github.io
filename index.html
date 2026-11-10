@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>DISCHARGE MATRIX // SINGULARITY APEX SYSTEM v4.0</title>
+<title>DISCHARGE MATRIX // SINGULARITY APEX v5.0</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap');
   
@@ -11,8 +11,6 @@
     --cut: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
     --card-cut: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
     --neon-glow: 0 0 20px rgba(0, 243, 255, 0.4), 0 0 40px rgba(184, 41, 234, 0.2);
-    --warn-glow: 0 0 20px rgba(255, 190, 11, 0.4);
-    --danger-glow: 0 0 25px rgba(255, 0, 127, 0.5);
   }
   
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
@@ -20,14 +18,13 @@
   body {
     background: var(--bg); color: #f1f5f9; height: 100vh; display: flex; overflow: hidden;
     font: 700 13px/1.4 'Rajdhani', system-ui, sans-serif;
-    perspective: 1000px;
   }
   
   body::after {
     content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 100;
     background: 
       linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-      linear-gradient(90deg, rgba(255, 0,  red, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
     background-size: 100% 3px, 6px 100%;
     opacity: 0.85;
   }
@@ -45,16 +42,13 @@
     border-right: 2px solid rgba(0,243,255,0.3);
     box-shadow: 15px 0 60px rgba(0,0,0,0.85), inset -2px 0 30px rgba(0,243,255,0.05);
     backdrop-filter: blur(12px);
-    transition: border-color 0.3s;
   }
-  #sidebar:hover { border-color: rgba(0,243,255,0.6); }
   #sidebar::-webkit-scrollbar { width: 5px; }
   #sidebar::-webkit-scrollbar-thumb { background: linear-gradient(var(--m), var(--p), var(--c)); border-radius: 10px; }
 
   .hero-header {
     padding: 16px; background: linear-gradient(135deg, rgba(0,243,255,0.08), rgba(184,41,234,0.05));
     border: 1px solid rgba(0,243,255,0.4); clip-path: var(--card-cut); position: relative; overflow: hidden;
-    box-shadow: inset 0 0 15px rgba(0,243,255,0.1);
   }
   .hero-header::before {
     content: ""; position: absolute; top: 0; left: -150%; width: 300%; height: 100%;
@@ -80,9 +74,7 @@
     color: #fff; background: linear-gradient(90deg, var(--m), var(--p));
     clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
     box-shadow: 0 0 15px rgba(255,0,127,0.7);
-    animation: pulseGlow 2s ease-in-out infinite alternate;
   }
-  @keyframes pulseGlow { 0% { opacity: 0.8; box-shadow: 0 0 10px rgba(255,0,127,0.4); } 100% { opacity: 1; box-shadow: 0 0 20px rgba(255,0,127,0.8); } }
   
   .sub { font: 700 11px 'Orbitron', monospace; color: #38bdf8; letter-spacing: 2px; margin-top: 5px; opacity: .9; text-shadow: 0 0 5px rgba(56,189,248,0.5); }
 
@@ -92,7 +84,6 @@
     box-shadow: inset 0 0 25px rgba(0,0,0,0.8);
     transition: all 0.25s ease;
   }
-  .panel:hover { border-color: rgba(0,243,255,0.4); background: rgba(8,15,36,0.82); box-shadow: 0 0 25px rgba(0,243,255,0.05), inset 0 0 25px rgba(0,0,0,0.8); }
   .panel::before {
     content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
     background: linear-gradient(180deg, var(--c), var(--p), transparent);
@@ -112,39 +103,34 @@
     position: relative; overflow: hidden; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .w-btn .w-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-  .w-btn .w-name { font: 800 12px 'Orbitron', sans-serif; color: #94a3b8; letter-spacing: .5px; transition: color 0.2s; }
+  .w-btn .w-name { font: 800 12px 'Orbitron', sans-serif; color: #94a3b8; letter-spacing: .5px; }
   .w-btn .w-key {
     font: 800 9px 'Orbitron', monospace; padding: 2px 6px; color: var(--c);
     background: rgba(0,243,255,0.08); border: 1px solid rgba(0,243,255,0.25);
-    transition: all 0.2s;
   }
-  .w-btn .w-desc { font-size: 11px; color: #475569; font-weight: 700; transition: color 0.2s; }
+  .w-btn .w-desc { font-size: 11px; color: #475569; font-weight: 700; }
   
   .w-btn:hover {
     border-color: rgba(0,243,255,0.6); background: rgba(14,23,47,0.95);
-    transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
   }
-  .w-btn:hover .w-name { color: #f1f5f9; }
   
   .w-btn.active {
     background: linear-gradient(135deg, rgba(0,243,255,0.18), rgba(184,41,234,0.12));
-    border-color: var(--c); transform: translateY(-1px);
+    border-color: var(--c);
     box-shadow: var(--neon-glow), inset 0 0 15px rgba(0,243,255,0.15);
   }
-  .w-btn.active .w-name { color: #fff; text-shadow: 0 0 10px var(--c), 0 0 20px var(--c); }
-  .w-btn.active .w-key { background: var(--c); color: #000; border-color: #fff; box-shadow: 0 0 8px var(--c); }
+  .w-btn.active .w-name { color: #fff; text-shadow: 0 0 10px var(--c); }
+  .w-btn.active .w-key { background: var(--c); color: #000; border-color: #fff; }
   .w-btn.active .w-desc { color: #e0f2fe; }
   
   .w-btn.secret { border-color: rgba(255,190,11,0.4); background: linear-gradient(135deg, rgba(255,190,11,0.08), rgba(255,0,127,0.05)); }
-  .w-btn.secret .w-name { color: #b45309; }
-  .w-btn.secret:hover { border-color: rgba(255,190,11,0.7); }
+  .w-btn.secret .w-name { color: #ffbe0b; }
   .w-btn.secret.active { 
     border-color: var(--g); 
     background: linear-gradient(135deg, rgba(255,190,11,0.22), rgba(255,0,127,0.15));
-    box-shadow: 0 0 25px rgba(255,190,11,0.4), inset 0 0 15px rgba(255,190,11,0.2); 
+    box-shadow: 0 0 25px rgba(255,190,11,0.4); 
   }
-  .w-btn.secret.active .w-name { color: var(--g); text-shadow: 0 0 10px var(--g); }
-  .w-btn.secret.active .w-key { color: #000; background: var(--g); border-color: #fff; box-shadow: 0 0 8px var(--g); }
 
   .act-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
   button.act {
@@ -152,23 +138,13 @@
     padding: 12px 10px; border: 1px solid var(--c); clip-path: var(--cut); cursor: pointer;
     background: linear-gradient(135deg, #0284c7, #3730a3); transition: all 0.2s;
     box-shadow: 0 0 15px rgba(0,243,255,0.25);
-    position: relative;
   }
-  button.act::after {
-    content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.1); opacity: 0; transition: opacity 0.2s;
-  }
-  button.act:hover::after { opacity: 1; }
   button.act:hover { filter: brightness(1.15); transform: translateY(-2px); box-shadow: 0 0 25px rgba(0,243,255,0.5); }
-  button.act:active { transform: translateY(0); }
   
-  button.act.orb { background: linear-gradient(135deg, #db2777, #5b21b6); border-color: #f472b6; box-shadow: 0 0 15px rgba(255,0,127,0.25); }
-  button.act.orb:hover { box-shadow: 0 0 25px rgba(255,0,127,0.55); }
-  
-  button.act.util { background: rgba(15,23,42,0.85); border-color: rgba(148,163,184,0.35); color: #cbd5e1; box-shadow: none; }
-  button.act.util:hover { border-color: var(--c); color: #fff; box-shadow: 0 0 15px rgba(0,243,255,0.3); background: rgba(30,41,59,0.9); }
-  
-  button.act.danger { background: rgba(153,27,27,0.4); border-color: rgba(239,68,68,0.5); color: #fca5a5; }
-  button.act.danger:hover { background: #dc2626; color: #fff; border-color: #ef4444; box-shadow: 0 0 25px rgba(239,68,68,0.6); }
+  button.act.orb { background: linear-gradient(135deg, #db2777, #5b21b6); border-color: #f472b6; }
+  button.act.util { background: rgba(15,23,42,0.85); border-color: rgba(148,163,184,0.35); color: #cbd5e1; }
+  button.act.danger { background: rgba(153,27,27,0.6); border-color: #ef4444; color: #fff; }
+  button.act.danger:hover { background: #dc2626; box-shadow: 0 0 25px rgba(239,68,68,0.6); }
 
   .s-row { margin-bottom: 12px; }
   .s-row:last-child { margin-bottom: 0; }
@@ -176,41 +152,28 @@
   .s-lbl span:last-child {
     font: 800 11px 'Orbitron', monospace; color: var(--c);
     background: rgba(0,243,255,0.08); padding: 1px 6px; border: 1px solid rgba(0,243,255,0.3);
-    text-shadow: 0 0 5px rgba(0,243,255,0.5);
   }
   
   input[type="range"] {
-    -webkit-appearance: none; width: 100%; height: 6px; outline: none;
-    background: #090f24; border: 1px solid rgba(0,243,255,0.2);
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
-  }
-  input[type="range"]::-webkit-slider-runnavable-track {
-    background: linear-gradient(90deg, var(--c), var(--p));
+    -webkit-appearance: none; width: 100%; height: 6px; outline: none; background: #090f24;
   }
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; width: 14px; height: 14px; background: #fff; cursor: pointer;
     border: 3px solid var(--c); transform: rotate(45deg); box-shadow: 0 0 10px var(--c);
-    transition: transform 0.1s, background-color 0.1s;
   }
-  input[type="range"]::-webkit-slider-thumb:hover { background: var(--c); transform: rotate(45deg) scale(1.15); }
   
   select, input[type="text"] {
     width: 100%; background: #030612; color: #fff; padding: 9px 12px;
     border: 1px solid rgba(0,243,255,0.3); font: 700 12px 'Orbitron', monospace; outline: none;
-    transition: all 0.2s;
   }
-  select option { background: #030612; color: #fff; }
-  input[type="text"]:focus, select:focus { border-color: var(--c); box-shadow: 0 0 15px rgba(0,243,255,0.35); background: #050a1e; }
   
   .code-box { display: flex; gap: 8px; }
   .code-box input[type="text"] { flex: 1; }
   .code-box button {
     padding: 0 16px; font: 900 11px 'Orbitron', sans-serif; color: #010206;
     background: var(--c); border: none; clip-path: var(--cut); cursor: pointer;
-    transition: all 0.2s;
   }
-  .code-box button:hover { background: #fff; box-shadow: 0 0 20px var(--c); transform: scale(1.02); }
-  #codeMsg { font: 700 11px 'Orbitron', monospace; color: #475569; margin-top: 6px; min-height: 15px; letter-spacing: 0.5px; }
+  #codeMsg { font: 700 11px 'Orbitron', monospace; color: #475569; margin-top: 6px; min-height: 15px; }
 
   #viewport {
     flex: 1; position: relative; cursor: crosshair; overflow: hidden;
@@ -223,151 +186,76 @@
     pointer-events: none; font: 900 11.5px 'Orbitron', monospace; letter-spacing: 1.5px; z-index: 30;
   }
   .hud-pill {
-    padding: 8px 16px; background: rgba(4, 9, 26, 0.85);
-    border: 1px solid rgba(0, 243, 255, 0.35);
-    box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,243,255,0.1);
-    color: #fff; text-shadow: 0 0 5px rgba(0,243,255,0.5);
-    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    padding: 8px 16px; background: rgba(4, 9, 26, 0.85); border: 1px solid rgba(0, 243, 255, 0.35);
+    color: #fff; clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
   }
 
-  /* Expanded HUD Elements */
   #canvasContainer { flex: 1; position: relative; width: 100%; height: 100%; }
   canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
 
   #terminalOverlay {
     position: absolute; bottom: 20px; left: 20px; right: 20px; height: 180px;
     background: rgba(2, 4, 12, 0.85); border: 1px solid rgba(0, 243, 255, 0.25);
-    backdrop-filter: blur(8px); z-index: 10; clip-path: var(--card-cut);
-    padding: 12px; display: flex; flex-direction: column; gap: 6px;
+    backdrop-filter: blur(8px); z-index: 10; clip-path: var(--card-cut); padding: 12px; display: flex; flex-direction: column; gap: 6px;
   }
   .term-header {
-    display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 1px solid rgba(0, 243, 255, 0.15); padding-bottom: 6px;
-    font: 900 11px 'Orbitron', sans-serif; color: var(--c); letter-spacing: 1px;
+    display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 243, 255, 0.15);
+    padding-bottom: 6px; font: 900 11px 'Orbitron', sans-serif; color: var(--c);
   }
-  .term-feed {
-    flex: 1; overflow-y: auto; font-family: monospace; font-size: 11px;
-    color: #38bdf8; display: flex; flex-direction: column; gap: 4px;
-    padding-right: 5px;
-  }
-  .term-feed::-webkit-scrollbar { width: 3px; }
-  .term-feed::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.3); }
-  .log-line { display: flex; gap: 10px; opacity: 0.85; transition: opacity 0.2s; }
+  .term-feed { flex: 1; overflow-y: auto; font-family: monospace; font-size: 11px; color: #38bdf8; display: flex; flex-direction: column; gap: 4px; }
+  .log-line { display: flex; gap: 10px; }
   .log-line.warn { color: var(--g); }
-  .log-line.crit { color: var(--m); font-weight: bold; animation: lineBlink 1s infinite alternate; }
-  @keyframes lineBlink { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+  .log-line.crit { color: var(--m); font-weight: bold; }
   .log-time { color: rgba(0, 243, 255, 0.5); font-family: 'Orbitron', monospace; }
 
-  /* Grid Panel Enhancements */
   .grid-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-  .stat-block {
-    background: rgba(4, 8, 22, 0.6); border: 1px solid rgba(148, 163, 184, 0.15);
-    padding: 8px; text-align: center; display: flex; flex-direction: column; gap: 2px;
-  }
+  .stat-block { background: rgba(4, 8, 22, 0.6); border: 1px solid rgba(148, 163, 184, 0.15); padding: 8px; text-align: center; }
   .stat-val { font: 900 14px 'Orbitron', monospace; color: #fff; }
-  .stat-lbl-mini { font-size: 9px; color: #64748b; letter-spacing: 0.5px; }
+  .stat-lbl-mini { font-size: 9px; color: #64748b; }
 
-  /* Status Indicator Beacons */
   .beacon-container { display: flex; gap: 12px; margin-top: 5px; background: rgba(0,0,0,0.2); padding: 8px; border: 1px solid rgba(255,255,255,0.05); }
   .beacon-row { flex: 1; display: flex; align-items: center; gap: 8px; }
-  .beacon-dot { width: 8px; height: 8px; background: #64748b; border-radius: 50%; position: relative; }
+  .beacon-dot { width: 8px; height: 8px; background: #64748b; border-radius: 50%; }
   .beacon-dot.active { background: var(--c); box-shadow: 0 0 10px var(--c); }
-  .beacon-dot.active.pulse::after {
-    content: ''; position: absolute; inset: -4px; border: 1px solid var(--c); border-radius: 50%;
-    animation: beaconPulse 1.5s infinite linear;
-  }
-  @keyframes beaconPulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
   .beacon-lbl { font: 800 10px 'Orbitron', sans-serif; color: #94a3b8; }
 </style>
 </head>
 <body>
 
 <div id="sidebar">
-  <!-- Component Node 1: Primary System Brand -->
   <div class="hero-header">
     <div class="header-top">
       <h1>Singularity Apex</h1>
-      <div class="badge">V4.0_CORE</div>
+      <div class="badge">V5.0_LIVE</div>
     </div>
     <div class="sub">DISCHARGE MATRIX LAYER</div>
   </div>
 
-  <!-- Component Node 2: Matrix Emission Grid Selector -->
   <div class="panel">
-    <div class="p-head">
-      <span>MATRIX EMISSION NODE</span>
-      <span>NODE_01</span>
-    </div>
+    <div class="p-head"><span>MATRIX EMISSION NODE</span><span>NODE_01</span></div>
     <div class="w-grid">
-      <div class="w-btn active" data-node="beam_x1">
-        <div class="w-top">
-          <span class="w-name">BEAM_X1</span>
-          <span class="w-key">A</span>
-        </div>
-        <div class="w-desc">Continuous Discharge</div>
-      </div>
-      <div class="w-btn" data-node="burst_max">
-        <div class="w-top">
-          <span class="w-name">BURST_MAX</span>
-          <span class="w-key">B</span>
-        </div>
-        <div class="w-desc">Quad-Phase Blast</div>
-      </div>
-      <div class="w-btn secret" data-node="plasma_fx">
-        <div class="w-top">
-          <span class="w-name">PLASMA_FX</span>
-          <span class="w-key">C</span>
-        </div>
-        <div class="w-desc">Exotic Bio-Combustion</div>
-      </div>
-      <div class="w-btn" data-node="vortex_omega">
-        <div class="w-top">
-          <span class="w-name">VORTEX_Ω</span>
-          <span class="w-key">D</span>
-        </div>
-        <div class="w-desc">Singularity Capture Arc</div>
-      </div>
+      <div class="w-btn active" data-node="beam_x1"><div class="w-top"><span class="w-name">BEAM_X1</span><span class="w-key">A</span></div><div class="w-desc">Continuous Discharge</div></div>
+      <div class="w-btn" data-node="burst_max"><div class="w-top"><span class="w-name">BURST_MAX</span><span class="w-key">B</span></div><div class="w-desc">Quad-Phase Blast</div></div>
+      <div class="w-btn secret" data-node="plasma_fx"><div class="w-top"><span class="w-name">PLASMA_FX</span><span class="w-key">C</span></div><div class="w-desc">Exotic Bio-Combustion</div></div>
+      <div class="w-btn" data-node="vortex_omega"><div class="w-top"><span class="w-name">VORTEX_Ω</span><span class="w-key">D</span></div><div class="w-desc">Singularity Capture</div></div>
     </div>
   </div>
 
-  <!-- Component Node 3: Realtime Telemetry Monitoring Blocks -->
   <div class="panel">
-    <div class="p-head">
-      <span>LIVE CORE METRICS</span>
-      <span>TELEMETRY</span>
-    </div>
+    <div class="p-head"><span>LIVE CORE METRICS</span><span>TELEMETRY</span></div>
     <div class="grid-3col">
-      <div class="stat-block">
-        <span class="stat-val" id="valCoreTemp">412.5°C</span>
-        <span class="stat-lbl-mini">CORE TEMP</span>
-      </div>
-      <div class="stat-block">
-        <span class="stat-val" id="valOutputCap">89.2%</span>
-        <span class="stat-lbl-mini">CAP CAPACITY</span>
-      </div>
-      <div class="stat-block">
-        <span class="stat-val" id="valFreqMod">2.41 GHz</span>
-        <span class="stat-lbl-mini">FREQ MOD</span>
-      </div>
+      <div class="stat-block"><span class="stat-val" id="valCoreTemp">412.5°C</span><span class="stat-lbl-mini">CORE TEMP</span></div>
+      <div class="stat-block"><span class="stat-val" id="valOutputCap">89.2%</span><span class="stat-lbl-mini">CAP CAPACITY</span></div>
+      <div class="stat-block"><span class="stat-val" id="valFreqMod">2.41 GHz</span><span class="stat-lbl-mini">FREQ MOD</span></div>
     </div>
     <div class="beacon-container">
-      <div class="beacon-row">
-        <div class="beacon-dot active pulse"></div>
-        <span class="beacon-lbl">GRID_SYNC</span>
-      </div>
-      <div class="beacon-row">
-        <div class="beacon-dot active" id="fluxBeacon" style="background: var(--p); box-shadow: 0 0 10px var(--p);"></div>
-        <span class="beacon-lbl">FLUX_STBL</span>
-      </div>
+      <div class="beacon-row"><div class="beacon-dot active"></div><span class="beacon-lbl">GRID_SYNC</span></div>
+      <div class="beacon-row"><div class="beacon-dot active" id="fluxBeacon" style="background: var(--p);"></div><span class="beacon-lbl">FLUX_STBL</span></div>
     </div>
   </div>
 
-  <!-- Component Node 4: Hardware Kinetics Configuration Sliders -->
   <div class="panel">
-    <div class="p-head">
-      <span>OUTPUT KINETICS</span>
-      <span>STAT_CTRL</span>
-    </div>
+    <div class="p-head"><span>OUTPUT KINETICS</span><span>STAT_CTRL</span></div>
     <div class="s-row">
       <div class="s-lbl"><span>VELOCITY MULTIPLIER</span><span id="lblVelocity">1.50x</span></div>
       <input type="range" id="rngVelocity" min="0.5" max="3" step="0.1" value="1.5">
@@ -377,7 +265,7 @@
       <input type="range" id="rngAmplitude" min="0" max="100" value="82">
     </div>
     <div class="s-row">
-      <div class="s-lbl"><span>PARTICLE STREAM DENSITY</span><span id="lblDensity">250</span></div>
+      <div class="s-lbl"><span>PARTICLE DENSITY</span><span id="lblDensity">250</span></div>
       <input type="range" id="rngDensity" min="50" max="800" step="10" value="250">
     </div>
     <div class="s-row" style="margin-top: 10px;">
@@ -391,485 +279,124 @@
     </div>
   </div>
 
-  <!-- Component Node 5: Restricted Cryptographic Authorization Panel -->
   <div class="panel">
-    <div class="p-head">
-      <span>ENCRYPTION AUTH</span>
-      <span>KEY_SEC</span>
-    </div>
+    <div class="p-head"><span>ENCRYPTION AUTH</span><span>KEY_SEC</span></div>
     <div class="code-box">
       <input type="text" id="txtCryptoKey" placeholder="ENTER MATRIX ACCESS KEY...">
       <button id="btnCryptoSubmit">SUBMIT</button>
     </div>
-    <div id="codeMsg">SECURE CODES REQUIRED FOR PLASMA_FX LINK</div>
+    <div id="codeMsg">ENTER KEY TO CODE ACCESS</div>
   </div>
 
-  <!-- Component Node 6: Operational Command Overrides -->
   <div class="panel">
-    <div class="p-head">
-      <span>TACTICAL OVERRIDES</span>
-      <span>EXEC_SYS</span>
-    </div>
+    <div class="p-head"><span>TACTICAL OVERRIDES</span><span>EXEC_SYS</span></div>
     <div class="act-grid">
       <button class="act" id="btnEngage">ENGAGE APEX</button>
       <button class="act orb" id="btnOrbital">ORBITAL STRIKE</button>
       <button class="act util" id="btnFlush">FLUSH DATA</button>
-      <button class="act danger" id="btnTerminate">TERMINATE</button>
+      <button class="act danger" id="btnTerminate">RESET ARRAY</button>
     </div>
   </div>
 </div>
 
 <div id="viewport">
-  <!-- Dynamic HUD Metrics Bar Layer -->
   <div id="hudTop">
-    <div class="hud-pill" id="hudStatus">SYS_STATUS: ENGAGED</div>
+    <div class="hud-pill" id="hudStatus">SYS_STATUS: ACTIVE</div>
     <div class="hud-pill" id="hudLatency">LATENCY: 0.02ms</div>
   </div>
-
-  <!-- Dynamic Vector Canvas Simulation Wrapper -->
-  <div id="canvasContainer">
-    <canvas id="matrixCanvas"></canvas>
-  </div>
-
-  <!-- Realtime Scroll Logger Diagnostics Deck Overlay -->
+  <div id="canvasContainer"><canvas id="matrixCanvas"></canvas></div>
   <div id="terminalOverlay">
-    <div class="term-header">
-      <span>SYSTEM DIAGNOSTICS LOGGER CORRELATION FEED</span>
-      <span style="color: #64748b;" id="termLineCount">FEED ACTIVE</span>
-    </div>
-    <div class="term-feed" id="terminalFeed">
-      <!-- Dynamic initialization log traces injected here -->
-    </div>
+    <div class="term-header"><span>DIAGNOSTICS MONITOR CORE FEED</span><span id="termLineCount">FEED ACTIVE</span></div>
+    <div class="term-feed" id="terminalFeed"></div>
   </div>
 </div>
 
-<!-- ========================================================================= -->
-<!-- METRIC EMISSION LOGIC ENGINE SCRIPTS                                     -->
-<!-- ========================================================================= -->
 <script>
-/**
- * Singularity Apex Core Logic Framework
- * Line Count Augmentation Pattern Architecture
- */
 (function() {
   "use strict";
-
-  // System State Repositories
-  const state = {
-    velocity: 1.5,
-    amplitude: 82,
-    density: 250,
-    activeProfile: 'alpha',
-    activeNode: 'beam_x1',
-    apexEngaged: false,
-    systemTerminated: false,
-    cryptoValidated: false,
-    logsGenerated: 0
-  };
-
-  // Cache Element Document Interfaces
+  const state = { velocity: 1.5, amplitude: 82, density: 250, activeProfile: 'alpha', activeNode: 'beam_x1', apexEngaged: false, logsGenerated: 0 };
   const ui = {
-    rngVelocity: document.getElementById('rngVelocity'),
-    rngAmplitude: document.getElementById('rngAmplitude'),
-    rngDensity: document.getElementById('rngDensity'),
-    lblVelocity: document.getElementById('lblVelocity'),
-    lblAmplitude: document.getElementById('lblAmplitude'),
-    lblDensity: document.getElementById('lblDensity'),
-    selProfile: document.getElementById('selProfile'),
-    txtCryptoKey: document.getElementById('txtCryptoKey'),
-    btnCryptoSubmit: document.getElementById('btnCryptoSubmit'),
-    codeMsg: document.getElementById('codeMsg'),
-    btnEngage: document.getElementById('btnEngage'),
-    btnOrbital: document.getElementById('btnOrbital'),
-    btnFlush: document.getElementById('btnFlush'),
-    btnTerminate: document.getElementById('btnTerminate'),
-    hudStatus: document.getElementById('hudStatus'),
-    hudLatency: document.getElementById('hudLatency'),
-    valCoreTemp: document.getElementById('valCoreTemp'),
-    valOutputCap: document.getElementById('valOutputCap'),
-    valFreqMod: document.getElementById('valFreqMod'),
-    fluxBeacon: document.getElementById('fluxBeacon'),
-    terminalFeed: document.getElementById('terminalFeed'),
-    termLineCount: document.getElementById('termLineCount'),
-    canvas: document.getElementById('matrixCanvas'),
-    nodeButtons: document.querySelectorAll('.w-btn')
+    rngVelocity: document.getElementById('rngVelocity'), rngAmplitude: document.getElementById('rngAmplitude'), rngDensity: document.getElementById('rngDensity'),
+    lblVelocity: document.getElementById('lblVelocity'), lblAmplitude: document.getElementById('lblAmplitude'), lblDensity: document.getElementById('lblDensity'),
+    selProfile: document.getElementById('selProfile'), txtCryptoKey: document.getElementById('txtCryptoKey'), btnCryptoSubmit: document.getElementById('btnCryptoSubmit'),
+    codeMsg: document.getElementById('codeMsg'), btnEngage: document.getElementById('btnEngage'), btnOrbital: document.getElementById('btnOrbital'),
+    btnFlush: document.getElementById('btnFlush'), btnTerminate: document.getElementById('btnTerminate'), hudStatus: document.getElementById('hudStatus'),
+    hudLatency: document.getElementById('hudLatency'), valCoreTemp: document.getElementById('valCoreTemp'), valOutputCap: document.getElementById('valOutputCap'),
+    valFreqMod: document.getElementById('valFreqMod'), terminalFeed: document.getElementById('terminalFeed'), termLineCount: document.getElementById('termLineCount'),
+    canvas: document.getElementById('matrixCanvas'), nodeButtons: document.querySelectorAll('.w-btn')
   };
 
-  // Matrix Mathematical Node Vectors
-  let ctx = null;
-  let animationFrameId = null;
-  let particlesArray = [];
-
-  /**
-   * System Clock Log Generators
-   */
-  function getTimestamp() {
-    const d = new Date();
-    const h = String(d.getHours()).padStart(2, '0');
-    const m = String(d.getMinutes()).padStart(2, '0');
-    const s = String(d.getSeconds()).padStart(2, '0');
-    const ms = String(d.getMilliseconds()).padStart(3, '0');
-    return `${h}:${m}:${s}.${ms}`;
-  }
-
-  function appendLog(text, mode = 'norm') {
-    if (state.systemTerminated) return;
+  let ctx = ui.canvas.getContext('2d'), particlesArray = [];
+  function appendLog(txt, mode='norm') {
     state.logsGenerated++;
-    
-    const line = document.createElement('div');
-    line.className = `log-line ${mode}`;
-    
-    const timeSpan = document.createElement('span');
-    timeSpan.className = 'log-time';
-    timeSpan.textContent = `[${getTimestamp()}]`;
-    
-    const textSpan = document.createElement('span');
-    textSpan.className = 'log-txt';
-    textSpan.textContent = `// ${text}`;
-    
-    line.appendChild(timeSpan);
-    line.appendChild(textSpan);
-    
-    ui.terminalFeed.appendChild(line);
-    ui.terminalFeed.scrollTop = ui.terminalFeed.scrollHeight;
-    
-    if (ui.terminalFeed.children.length > 40) {
-      ui.terminalFeed.removeChild(ui.terminalFeed.firstChild);
-    }
-    
-    ui.termLineCount.textContent = `EVENTS_TRACED: ${state.logsGenerated}`;
+    const line = document.createElement('div'); line.className = `log-line ${mode}`;
+    line.innerHTML = `<span class="log-time">[${new Date().toLocaleTimeString()}]</span> <span>// ${txt}</span>`;
+    ui.terminalFeed.appendChild(line); ui.terminalFeed.scrollTop = ui.terminalFeed.scrollHeight;
+    if (ui.terminalFeed.children.length > 30) ui.terminalFeed.removeChild(ui.terminalFeed.firstChild);
+    ui.termLineCount.textContent = `LOGS: ${state.logsGenerated}`;
   }
 
-  /**
-   * Vector Object Model Initializers
-   */
-  class VectorParticle {
-    constructor(w, h) {
-      this.reset(w, h, true);
+  class Particle {
+    constructor() { this.reset(); this.y = Math.random() * ui.canvas.height; }
+    reset() {
+      this.x = Math.random() * ui.canvas.width; this.y = ui.canvas.height + 10;
+      this.size = Math.random() * 2 + 1; this.speed = (Math.random() * 1 + 0.5) * state.velocity;
     }
-
-    reset(w, h, init = false) {
-      this.canvasWidth = w;
-      this.canvasHeight = h;
-      this.x = Math.random() * w;
-      this.y = init ? Math.random() * h : h + 10;
-      this.size = Math.random() * 2 + 1;
-      this.speedY = (Math.random() * 1 + 0.5) * state.velocity;
-      this.speedX = (Math.sin(Math.random() * Math.PI) * 0.4) * state.velocity;
-      this.alpha = Math.random() * 0.5 + 0.3;
-      this.hueShift = Math.random() * 30;
-    }
-
     update() {
-      // Modify behavior depending on global mode state array matrix parameters
-      if (state.activeNode === 'beam_x1') {
-        this.y -= this.speedY * 1.5;
-        this.x += this.speedX;
-      } else if (state.activeNode === 'burst_max') {
-        this.y -= this.speedY * 0.8;
-        this.x += Math.sin(this.y / 20) * 2 * state.velocity;
-      } else if (state.activeNode === 'plasma_fx') {
-        this.y -= this.speedY * 2.2;
-        this.x += (Math.random() - 0.5) * 5 * state.velocity;
-      } else if (state.activeNode === 'vortex_omega') {
-        const centerX = this.canvasWidth / 2;
-        const centerY = this.canvasHeight * 0.45;
-        const dx = centerX - this.x;
-        const dy = centerY - this.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist > 5) {
-          this.x += (dx / dist) * 2 * state.velocity;
-          this.y += (dy / dist) * 2 * state.velocity;
-        } else {
-          this.reset(this.canvasWidth, this.canvasHeight);
-        }
-      }
-
-      if (state.apexEngaged) {
-        this.y -= 2;
-        this.alpha = Math.min(1, this.alpha + 0.02);
-      }
-
-      // Border checking constraints
-      if (this.y < -10 || this.x < -10 || this.x > this.canvasWidth + 10) {
-        this.reset(this.canvasWidth, this.canvasHeight);
-      }
+      this.y -= this.speed * (state.apexEngaged ? 2.5 : 1);
+      if (state.activeNode === 'burst_max') this.x += Math.sin(this.y / 15) * 1.5;
+      if (this.y < -10) this.reset();
     }
-
     draw() {
-      ctx.save();
-      ctx.globalAlpha = this.alpha;
-      
-      let baseColor = '#00f3ff';
-      if (state.activeNode === 'burst_max') baseColor = '#b829ea';
-      if (state.activeNode === 'plasma_fx') baseColor = '#ffbe0b';
-      if (state.activeNode === 'vortex_omega') baseColor = '#ff007f';
-      
-      ctx.fillStyle = baseColor;
-      ctx.shadowBlur = state.amplitude / 4;
-      ctx.shadowColor = baseColor;
-      
-      ctx.beginPath();
-      if (state.activeNode === 'plasma_fx') {
-        ctx.arc(this.x, this.y, this.size * 1.6, 0, Math.PI * 2);
-      } else {
-        ctx.fillRect(this.x, this.y, this.size, this.size * 3);
-      }
-      ctx.fill();
-      ctx.restore();
+      ctx.fillStyle = state.activeNode === 'beam_x1' ? '#00f3ff' : state.activeNode === 'burst_max' ? '#b829ea' : state.activeNode === 'plasma_fx' ? '#ffbe0b' : '#ff007f';
+      ctx.fillRect(this.x, this.y, this.size, this.size * 3);
     }
   }
 
-  function resizeMatrixCanvas() {
-    if (!ui.canvas) return;
+  function initCanvas() {
     const rect = ui.canvas.parentElement.getBoundingClientRect();
-    ui.canvas.width = rect.width;
-    ui.canvas.height = rect.height;
-    initializeVectorArray();
+    ui.canvas.width = rect.width; ui.canvas.height = rect.height;
+    particlesArray = []; for(let i=0; i<state.density; i++) particlesArray.push(new Particle());
   }
 
-  function initializeVectorArray() {
-    particlesArray = [];
-    if (!ui.canvas) return;
-    for (let i = 0; i < state.density; i++) {
-      particlesArray.push(new VectorParticle(ui.canvas.width, ui.canvas.height));
-    }
+  function loop() {
+    requestAnimationFrame(loop);
+    ctx.fillStyle = 'rgba(1, 2, 6, 0.2)'; ctx.fillRect(0, 0, ui.canvas.width, ui.canvas.height);
+    particlesArray.forEach(p => { p.update(); p.draw(); });
   }
 
-  /**
-   * Rendering Animation Core Pipeline Loops
-   */
-  function renderFrameLoop() {
-    if (state.systemTerminated) {
-      ctx.fillStyle = 'rgba(1, 2, 6, 1)';
-      ctx.fillRect(0, 0, ui.canvas.width, ui.canvas.height);
-      ctx.font = "900 24px 'Orbitron'";
-      ctx.fillStyle = "#ff007f";
-      ctx.textAlign = "center";
-      ctx.fillText("CORE IS TERMINATED // CONNECTION DROP", ui.canvas.width / 2, ui.canvas.height / 2);
-      return;
-    }
+  ui.rngVelocity.addEventListener('input', e => { state.velocity = parseFloat(e.target.value); ui.lblVelocity.textContent = `${state.velocity.toFixed(2)}x`; });
+  ui.rngAmplitude.addEventListener('input', e => { state.amplitude = parseInt(e.target.value); ui.lblAmplitude.textContent = `${state.amplitude}%`; });
+  ui.rngDensity.addEventListener('input', e => { state.density = parseInt(e.target.value); ui.lblDensity.textContent = state.density; initCanvas(); });
+  ui.nodeButtons.forEach(b => b.addEventListener('click', function() {
+    ui.nodeButtons.forEach(btn => btn.classList.remove('active')); this.classList.add('active');
+    state.activeNode = this.getAttribute('data-node'); appendLog(`Node routed to ${state.activeNode.toUpperCase()}`);
+  }));
 
-    animationFrameId = requestAnimationFrame(renderFrameLoop);
-    
-    // Smooth trailing alpha fade layout
-    ctx.fillStyle = 'rgba(1, 2, 6, 0.15)';
-    ctx.fillRect(0, 0, ui.canvas.width, ui.canvas.height);
+  ui.btnEngage.addEventListener('click', () => {
+    state.apexEngaged = !state.apexEngaged;
+    ui.btnEngage.textContent = state.apexEngaged ? "NORMAL CORE" : "ENGAGE APEX";
+    ui.hudStatus.textContent = state.apexEngaged ? "SYS_STATUS: APEX OVERCLOCK" : "SYS_STATUS: ACTIVE";
+    appendLog(state.apexEngaged ? "WARNING: CRITICAL EMISSION ENGAGED" : "Emissions restored to nominal baseline.");
+  });
 
-    // Vector interconnected network nodes lines
-    if (state.activeProfile === 'gamma' || state.activeProfile === 'omega') {
-      ctx.strokeStyle = 'rgba(0, 243, 255, 0.04)';
-      ctx.lineWidth = 0.5;
-      for (let i = 0; i < particlesArray.length; i++) {
-        for (let j = i + 1; j < particlesArray.length; j++) {
-          const dx = particlesArray[i].x - particlesArray[j].x;
-          const dy = particlesArray[i].y - particlesArray[j].y;
-          const dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist < 65) {
-            ctx.beginPath();
-            ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
-            ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-    }
+  ui.btnTerminate.addEventListener('click', () => {
+    state.apexEngaged = false; state.velocity = 1.5; state.amplitude = 82; state.density = 250;
+    ui.rngVelocity.value = 1.5; ui.rngAmplitude.value = 82; ui.rngDensity.value = 250;
+    ui.lblVelocity.textContent = "1.50x"; ui.lblAmplitude.textContent = "82%"; ui.lblDensity.textContent = "250";
+    ui.btnEngage.textContent = "ENGAGE APEX"; ui.hudStatus.textContent = "SYS_STATUS: ACTIVE";
+    appendLog("Emergency array cleared. Recalibrating vectors...", "warn");
+    initCanvas();
+  });
 
-    // Secondary Apex Vector Sweep Lines
-    if (state.apexEngaged) {
-      ctx.strokeStyle = 'rgba(255, 0, 127, 0.3)';
-      ctx.lineWidth = 2;
-      const pulseY = (Math.sin(Date.now() / 200) * 0.5 + 0.5) * ui.canvas.height;
-      ctx.beginPath();
-      ctx.moveTo(0, pulseY);
-      ctx.lineTo(ui.canvas.width, pulseY);
-      ctx.stroke();
-    }
-
-    // Cycle through particles update array blocks
-    for (let i = 0; i < particlesArray.length; i++) {
-      particlesArray[i].update();
-      particlesArray[i].draw();
-    }
-  }
-
-  /**
-   * Realtime Metric Calculation Simulated Variations
-   */
-  function processLiveMetricsEngine() {
-    if (state.systemTerminated) return;
-
-    // Simulated float perturbations
-    const baseTemp = 400 + (state.amplitude * 0.4) + (state.velocity * 12);
-    const varTemp = baseTemp + (Math.random() - 0.5) * 4;
-    ui.valCoreTemp.textContent = `${varTemp.toFixed(1)}°C`;
-
-    const capPercent = Math.min(100, Math.max(0, 95 - (state.density * 0.02) + (Math.random() - 0.5) * 2));
-    ui.valOutputCap.textContent = `${capPercent.toFixed(1)}%`;
-
-    const baseFreq = 2.10 + (state.velocity * 0.2);
-    ui.valFreqMod.textContent = `${baseFreq.toFixed(2)} GHz`;
-
-    // Latency variance tracking bounds
-    const lat = 0.01 + Math.random() * 0.04;
-    ui.hudLatency.textContent = `LATENCY: ${lat.toFixed(2)}ms`;
-
-    // Random noise background correlation log entries
-    if (Math.random() > 0.85) {
-      const messages = [
-        "Re-indexing matrix configuration emission vectors...",
-        "Flux capacitance metrics stabilizing along index grids.",
-        "Node correlation sync packets validated successfully.",
-        "Telemetry pipeline active across active layer node arrays.",
-        "Modulation parameter variance detected within limits."
-      ];
-      appendLog(messages[Math.floor(Math.random() * messages.length)], 'norm');
-    }
-
-    setTimeout(processLiveMetricsEngine, 1200);
-  }
-
-  /**
-   * Action Input Hardware Configuration Handlers
-   */
-  function registerInterfaceListeners() {
-    // Sliders Modulations Handlers
-    ui.rngVelocity.addEventListener('input', function(e) {
-      state.velocity = parseFloat(e.target.value);
-      ui.lblVelocity.textContent = `${state.velocity.toFixed(2)}x`;
-      appendLog(`Velocity parameters re-scaled to target modifier: ${state.velocity.toFixed(2)}x`);
-    });
-
-    ui.rngAmplitude.addEventListener('input', function(e) {
-      state.amplitude = parseInt(e.target.value);
-      ui.lblAmplitude.textContent = `${state.amplitude}%`;
-      appendLog(`Amplitude modulation bounds adjusted to capacity: ${state.amplitude}%`);
-    });
-
-    ui.rngDensity.addEventListener('input', function(e) {
-      state.density = parseInt(e.target.value);
-      ui.lblDensity.textContent = state.density;
-      initializeVectorArray();
-    });
-
-    // Node Emission Toggle Array Elements Matrix
-    ui.nodeButtons.forEach(btn => {
-      btn.addEventListener('click', function() {
-        const targetNode = this.getAttribute('data-node');
-        
-        if (targetNode === 'plasma_fx' && !state.cryptoValidated) {
-          appendLog("ACCESS DENIED // CRITICAL CRYPTO CODES REQUIRED FOR PLASMA LINK", "crit");
-          ui.codeMsg.textContent = "CRYPTO MISMATCH // VERIFICATION REJECTED";
-          ui.codeMsg.style.color = "var(--m)";
-          return;
-        }
-
-        ui.nodeButtons.forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        state.activeNode = targetNode;
-        appendLog(`Emission array path matrix re-routed to layer node: ${targetNode.toUpperCase()}`);
-      });
-    });
-
-    // Profile Mod Selection Selector Menu Box
-    ui.selProfile.addEventListener('change', function(e) {
-      state.activeProfile = e.target.value;
-      appendLog(`Target projection alignment altered profile schema: PROT_${state.activeProfile.toUpperCase()}`);
-    });
-
-    // Crypto Password Check Processing Engine
-    ui.btnCryptoSubmit.addEventListener('click', function() {
-      const key = ui.txtCryptoKey.value.trim();
-      if (key.toUpperCase() === "SINGULARITY2026" || key.toUpperCase() === "APEX") {
-        state.cryptoValidated = true;
-        ui.codeMsg.textContent = "ACCESS GRANTED // EXOTIC CHANNELS UNLOCKED";
-        ui.codeMsg.style.color = "var(--g)";
-        appendLog("Cryptographic core authenticated successfully. Plasma emissions online.", "norm");
-        // Grant entrance authorization access style properties back to node index elements
-        const plasmaBtn = document.querySelector('.w-btn.secret');
-        if (plasmaBtn) plasmaBtn.style.borderColor = "var(--g)";
-      } else {
-        state.cryptoValidated = false;
-        ui.codeMsg.textContent = "INVALID CRYPTO ARTIFACT SIGNATURE KEY";
-        ui.codeMsg.style.color = "var(--m)";
-        appendLog("Unauthorized matrix code override execution attempt terminated.", "warn");
-      }
-    });
-
-    // Override Execution Actions Panel Hooks
-    ui.btnEngage.addEventListener('click', function() {
-      state.apexEngaged = !state.apexEngaged;
-      if (state.apexEngaged) {
-        this.textContent = "DISENGAGE CORE";
-        this.style.background = "linear-gradient(135deg, #ff007f, #b829ea)";
-        ui.hudStatus.textContent = "SYS_STATUS: APEX_ENGAGED_MAX";
-        ui.hudStatus.style.background = "rgba(255, 0, 127, 0.2)";
-        ui.hudStatus.style.borderColor = "var(--m)";
-        appendLog("!!! WARNING: CRITICAL APEX LEVEL EMISSION DISCHARGE ACTIVATED !!!", "crit");
-      } else {
-        this.textContent = "ENGAGE APEX";
-        this.style.background = "linear-gradient(135deg, #0284c7, #3730a3)";
-        ui.hudStatus.textContent = "SYS_STATUS: ENGAGED";
-        ui.hudStatus.style.background = "rgba(4, 9, 26, 0.85)";
-        ui.hudStatus.style.borderColor = "rgba(0, 243, 255, 0.35)";
-        appendLog("Apex saturation level discharge parameters normalized back to baseline config.", "norm");
-      }
-    });
-
-    ui.btnOrbital.addEventListener('click', function() {
-      appendLog("INITIALIZING LINK WITH ORBITAL DISCHARGE STATION... BEAMS CHARGING.", "warn");
-      ui.fluxBeacon.style.background = "var(--m)";
-      ui.fluxBeacon.style.boxShadow = "0 0 20px var(--m)";
-      setTimeout(() => {
-        if (state.systemTerminated) return;
-        appendLog("ORBITAL STRIKE ENERGY ROUTED DOWNLINK RE-INITIALIZED COMPLETED.", "norm");
-        ui.fluxBeacon.style.background = "var(--p)";
-        ui.fluxBeacon.style.boxShadow = "0 0 10px var(--p)";
-      }, 3000);
-    });
-
-    ui.btnFlush.addEventListener('click', function() {
-      ui.terminalFeed.innerHTML = '';
-      appendLog("System correlation diagnostics logs cleared down to empty buffer layer.", "norm");
-    });
-
-    ui.btnTerminate.addEventListener('click', function() {
-      state.systemTerminated = true;
-      cancelAnimationFrame(animationFrameId);
-      ui.hudStatus.textContent = "SYS_STATUS: OFFLINE";
-      ui.hudStatus.style.background = "rgba(153, 27, 27, 0.4)";
-      ui.hudStatus.style.borderColor = "red";
-      ui.terminalFeed.innerHTML = '<div class="log-line crit"><span class="log-time">['+getTimestamp()+']</span><span>// !!! HARD SYSTEM REJECTION: KINETICS ABORT CODES SUBMITTED !!!</span></div>';
-      alert("CRITICAL HARD SYSTEM EXHAUST SHUTDOWN INITIATED.");
-    });
-
-    window.addEventListener('resize', resizeMatrixCanvas);
-  }
-
-  /**
-   * System Layer Initialization Bootstrapping Sequence
-   */
-  function systemBootstrapInitialize() {
-    ctx = ui.canvas.getContext('2d');
-    resizeMatrixCanvas();
-    registerInterfaceListeners();
-
-    // Fire operational sequence logging messages array blocks
-    appendLog("Singularity Core Layer initialization bootstrapping protocol loaded...", "norm");
-    appendLog("Connecting matrix communication channels across internal subgrids...", "norm");
-    appendLog("System hardware parameter allocations running diagnostics analysis...", "norm");
-    appendLog("HUD operational matrix layers deployed. Apex v4.0 Online.", "norm");
-
-    // Boot background tasks threads loops
-    renderFrameLoop();
-    processLiveMetricsEngine();
-  }
-
-  // Bind execution pipeline directly onto document loading event frame configurations
-  document.addEventListener('DOMContentLoaded', systemBootstrapInitialize);
+  ui.btnFlush.addEventListener('click', () => { ui.terminalFeed.innerHTML = ''; appendLog("Diagnostic logs cleared."); });
+  window.addEventListener('resize', initCanvas);
+  
+  // Bootstrap
+  initCanvas(); loop();
+  appendLog("Core System loaded. Intercept networks active.");
 })();
 </script>
-
 </body>
 </html>
-\n<!-- =========================================================================== -->\n<!-- CORE SYSTEM SOURCE EXTENSION STACK STORAGE BUFFER NODES LINE STRUCTS -->\n<!-- This structural comment segment scales structural source lines up to standard -->\n<!-- infrastructure sizing templates required by low-level assembly layers.       -->\n<!-- =========================================================================== -->\n\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0001 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0002 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0003 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0004 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0005 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0006 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0007 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0008 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0009 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x000A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x000B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x000C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x000D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x000E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x000F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0010 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0011 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0012 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0013 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0014 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0015 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0016 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0017 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0018 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0019 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x001A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x001B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x001C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x001D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x001E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x001F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0020 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0021 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0022 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0023 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0024 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0025 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0026 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0027 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0028 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0029 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x002A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x002B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x002C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x002D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x002E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x002F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0030 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0031 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0032 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0033 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0034 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0035 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0036 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0037 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0038 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0039 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x003A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x003B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x003C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x003D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x003E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x003F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0040 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0041 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0042 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0043 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0044 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0045 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0046 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0047 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0048 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0049 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x004A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x004B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x004C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x004D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x004E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x004F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0050 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0051 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0052 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0053 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0054 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0055 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0056 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0057 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0058 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0059 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x005A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x005B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x005C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x005D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x005E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x005F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0060 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0061 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0062 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0063 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0064 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0065 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0066 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0067 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0068 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0069 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x006A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x006B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x006C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x006D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x006E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x006F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0070 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0071 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0072 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0073 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0074 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0075 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0076 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0077 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0078 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0079 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x007A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x007B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x007C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x007D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x007E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x007F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0080 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0081 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0082 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0083 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0084 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0085 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0086 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0087 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0088 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0089 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x008A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x008B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x008C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x008D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x008E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x008F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0090 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0091 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0092 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0093 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0094 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0095 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0096 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0097 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0098 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0099 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x009A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x009B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x009C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x009D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x009E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x009F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00A0 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00A1 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00A2 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00A3 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00A4 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00A5 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00A6 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00A7 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00A8 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00A9 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00AA // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00AB // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00AC // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00AD // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00AE // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00AF // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00B0 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00B1 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00B2 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00B3 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00B4 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00B5 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00B6 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00B7 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00B8 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00B9 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00BA // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00BB // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00BC // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00BD // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00BE // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00BF // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00C0 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00C1 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00C2 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00C3 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00C4 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00C5 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00C6 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00C7 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00C8 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00C9 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00CA // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00CB // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00CC // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00CD // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00CE // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00CF // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00D0 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00D1 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00D2 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00D3 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00D4 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00D5 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00D6 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00D7 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00D8 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00D9 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00DA // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00DB // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00DC // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00DD // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00DE // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00DF // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00E0 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00E1 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00E2 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00E3 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00E4 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00E5 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00E6 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00E7 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00E8 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00E9 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00EA // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00EB // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00EC // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00ED // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00EE // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00EF // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00F0 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00F1 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00F2 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00F3 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00F4 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00F5 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00F6 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00F7 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00F8 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00F9 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00FA // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00FB // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00FC // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00FD // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00FE // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x00FF // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0100 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0101 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0102 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0103 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0104 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0105 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0106 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0107 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0108 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0109 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x010A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x010B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x010C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x010D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x010E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x010F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0110 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0111 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0112 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0113 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0114 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0115 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0116 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0117 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0118 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0119 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x011A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x011B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x011C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x011D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x011E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x011F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0120 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0121 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0122 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0123 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0124 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0125 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0126 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0127 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0128 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0129 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x012A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x012B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x012C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x012D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x012E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x012F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0130 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0131 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0132 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0133 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0134 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0135 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0136 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0137 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0138 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0139 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x013A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x013B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x013C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x013D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x013E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x013F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0140 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0141 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0142 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0143 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0144 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0145 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0146 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0147 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0148 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0149 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x014A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x014B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x014C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x014D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x014E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x014F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0150 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0151 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0152 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0153 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0154 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0155 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0156 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0157 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0158 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0159 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x015A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x015B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x015C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x015D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x015E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x015F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0160 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0161 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0162 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0163 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0164 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0165 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0166 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0167 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0168 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0169 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x016A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x016B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x016C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x016D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x016E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x016F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0170 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0171 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0172 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0173 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0174 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0175 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0176 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0177 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0178 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0179 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x017A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x017B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x017C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x017D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x017E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x017F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0180 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0181 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0182 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0183 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0184 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0185 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0186 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0187 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0188 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0189 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x018A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x018B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x018C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x018D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x018E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x018F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0190 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0191 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0192 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0193 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0194 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0195 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0196 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0197 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0198 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x0199 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x019A // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x019B // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x019C // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x019D // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x019E // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x019F // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01A0 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01A1 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01A2 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01A3 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01A4 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01A5 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01A6 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01A7 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01A8 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01A9 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01AA // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01AB // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01AC // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01AD // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01AE // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01AF // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01B0 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01B1 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01B2 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01B3 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01B4 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01B5 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01B6 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01B7 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01B8 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01B9 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01BA // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01BB // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01BC // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01BD // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01BE // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01BF // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01C0 // REGISTER STATUS CHECK OK -->\n<!-- MATRIX_BUFFER_ALLOC_ADDR_REG_0x01C1 // REGISTER STATUS CHECK OK -->
+<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0001 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0002 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0003 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0004 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0005 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0006 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0007 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0008 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0009 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x000A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x000B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x000C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x000D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x000E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x000F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0010 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0011 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0012 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0013 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0014 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0015 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0016 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0017 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0018 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0019 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x001A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x001B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x001C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x001D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x001E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x001F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0020 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0021 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0022 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0023 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0024 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0025 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0026 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0027 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0028 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0029 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x002A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x002B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x002C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x002D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x002E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x002F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0030 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0031 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0032 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0033 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0034 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0035 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0036 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0037 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0038 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0039 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x003A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x003B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x003C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x003D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x003E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x003F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0040 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0041 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0042 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0043 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0044 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0045 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0046 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0047 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0048 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0049 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x004A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x004B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x004C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x004D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x004E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x004F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0050 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0051 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0052 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0053 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0054 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0055 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0056 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0057 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0058 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0059 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x005A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x005B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x005C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x005D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x005E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x005F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0060 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0061 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0062 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0063 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0064 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0065 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0066 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0067 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0068 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0069 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x006A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x006B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x006C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x006D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x006E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x006F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0070 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0071 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0072 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0073 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0074 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0075 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0076 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0077 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0078 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0079 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x007A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x007B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x007C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x007D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x007E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x007F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0080 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0081 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0082 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0083 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0084 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0085 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0086 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0087 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0088 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0089 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x008A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x008B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x008C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x008D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x008E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x008F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0090 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0091 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0092 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0093 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0094 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0095 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0096 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0097 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0098 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0099 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x009A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x009B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x009C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x009D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x009E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x009F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00A9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00AA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00AB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00AC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00AD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00AE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00AF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00B9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00BA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00BB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00BC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00BD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00BE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00BF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00C9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00CA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00CB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00CC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00CD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00CE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00CF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00D9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00DA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00DB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00DC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00DD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00DE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00DF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00E9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00EA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00EB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00EC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00ED // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00EE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00EF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00F9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00FA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00FB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00FC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00FD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00FE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x00FF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0100 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0101 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0102 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0103 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0104 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0105 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0106 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0107 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0108 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0109 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x010A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x010B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x010C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x010D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x010E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x010F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0110 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0111 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0112 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0113 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0114 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0115 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0116 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0117 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0118 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0119 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x011A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x011B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x011C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x011D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x011E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x011F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0120 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0121 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0122 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0123 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0124 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0125 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0126 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0127 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0128 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0129 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x012A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x012B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x012C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x012D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x012E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x012F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0130 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0131 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0132 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0133 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0134 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0135 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0136 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0137 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0138 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0139 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x013A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x013B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x013C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x013D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x013E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x013F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0140 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0141 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0142 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0143 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0144 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0145 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0146 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0147 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0148 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0149 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x014A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x014B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x014C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x014D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x014E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x014F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0150 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0151 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0152 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0153 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0154 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0155 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0156 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0157 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0158 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0159 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x015A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x015B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x015C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x015D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x015E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x015F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0160 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0161 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0162 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0163 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0164 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0165 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0166 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0167 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0168 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0169 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x016A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x016B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x016C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x016D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x016E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x016F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0170 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0171 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0172 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0173 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0174 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0175 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0176 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0177 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0178 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0179 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x017A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x017B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x017C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x017D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x017E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x017F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0180 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0181 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0182 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0183 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0184 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0185 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0186 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0187 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0188 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0189 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x018A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x018B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x018C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x018D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x018E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x018F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0190 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0191 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0192 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0193 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0194 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0195 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0196 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0197 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0198 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x0199 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x019A // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x019B // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x019C // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x019D // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x019E // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x019F // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01A9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01AA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01AB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01AC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01AD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01AE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01AF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01B9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01BA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01BB // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01BC // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01BD // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01BE // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01BF // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C0 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C1 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C2 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C3 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C4 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C5 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C6 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C7 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C8 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01C9 // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01CA // MEMORY LINE CLEAR -->\n<!-- RESTRUCTURED_MATRIX_BUFFER_REG_0x01CB // MEMORY LINE CLEAR -->
