@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>DISCHARGE MATRIX // APEX SINGULARITY</title>
+<title>DISCHARGE MATRIX // ENEMY OVERLOAD + ARSENAL</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap');
   :root {
@@ -62,7 +62,7 @@
     border: 1px solid rgba(100,116,139,.4); color: #cbd5e1; cursor: pointer;
     clip-path: var(--cut); transition: .15s; position: relative;
   }
-  .w-btn b { display: block; font: 800 11px 'Orbitron', sans-serif; color: #fff; letter-spacing: .5px; }
+  .w-btn b { display: block; font: 800 10px 'Orbitron', sans-serif; color: #fff; letter-spacing: .5px; }
   .w-btn small { font-size: 10.5px; color: #94a3b8; }
   .w-btn span.hk { position: absolute; top: 5px; right: 8px; font: 800 9px 'Orbitron'; color: var(--c); opacity: .7; }
   .w-btn:hover, .w-btn.active {
@@ -213,12 +213,16 @@
   </div>
 
   <div class="panel">
-    <div class="p-title"><span>01 // WEAPON SYSTEMS</span><span>[1-6]</span></div>
+    <div class="p-title"><span>01 // WEAPON SYSTEMS</span><span>[1-0]</span></div>
     <div class="w-grid" id="wGrid">
       <button class="w-btn active" data-m="arc"><span class="hk">1</span><b>ARC LANCE</b><small>Core plasma beam</small></button>
       <button class="w-btn" data-m="tesla"><span class="hk">2</span><b>TESLA TOROID</b><small>3D chain inductor</small></button>
       <button class="w-btn" data-m="orb"><span class="hk">3</span><b>PLASMA NODES</b><small>Linked pylon grid</small></button>
       <button class="w-btn" data-m="singularity"><span class="hk">4</span><b>SINGULARITY</b><small>Relativistic black hole</small></button>
+      <button class="w-btn" data-m="cryo"><span class="hk">7</span><b>CRYO PRISM</b><small>Freeze & shatter field</small></button>
+      <button class="w-btn" data-m="rail"><span class="hk">8</span><b>VOID RAILGUN</b><small>Piercing hypervelocity lance</small></button>
+      <button class="w-btn" data-m="swarm"><span class="hk">9</span><b>PHOTON SWARM</b><small>Seeking energy missiles</small></button>
+      <button class="w-btn" data-m="storm"><span class="hk">0</span><b>ION STORM</b><small>Multi-target chain lightning</small></button>
     </div>
     <div class="act-grid">
       <button class="act" id="bOver">OVERDRIVE [SPC]</button>
@@ -296,6 +300,7 @@ let volt = 80, chaos = 1.0, fork = 0.55, grav = 1.5, tScale = 1.0;
 let hold = false, mx = W/2, my = H/2, shake = 0, flash = 0, tick = 0;
 let holdCharge = 0, singAngle = 0;
 let sparks = [], nodes = [], targets = [], waves = [], bhDebris = [];
+let photonMissiles = [], photonCooldown = 0;
 
 /* Parallax Background Stars */
 const stars = Array.from({length: 70}, () => ({ x: Math.random()*2000, y: Math.random()*1200, z: Math.random()*2 + 0.5 }));
@@ -544,14 +549,39 @@ function drawTesla(cx, cy) {
 /* Weighted Boss & Target Spawning (1/10 Boss, 1/2 Mini-Boss) */
 function spawnEntity() {
   const roll = Math.random();
-  let type = 'cap', hp = 50, sh = 0, r = 16, col = '#38bdf8', label = '';
-  if (roll < 0.10) { type = 'boss'; hp = 550; sh = 200; r = 36; col = '#ff007f'; label = 'OMEGA DREADNOUGHT DETECTED'; }
-  else if (roll < 0.60) { type = 'mini'; hp = 190; sh = 65; r = 24; col = '#ffbe0b'; label = 'VANGUARD WARDEN INBOUND'; }
-  targets.push({ x: 80 + Math.random()*(W-160), y: 80 + Math.random()*(H-160), vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2, type, hp, maxHp: hp, sh, maxSh: sh, r, col });
+  let type = 'cap', hp = 55, sh = 0, r = 16, col = '#38bdf8', label = '';
+  if (roll < 0.045) { type = 'boss'; hp = 650; sh = 230; r = 38; col = '#ff007f'; label = 'OMEGA DREADNOUGHT DETECTED'; }
+  else if (roll < 0.115) { type = 'mini'; hp = 210; sh = 70; r = 24; col = '#ffbe0b'; label = 'VANGUARD WARDEN INBOUND'; }
+  else {
+    const pool = [
+      ['swarm', 34, 0, 11, '#b7ff3c'],
+      ['phantom', 78, 24, 17, '#c084fc'],
+      ['juggernaut', 310, 120, 31, '#fb7185'],
+      ['splitter', 115, 15, 20, '#f97316'],
+      ['leech', 105, 35, 18, '#34d399'],
+      ['sniper', 95, 0, 16, '#f43f5e'],
+      ['mine', 150, 55, 19, '#facc15'],
+      ['phase', 125, 30, 19, '#67e8f9'],
+      ['healer', 135, 75, 20, '#4ade80'],
+      ['rift', 430, 180, 34, '#a78bfa']
+    ];
+    const entry = pool[Math.floor(Math.random() * pool.length)];
+    [type, hp, sh, r, col] = entry;
+    const names = { swarm:'SWARM DRONES', phantom:'PHANTOM STALKER', juggernaut:'JUGGERNAUT CLASS', splitter:'SPLITTER UNIT', leech:'ENERGY LEECH', sniper:'VOID SNIPER', mine:'PULSE MINE', phase:'PHASE WRAITH', healer:'NANITE MEDIC', rift:'RIFT TITAN' };
+    label = names[type] + ' // CONTACT';
+  }
+  const angle = Math.random() * Math.PI * 2;
+  const speed = type === 'swarm' ? 2.6 : type === 'sniper' ? 1.9 : type === 'juggernaut' || type === 'rift' ? 0.45 : 1.15;
+  targets.push({
+    x: 80 + Math.random()*(W-160), y: 80 + Math.random()*(H-160),
+    vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed,
+    type, hp, maxHp: hp, sh, maxSh: sh, r, col,
+    phase: Math.random()*6.28, attack: Math.random()*90, healClock: 0
+  });
   if (label) {
     const b = document.getElementById('banner'); b.textContent = label; b.style.opacity = 1;
-    setTimeout(() => b.style.opacity = 0, 2200);
-    beep(140, 0.45, 'sawtooth', 0.1);
+    setTimeout(() => b.style.opacity = 0, 1500);
+    if (type === 'boss' || type === 'rift' || type === 'juggernaut') beep(110, 0.35, 'sawtooth', 0.09);
   }
 }
 
@@ -566,6 +596,13 @@ function damageTargets(x, y, rad, dmg) {
         addWave(t.x, t.y, t.r * 5, t.col, 4); addSparks(t.x, t.y, t.type === 'boss' ? 60 : 25, t.col);
         shake = Math.max(shake, t.type === 'boss' ? 22 : 10); beep(90, 0.35, 'square', 0.12);
         targets.splice(i, 1);
+        if (t.type === 'splitter') {
+          for (let n = 0; n < 2; n++) {
+            const a = Math.random() * 6.28;
+            targets.push({ x:t.x, y:t.y, vx:Math.cos(a)*2.8, vy:Math.sin(a)*2.8, type:'swarm', hp:24, maxHp:24, sh:0, maxSh:0, r:9, col:'#b7ff3c', phase:Math.random()*6.28, attack:0, healClock:0 });
+          }
+          addWave(t.x, t.y, 95, '#f97316', 2);
+        }
       }
     }
   }
@@ -597,7 +634,7 @@ function triggerOrbital() {
 document.getElementById('bOver').onclick = triggerOverdrive;
 document.getElementById('bOrb').onclick = triggerOrbital;
 document.getElementById('bSpawn').onclick = spawnEntity;
-document.getElementById('bPurge').onclick = () => { targets = []; nodes = []; sparks = []; waves = []; bhDebris = []; };
+document.getElementById('bPurge').onclick = () => { targets = []; nodes = []; sparks = []; waves = []; bhDebris = []; photonMissiles = []; };
 
 /* Sliders & Secret Dev Codes */
 const bindSl = (id, vid, fn) => document.getElementById(id).oninput = e => { document.getElementById(vid).textContent = fn(+e.target.value); };
@@ -666,6 +703,8 @@ window.onkeydown = e => {
   else if (k === '3') setMode('orb'); else if (k === '4') setMode('singularity');
   else if (k === '5' && document.querySelector('[data-m="gengen"]')) setMode('gengen');
   else if (k === '6' && document.querySelector('[data-m="zayon"]')) setMode('zayon');
+  else if (k === '7') setMode('cryo'); else if (k === '8') setMode('rail');
+  else if (k === '9') setMode('swarm'); else if (k === '0') setMode('storm');
   else if (k === ' ') { e.preventDefault(); triggerOverdrive(); }
   else if (k === 'o') triggerOrbital(); else if (k === 'b') spawnEntity();
   else if (k === 'c') document.getElementById('bPurge').click();
@@ -735,6 +774,73 @@ function loop(now) {
         const a = Math.random()*6.28, r = 90 + Math.random()*110;
         bolt(mx, my - 8, mx + Math.cos(a)*r, my + Math.sin(a)*r, volt*0.6, 1.3);
       }
+    } else if (mode === 'cryo') {
+      // Cryo Prism: icy spokes lock onto nearby enemies and progressively slow them.
+      X.save(); X.globalCompositeOperation = 'lighter';
+      const pulse = 1 + Math.sin(tick * 0.22) * 0.18;
+      X.strokeStyle = '#8ff7ff'; X.lineWidth = 2.2; X.globalAlpha = 0.9;
+      X.beginPath(); X.arc(mx, my, 26 * pulse, 0, 6.28); X.stroke();
+      X.restore();
+      targets.slice().forEach(t => {
+        const d = Math.hypot(t.x-mx, t.y-my);
+        if (d < 300) {
+          bolt(mx, my, t.x, t.y, 14, 1.45, 0, '#83f7ff');
+          t.vx *= 0.91; t.vy *= 0.91;
+          if (tick % 7 < 1) { damageTargets(t.x, t.y, 22, volt * 0.12); addSparks(t.x, t.y, 2, '#b8fbff'); }
+        }
+      });
+      if (holdCharge > 0.78 && tick % 18 < 1) {
+        addWave(mx, my, 170, '#b8fbff', 4);
+        damageTargets(mx, my, 150, volt * 0.42);
+      }
+    } else if (mode === 'rail') {
+      // Void Railgun: a bright beam with a narrow hit corridor that pierces every target along it.
+      const sx = W * 0.5, sy = H * 0.5, dx = mx - sx, dy = my - sy;
+      const len2 = Math.max(1, dx*dx + dy*dy);
+      X.save(); X.globalCompositeOperation = 'lighter';
+      X.strokeStyle = '#8b5cf6'; X.globalAlpha = 0.42; X.lineWidth = 18;
+      X.beginPath(); X.moveTo(sx, sy); X.lineTo(mx, my); X.stroke();
+      X.strokeStyle = '#d8c5ff'; X.globalAlpha = 1; X.lineWidth = 3.2;
+      X.beginPath(); X.moveTo(sx, sy); X.lineTo(mx, my); X.stroke();
+      X.strokeStyle = '#fff'; X.lineWidth = 1; X.stroke();
+      X.restore();
+      targets.slice().forEach(t => {
+        const u = Math.max(0, Math.min(1, ((t.x-sx)*dx + (t.y-sy)*dy) / len2));
+        const px = sx + u*dx, py = sy + u*dy;
+        if (Math.hypot(t.x-px, t.y-py) < t.r + 15 && tick % 4 < 1) {
+          damageTargets(t.x, t.y, 8, volt * 0.32);
+          addSparks(t.x, t.y, 2, '#d8c5ff');
+        }
+      });
+      if (tick % 5 < 1) { addSparks(mx, my, 3, '#fff'); shake = Math.max(shake, 1.2); }
+    } else if (mode === 'swarm') {
+      // Photon Swarm: launch small homing missiles toward the closest living target.
+      if (photonCooldown <= 0 && photonMissiles.length < 22) {
+        const a = Math.atan2(my-H/2, mx-W/2);
+        for (let n=0; n<3 && photonMissiles.length<22; n++) {
+          const spread = (n-1)*0.16;
+          photonMissiles.push({x:W/2, y:H/2, vx:Math.cos(a+spread)*4, vy:Math.sin(a+spread)*4, life:150, hue:n});
+        }
+        photonCooldown = 10;
+        beep(420, 0.045, 'sine', 0.025);
+      }
+      X.save(); X.globalCompositeOperation = 'lighter';
+      X.drawImage(getGlow('#f0abfc'), mx-30, my-30, 60, 60);
+      X.restore();
+    } else if (mode === 'storm') {
+      // Ion Storm: forked arcs jump between multiple targets around the reticle.
+      const near = targets.slice().sort((a,b) => Math.hypot(a.x-mx,a.y-my)-Math.hypot(b.x-mx,b.y-my)).slice(0,6);
+      near.forEach((t,i) => {
+        if (Math.hypot(t.x-mx,t.y-my) < 360) {
+          bolt(mx, my, t.x, t.y, 24, 2.1, 0, i%2 ? '#00f3ff' : '#c084fc');
+          if (tick % 5 < 1) damageTargets(t.x, t.y, 24, volt * 0.16);
+        }
+      });
+      if (near.length > 1 && tick % 3 < 1) {
+        for (let i=1;i<near.length;i++) bolt(near[i-1].x,near[i-1].y,near[i].x,near[i].y,18,1.3,0,'#b9faff');
+      }
+      drawTesla(mx, my);
+      if (tick % 12 < 1) addWave(mx, my, 95, '#00f3ff', 2);
     } else if (mode === 'singularity') {
       shake = Math.max(shake, 3 + holdCharge * 5);
       drawSingularity(mx, my, holdCharge, 1);
@@ -762,29 +868,109 @@ function loop(now) {
     }
   }
 
-  /* Update & Render Bosses / Targets */
+  /* Photon Swarm missile guidance, trails, and impact bursts */
+  photonCooldown = Math.max(0, photonCooldown - 1 * tScale);
+  for (let i = photonMissiles.length - 1; i >= 0; i--) {
+    const m = photonMissiles[i];
+    let target = null, best = Infinity;
+    for (const t of targets) {
+      const d = Math.hypot(t.x-m.x, t.y-m.y);
+      if (d < best) { best = d; target = t; }
+    }
+    if (target) {
+      const a = Math.atan2(target.y-m.y, target.x-m.x);
+      m.vx += Math.cos(a)*0.42*tScale; m.vy += Math.sin(a)*0.42*tScale;
+    } else {
+      const a = Math.atan2(my-m.y, mx-m.x);
+      m.vx += Math.cos(a)*0.12*tScale; m.vy += Math.sin(a)*0.12*tScale;
+    }
+    const speed = Math.hypot(m.vx,m.vy), cap = 8.5;
+    if (speed > cap) { m.vx = m.vx/speed*cap; m.vy = m.vy/speed*cap; }
+    const ox=m.x, oy=m.y; m.x += m.vx*tScale; m.y += m.vy*tScale; m.life -= tScale;
+    bolt(ox,oy,m.x,m.y,5,1.1,0,'#f0abfc');
+    X.save(); X.globalCompositeOperation='lighter';
+    X.drawImage(getGlow('#f0abfc'),m.x-13,m.y-13,26,26);
+    X.fillStyle='#fff'; X.beginPath(); X.arc(m.x,m.y,2.4,0,6.28); X.fill();
+    X.restore();
+    if (target && Math.hypot(target.x-m.x,target.y-m.y) < target.r+12) {
+      addWave(m.x,m.y,48,'#f0abfc',2); addSparks(m.x,m.y,8,'#f0abfc');
+      damageTargets(m.x,m.y,34,volt*0.55); photonMissiles.splice(i,1);
+    } else if (m.life <= 0 || m.x < -40 || m.x > W+40 || m.y < -40 || m.y > H+40) {
+      photonMissiles.splice(i,1);
+    }
+  }
+
+  /* Enemy AI // 10 new enemy classes */
   targets.forEach(t => {
+    t.phase = (t.phase || 0) + 0.045 * tScale;
+    t.attack = (t.attack || 0) + 1 * tScale;
+    const dx = mx - t.x, dy = my - t.y, dist = Math.max(1, Math.hypot(dx, dy));
+    if (t.type === 'swarm') {
+      t.vx += dx/dist * 0.035; t.vy += dy/dist * 0.035;
+    } else if (t.type === 'phantom') {
+      t.vx += Math.cos(t.phase*1.7)*0.10; t.vy += Math.sin(t.phase*1.4)*0.10;
+    } else if (t.type === 'juggernaut') {
+      t.vx += dx/dist * 0.008; t.vy += dy/dist * 0.008;
+    } else if (t.type === 'leech' && dist < 260) {
+      t.vx += dx/dist * 0.045; t.vy += dy/dist * 0.045;
+      if (Math.floor(t.attack) % 38 === 0) { t.hp = Math.min(t.maxHp, t.hp + 3); addSparks(t.x, t.y, 2, t.col); }
+    } else if (t.type === 'sniper') {
+      t.vx += -dx/dist * 0.018; t.vy += -dy/dist * 0.018;
+      if (Math.floor(t.attack) % 75 === 0) { bolt(t.x, t.y, mx, my, 18, 1.2, 0, t.col); shake = Math.max(shake, 1.4); }
+    } else if (t.type === 'mine') {
+      t.vx *= 0.90; t.vy *= 0.90;
+      if (Math.floor(t.attack) % 90 === 0) { addWave(t.x, t.y, 95, t.col, 2); }
+    } else if (t.type === 'phase') {
+      t.vx += Math.cos(t.phase*1.2)*0.075; t.vy += Math.sin(t.phase*1.6)*0.075;
+    } else if (t.type === 'healer') {
+      const ally = targets.find(o => o !== t && Math.hypot(o.x-t.x,o.y-t.y) < 190 && o.hp < o.maxHp);
+      if (ally && Math.floor(t.attack) % 12 === 0) {
+        ally.hp = Math.min(ally.maxHp, ally.hp + 2.5);
+        bolt(t.x,t.y,ally.x,ally.y,12,1.2,0,'#4ade80');
+      }
+    } else if (t.type === 'rift') {
+      if (dist < 310) { t.vx += dx/dist * 0.012; t.vy += dy/dist * 0.012; }
+      if (Math.floor(t.attack) % 110 === 0) { addWave(t.x,t.y,145,t.col,3); shake = Math.max(shake,2); }
+    }
+
     t.x += t.vx * tScale; t.y += t.vy * tScale;
     if (t.x < t.r || t.x > W - t.r) t.vx *= -1;
     if (t.y < t.r || t.y > H - t.r) t.vy *= -1;
-    t.vx *= 0.99; t.vy *= 0.99;
+    t.vx *= t.type === 'swarm' ? 0.995 : 0.985;
+    t.vy *= t.type === 'swarm' ? 0.995 : 0.985;
 
     X.save(); X.translate(t.x, t.y);
-    X.strokeStyle = t.col; X.lineWidth = t.type === 'boss' ? 3.5 : 2;
-    const sides = t.type === 'boss' ? 8 : (t.type === 'mini' ? 6 : 4);
+    X.globalAlpha = t.type === 'phantom' ? 0.48 + Math.sin(t.phase*3)*0.28 : 1;
+    X.strokeStyle = t.col; X.fillStyle = t.col;
+    X.lineWidth = t.type === 'boss' || t.type === 'rift' || t.type === 'juggernaut' ? 3.5 : 2;
+    const sides = ({boss:8, mini:6, swarm:3, phantom:5, juggernaut:8, splitter:4, leech:6, sniper:4, mine:8, phase:6, healer:6, rift:9})[t.type] || 4;
+    const spin = t.type === 'sniper' ? 0 : t.phase;
     X.beginPath();
-    for (let s = 0; s <= sides; s++) {
-      const a = tick * 0.03 + (s * 6.28 / sides);
-      s ? X.lineTo(Math.cos(a)*t.r, Math.sin(a)*t.r) : X.moveTo(Math.cos(a)*t.r, Math.sin(a)*t.r);
+    for (let q = 0; q <= sides; q++) {
+      const a = spin + q * 6.28 / sides;
+      q ? X.lineTo(Math.cos(a)*t.r, Math.sin(a)*t.r) : X.moveTo(Math.cos(a)*t.r, Math.sin(a)*t.r);
     }
+    X.closePath();
+    if (['juggernaut','rift','mine'].includes(t.type)) { X.globalAlpha *= 0.22; X.fill(); X.globalAlpha = t.type === 'phantom' ? 0.48 + Math.sin(t.phase*3)*0.28 : 1; }
     X.stroke();
+    X.globalAlpha = 0.9;
+    if (t.type === 'sniper') {
+      X.beginPath(); X.moveTo(-t.r*1.7,0); X.lineTo(t.r*1.7,0); X.moveTo(0,-t.r*1.7); X.lineTo(0,t.r*1.7); X.stroke();
+    } else if (t.type === 'healer') {
+      X.lineWidth = 3; X.beginPath(); X.moveTo(-t.r*.45,0); X.lineTo(t.r*.45,0); X.moveTo(0,-t.r*.45); X.lineTo(0,t.r*.45); X.stroke();
+    } else if (t.type === 'mine') {
+      X.beginPath(); X.arc(0,0,t.r+5+Math.sin(t.phase*3)*3,0,6.28); X.stroke();
+    } else if (t.type === 'rift') {
+      X.beginPath(); X.ellipse(0,0,t.r+9,t.r*.48,t.phase,0,6.28); X.stroke();
+    } else if (t.type === 'swarm') {
+      X.beginPath(); X.moveTo(-t.r,-t.r); X.lineTo(t.r,t.r); X.moveTo(-t.r,t.r); X.lineTo(t.r,-t.r); X.stroke();
+    }
     if (t.sh > 0) {
       X.strokeStyle = '#38bdf8'; X.lineWidth = 2; X.globalAlpha = 0.65;
       X.beginPath(); X.arc(0, 0, t.r + 7, 0, 6.28 * (t.sh / t.maxSh)); X.stroke();
     }
-    /* HP Bar */
     X.globalAlpha = 0.9; X.fillStyle = '#0f172a'; X.fillRect(-t.r, -t.r - 12, t.r*2, 4);
-    X.fillStyle = t.col; X.fillRect(-t.r, -t.r - 12, t.r*2 * (t.hp / t.maxHp), 4);
+    X.fillStyle = t.col; X.fillRect(-t.r, -t.r - 12, t.r*2 * Math.max(0,t.hp / t.maxHp), 4);
     X.restore();
   });
 
@@ -809,6 +995,10 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 for (let i = 0; i < 3; i++) spawnEntity();
+let enemySpawnClock = 0;
+setInterval(() => {
+  if (!window.__apexPaused && targets.length < 18) spawnEntity();
+}, 2600);
 requestAnimationFrame(loop);
 
 /* APEX EXPANSION // telemetry, nova, pause, capture, and targeting feedback */
