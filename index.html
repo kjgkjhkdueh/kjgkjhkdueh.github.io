@@ -204,6 +204,55 @@
   @media(max-width:760px) { #apex50-dock { bottom:112px; } #apex50-topline{font-size:8px;letter-spacing:1px;top:6px} }
 </style>
 
+
+<style id="cooldown-player-style">
+  /* Cooldown overlays on ability buttons */
+  button.act, .apex-btn, .apex50-btn { position:relative; overflow:hidden; }
+  button.act::after, .apex-btn::after, .apex50-btn::after {
+    content:''; position:absolute; inset:0; background:rgba(0,0,0,.62); pointer-events:none;
+    transform-origin:left center; transform:scaleX(var(--cd,0));
+  }
+  button.cooling::before {
+    content:attr(data-cd); position:absolute; top:2px; right:6px; z-index:2;
+    font:800 8px 'Orbitron',sans-serif; color:#ffbe0b; text-shadow:0 0 6px #000;
+  }
+  button.cooling { cursor:not-allowed; filter:saturate(.55); }
+  button.cooling:hover { transform:none !important; box-shadow:none !important; }
+
+  /* Weapon heat bars */
+  .w-btn::after {
+    content:''; position:absolute; left:0; bottom:0; height:3px; pointer-events:none;
+    width:calc(var(--heat,0) * 100%); background:linear-gradient(90deg,#00f3ff,#ffbe0b,#ff007f);
+  }
+  .w-btn.oh { opacity:.62; }
+  .w-btn.oh::after { background:#ef4444; animation:ohblink .45s steps(2) infinite; }
+  @keyframes ohblink { 50% { opacity:.3; } }
+
+  /* Player HUD */
+  #player-hud {
+    position:absolute; z-index:12; left:16px; top:50px; width:250px; pointer-events:none;
+    padding:8px 10px 5px; background:rgba(6,11,25,.8); border:1px solid rgba(0,243,255,.35);
+    clip-path:var(--cut); font:800 9px 'Orbitron',sans-serif; letter-spacing:1px; color:#b9faff;
+    box-shadow:0 0 15px rgba(0,0,0,.8);
+  }
+  .ph-head { display:flex; justify-content:space-between; margin-bottom:6px; }
+  .ph-head .lvl { color:var(--a); }
+  .bar { position:relative; height:14px; margin-bottom:5px; overflow:hidden;
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.2); }
+  .bar i { position:absolute; inset:0 auto 0 0; width:100%; transition:width .12s linear; }
+  .bar b { position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font:800 8px 'Orbitron',sans-serif; color:#fff; text-shadow:0 0 4px #000, 0 0 4px #000; }
+  .bar.hp i { background:linear-gradient(90deg,#16a34a,#4ade80); }
+  .bar.hp.low i { background:linear-gradient(90deg,#d97706,#fbbf24); }
+  .bar.hp.crit i { background:linear-gradient(90deg,#b91c1c,#ef4444); animation:ohblink .5s steps(2) infinite; }
+  .bar.xp i { background:linear-gradient(90deg,#7e22ce,#00f3ff); }
+  .bar.ht { height:10px; }
+  .bar.ht i { background:linear-gradient(90deg,#00f3ff,#ffbe0b,#ff007f); }
+  .bar.ht.oh i { background:#ef4444; animation:ohblink .4s steps(2) infinite; }
+  #hurt { position:absolute; inset:0; z-index:9; pointer-events:none; opacity:0;
+    background:radial-gradient(ellipse at center,transparent 42%,rgba(255,0,40,.6) 100%); }
+  @media(max-width:760px) { #player-hud { width:200px; top:44px; left:8px; } }
+</style>
 </head>
 <body>
 <aside id="sidebar">
@@ -263,6 +312,13 @@
     <div class="pill" id="hudStats">FPS: 60 | ENTITIES: 0</div>
   </div>
   <div id="banner">OMEGA DREADNOUGHT DETECTED</div>
+  <div id="hurt"></div>
+  <div id="player-hud">
+    <div class="ph-head"><span>CORE INTEGRITY</span><span class="lvl" id="plLvl">LVL 1</span></div>
+    <div class="bar hp" id="hpBar"><i id="hpFill"></i><b id="hpTxt">HP 100 / 100</b></div>
+    <div class="bar xp"><i id="xpFill" style="width:0%"></i><b id="xpTxt">XP 0 / 80</b></div>
+    <div class="bar ht" id="htBar"><i id="htFill" style="width:0%"></i><b id="htTxt">HEAT</b></div>
+  </div>
   <canvas id="c"></canvas>
 
   
@@ -301,6 +357,132 @@ let hold = false, mx = W/2, my = H/2, shake = 0, flash = 0, tick = 0;
 let holdCharge = 0, singAngle = 0;
 let sparks = [], nodes = [], targets = [], waves = [], bhDebris = [];
 let photonMissiles = [], photonCooldown = 0;
+
+/* ===== PLAYER, XP, WEAPON HEAT & ABILITY COOLDOWNS ===== */
+const player = { hp: 100, maxHp: 100, lvl: 1, xp: 0, inv: 0, sinceHit: 99 };
+const cd = {                       /* ability cooldowns, in seconds */
+  over: { t: 0, max: 6 },          /* Overdrive */
+  orb:  { t: 0, max: 10 },         /* Orbital strike */
+  nova: { t: 0, max: 25 },         /* Nova burst */
+  rift: { t: 0, max: 18 }          /* Rift pulse */
+};
+/* rate = heat gained per second of fire, cool = heat lost per second when idle */
+const heatCfg = {
+  arc:{rate:.17,cool:.34}, tesla:{rate:.20,cool:.34}, orb:{rate:0,cool:.30},
+  singularity:{rate:.24,cool:.32}, cryo:{rate:.20,cool:.34}, rail:{rate:.28,cool:.36},
+  swarm:{rate:.24,cool:.34}, storm:{rate:.21,cool:.34}, gengen:{rate:.30,cool:.32}, zayon:{rate:.34,cool:.30}
+};
+const heat = {}, locked = {};
+Object.keys(heatCfg).forEach(k => { heat[k] = 0; locked[k] = false; });
+const blastModes = ['singularity', 'gengen', 'zayon'];
+const xpValues = { swarm:5, phantom:14, juggernaut:40, splitter:18, leech:16, sniper:16, mine:20, phase:20, healer:22, rift:55, mini:45, boss:120, cap:8 };
+const xpNeed = lvl => 80 + (lvl - 1) * 45;
+const cdSpeed = () => 1 + (player.lvl - 1) * 0.05;   /* +5% cooldown recovery per level */
+const contactDmg = { swarm:3, boss:20, mini:12, juggernaut:15, rift:15 };
+
+function notify(msg) {
+  const t = document.getElementById('apex-toast'); if (!t) return;
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(notify.timer); notify.timer = setTimeout(() => t.classList.remove('show'), 1300);
+}
+function gainXP(type) {
+  player.xp += xpValues[type] || 10;
+  while (player.xp >= xpNeed(player.lvl)) {
+    player.xp -= xpNeed(player.lvl); player.lvl++;
+    player.maxHp += 10; player.hp = player.maxHp;
+    addWave(W/2, H/2, 260, '#ffbe0b', 5); addWave(W/2, H/2, 160, '#fff', 3); flash = Math.max(flash, 0.2);
+    notify('LEVEL UP // LVL ' + player.lvl + ' // HP RESTORED'); beep(660, 0.3, 'sine', 0.08);
+  }
+}
+function hurtPlayer(d) {
+  if (godMode || player.inv > 0 || player.hp <= 0) return;
+  player.hp = Math.max(0, player.hp - d); player.inv = 0.5; player.sinceHit = 0;
+  shake = Math.max(shake, 9); beep(140, 0.15, 'square', 0.08);
+  document.getElementById('hurt').style.opacity = 0.9;
+  if (player.hp <= 0) playerDown();
+}
+function playerDown() {
+  const b = document.getElementById('banner');
+  b.textContent = 'CORE BREACHED // REBOOTING'; b.style.opacity = 1; setTimeout(() => b.style.opacity = 0, 1900);
+  addWave(W/2, H/2, Math.max(W, H) * 0.7, '#ff0040', 8); flash = 0.5; shake = 28;
+  targets = []; photonMissiles = [];
+  player.xp = 0; player.hp = player.maxHp; player.inv = 3;
+  Object.keys(heat).forEach(k => { heat[k] = 0; locked[k] = false; });
+}
+function drawCore() {
+  const cx = W/2, cy = H/2, frac = player.hp / player.maxHp;
+  X.save(); X.globalCompositeOperation = 'lighter';
+  if (player.inv > 0 && Math.floor(tick / 3) % 2) X.globalAlpha = 0.35;
+  X.strokeStyle = frac > 0.5 ? '#4ade80' : frac > 0.25 ? '#fbbf24' : '#ef4444';
+  X.lineWidth = 3; X.beginPath(); X.arc(cx, cy, 20, -Math.PI/2, -Math.PI/2 + 6.28 * frac); X.stroke();
+  X.strokeStyle = activeCol(); X.lineWidth = 1.5; X.beginPath(); X.arc(cx, cy, 14, 0, 6.28); X.stroke();
+  X.drawImage(getGlow(activeCol()), cx - 20, cy - 20, 40, 40);
+  X.restore();
+}
+function supernova() {
+  /* Supernova Collapse Blast (on release or on overheat) */
+  const power = 1 + holdCharge * 1.4;
+  shake = 24 * power; flash = 0.4; beep(75, 0.55, 'sawtooth', 0.14);
+  addWave(mx, my, 340 * power, activeCol(), 6);
+  addWave(mx, my, 210 * power, '#fff', 3);
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * 6.28 + Math.random()*0.2;
+    bolt(mx, my, mx + Math.cos(a)*280*power, my + Math.sin(a)*280*power, volt*1.2, 2.2, 0, activeCol(i*30));
+  }
+  addSparks(mx, my, 65); damageTargets(mx, my, 260 * power, volt * 2.5 * power);
+}
+const $id = id => document.getElementById(id);
+function updateSystems(dt) {
+  const cs = cdSpeed();
+  for (const k in cd) cd[k].t = Math.max(0, cd[k].t - dt * cs);
+  player.inv = Math.max(0, player.inv - dt);
+  player.sinceHit += dt;
+  if (player.sinceHit > 4 && player.hp < player.maxHp) player.hp = Math.min(player.maxHp, player.hp + 1.5 * dt);
+  const hurtEl = $id('hurt'); hurtEl.style.opacity = (parseFloat(hurtEl.style.opacity) || 0) * 0.9;
+
+  /* weapon heat */
+  for (const m in heatCfg) {
+    const cfg = heatCfg[m];
+    const firing = m === mode && hold && !locked[m] && m !== 'orb';
+    if (firing) heat[m] += cfg.rate * dt;
+    else heat[m] = Math.max(0, heat[m] - cfg.cool * dt * cs * (locked[m] ? 0.8 : 1));
+    if (!locked[m] && heat[m] >= 1) {
+      heat[m] = 1; locked[m] = true;
+      if (m === mode) {
+        if (hold && blastModes.includes(m)) supernova();
+        holdCharge = 0; notify(m.toUpperCase() + ' // OVERHEATED'); beep(95, 0.3, 'square', 0.08);
+      }
+    } else if (locked[m] && heat[m] <= 0.3) {
+      locked[m] = false;
+    }
+    const btn = document.querySelector('.w-btn[data-m="' + m + '"]');
+    if (btn) { btn.style.setProperty('--heat', heat[m].toFixed(3)); btn.classList.toggle('oh', locked[m]); }
+  }
+
+  /* ability buttons */
+  [['bOver','over'], ['bOrb','orb'], ['apexNova','nova'], ['apex50Rift','rift']].forEach(([id, k]) => {
+    const el = $id(id); if (!el) return;
+    const c = cd[k], on = c.t > 0;
+    el.style.setProperty('--cd', (c.t / c.max).toFixed(3));
+    el.classList.toggle('cooling', on);
+    if (on) el.dataset.cd = c.t.toFixed(1) + 's'; else delete el.dataset.cd;
+  });
+
+  /* player HUD */
+  const frac = player.hp / player.maxHp;
+  $id('hpFill').style.width = (frac * 100) + '%';
+  $id('hpTxt').textContent = 'HP ' + Math.ceil(player.hp) + ' / ' + player.maxHp;
+  $id('hpBar').className = 'bar hp' + (frac <= 0.25 ? ' crit' : frac <= 0.5 ? ' low' : '');
+  const need = xpNeed(player.lvl);
+  $id('xpFill').style.width = (player.xp / need * 100) + '%';
+  $id('xpTxt').textContent = 'XP ' + Math.floor(player.xp) + ' / ' + need;
+  $id('plLvl').textContent = 'LVL ' + player.lvl;
+  const h = heat[mode] || 0;
+  $id('htFill').style.width = (h * 100) + '%';
+  $id('htBar').className = 'bar ht' + (locked[mode] ? ' oh' : '');
+  $id('htTxt').textContent = locked[mode] ? mode.toUpperCase() + ' OVERHEATED' : mode.toUpperCase() + ' HEAT ' + Math.round(h * 100) + '%';
+  $id('hudMode').textContent = 'SYS: ' + mode.toUpperCase() + (locked[mode] ? ' // OVERHEATED' : ' // HOLD LMB');
+}
 
 /* Parallax Background Stars */
 const stars = Array.from({length: 70}, () => ({ x: Math.random()*2000, y: Math.random()*1200, z: Math.random()*2 + 0.5 }));
@@ -596,6 +778,7 @@ function damageTargets(x, y, rad, dmg) {
         addWave(t.x, t.y, t.r * 5, t.col, 4); addSparks(t.x, t.y, t.type === 'boss' ? 60 : 25, t.col);
         shake = Math.max(shake, t.type === 'boss' ? 22 : 10); beep(90, 0.35, 'square', 0.12);
         targets.splice(i, 1);
+        gainXP(t.type);
         if (t.type === 'splitter') {
           for (let n = 0; n < 2; n++) {
             const a = Math.random() * 6.28;
@@ -616,7 +799,7 @@ function setMode(m) {
 }
 document.getElementById('wGrid').onclick = e => { const b = e.target.closest('.w-btn'); if (b) setMode(b.dataset.m); };
 
-function triggerOverdrive() {
+function doOverdrive() {
   shake = 20; flash = 0.35; beep(220, 0.4, 'sawtooth', 0.1);
   for (let i = 0; i < 14; i++) {
     const tx = Math.random()*W, ty = Math.random()*H;
@@ -625,12 +808,20 @@ function triggerOverdrive() {
   }
   addWave(W/2, H/2, Math.max(W,H)*0.6, activeCol(), 5);
 }
-function triggerOrbital() {
+function doOrbital() {
   shake = 26; flash = 0.45; beep(110, 0.5, 'square', 0.12);
   bolt(mx, 0, mx, H, volt*1.3, 5.5, 0, activeCol());
   addWave(mx, my, 240, activeCol(), 5); addSparks(mx, my, 55); damageTargets(mx, my, 180, volt * 2.2);
 }
 
+function triggerOverdrive() {
+  if (cd.over.t > 0) { notify('OVERDRIVE // COOLING ' + cd.over.t.toFixed(1) + 's'); return; }
+  cd.over.t = cd.over.max; doOverdrive();
+}
+function triggerOrbital() {
+  if (cd.orb.t > 0) { notify('ORBITAL // COOLING ' + cd.orb.t.toFixed(1) + 's'); return; }
+  cd.orb.t = cd.orb.max; doOrbital();
+}
 document.getElementById('bOver').onclick = triggerOverdrive;
 document.getElementById('bOrb').onclick = triggerOrbital;
 document.getElementById('bSpawn').onclick = spawnEntity;
@@ -678,22 +869,14 @@ document.getElementById('codeIn').onkeydown = e => { if (e.key === 'Enter') exec
 /* Input & Hotkeys */
 C.onpointerdown = e => {
   hold = true; mx = e.offsetX; my = e.offsetY;
-  if (mode === 'orb') { nodes.push({x: mx, y: my}); addWave(mx, my, 65, activeCol(), 2); beep(520, 0.12, 'sine'); }
+  if (mode === 'orb') {
+    if (locked.orb) notify('PLASMA NODES // OVERHEATED');
+    else { heat.orb = Math.min(1, heat.orb + 0.17); nodes.push({x: mx, y: my}); addWave(mx, my, 65, activeCol(), 2); beep(520, 0.12, 'sine'); }
+  }
 };
 C.onpointermove = e => { mx = e.offsetX; my = e.offsetY; };
 window.onpointerup = () => {
-  if (hold && (mode === 'singularity' || mode === 'gengen' || mode === 'zayon')) {
-    /* Supernova Collapse Blast on Release */
-    const power = 1 + holdCharge * 1.4;
-    shake = 24 * power; flash = 0.4; beep(75, 0.55, 'sawtooth', 0.14);
-    addWave(mx, my, 340 * power, activeCol(), 6);
-    addWave(mx, my, 210 * power, '#fff', 3);
-    for (let i = 0; i < 12; i++) {
-      const a = (i / 12) * 6.28 + Math.random()*0.2;
-      bolt(mx, my, mx + Math.cos(a)*280*power, my + Math.sin(a)*280*power, volt*1.2, 2.2, 0, activeCol(i*30));
-    }
-    addSparks(mx, my, 65); damageTargets(mx, my, 260 * power, volt * 2.5 * power);
-  }
+  if (hold && !locked[mode] && blastModes.includes(mode)) supernova();
   hold = false; holdCharge = 0;
 };
 window.onkeydown = e => {
@@ -732,6 +915,7 @@ function loop(now) {
   const dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
   fps = Math.round(fps * 0.9 + (1 / Math.max(0.001, dt)) * 0.1);
   tick += tScale; singAngle += 0.055 * tScale * (1 + holdCharge * 1.5);
+  updateSystems(dt);
 
   X.save();
   X.fillStyle = 'rgba(2, 3, 8, 0.28)'; X.fillRect(0, 0, W, H);
@@ -755,7 +939,7 @@ function loop(now) {
   });
 
   /* Active Weapons */
-  if (hold) {
+  if (hold && !locked[mode]) {
     holdCharge = Math.min(1, holdCharge + 0.016 * tScale);
     if (tick % 4 < 1) beep(180 + holdCharge * 240, 0.08, 'sawtooth', 0.03);
 
@@ -900,11 +1084,13 @@ function loop(now) {
     }
   }
 
+  drawCore();
+
   /* Enemy AI // 10 new enemy classes */
   targets.forEach(t => {
     t.phase = (t.phase || 0) + 0.045 * tScale;
     t.attack = (t.attack || 0) + 1 * tScale;
-    const dx = mx - t.x, dy = my - t.y, dist = Math.max(1, Math.hypot(dx, dy));
+    const dx = W/2 - t.x, dy = H/2 - t.y, dist = Math.max(1, Math.hypot(dx, dy));
     if (t.type === 'swarm') {
       t.vx += dx/dist * 0.035; t.vy += dy/dist * 0.035;
     } else if (t.type === 'phantom') {
@@ -916,10 +1102,10 @@ function loop(now) {
       if (Math.floor(t.attack) % 38 === 0) { t.hp = Math.min(t.maxHp, t.hp + 3); addSparks(t.x, t.y, 2, t.col); }
     } else if (t.type === 'sniper') {
       t.vx += -dx/dist * 0.018; t.vy += -dy/dist * 0.018;
-      if (Math.floor(t.attack) % 75 === 0) { bolt(t.x, t.y, mx, my, 18, 1.2, 0, t.col); shake = Math.max(shake, 1.4); }
+      if (Math.floor(t.attack) % 75 === 0) { bolt(t.x, t.y, W/2, H/2, 18, 1.2, 0, t.col); shake = Math.max(shake, 1.4); hurtPlayer(6); }
     } else if (t.type === 'mine') {
       t.vx *= 0.90; t.vy *= 0.90;
-      if (Math.floor(t.attack) % 90 === 0) { addWave(t.x, t.y, 95, t.col, 2); }
+      if (Math.floor(t.attack) % 90 === 0) { addWave(t.x, t.y, 95, t.col, 2); if (dist < 95 + 22) hurtPlayer(6); }
     } else if (t.type === 'phase') {
       t.vx += Math.cos(t.phase*1.2)*0.075; t.vy += Math.sin(t.phase*1.6)*0.075;
     } else if (t.type === 'healer') {
@@ -930,10 +1116,16 @@ function loop(now) {
       }
     } else if (t.type === 'rift') {
       if (dist < 310) { t.vx += dx/dist * 0.012; t.vy += dy/dist * 0.012; }
-      if (Math.floor(t.attack) % 110 === 0) { addWave(t.x,t.y,145,t.col,3); shake = Math.max(shake,2); }
+      if (Math.floor(t.attack) % 110 === 0) { addWave(t.x,t.y,145,t.col,3); shake = Math.max(shake,2); if (dist < 145 + 22) hurtPlayer(10); }
+    } else if (t.type === 'boss') {
+      if (Math.floor(t.attack) % 140 === 0) { addWave(t.x,t.y,185,t.col,3); shake = Math.max(shake,3); if (dist < 185 + 22) hurtPlayer(12); }
     }
 
     t.x += t.vx * tScale; t.y += t.vy * tScale;
+    if (dist < t.r + 22) {   /* contact with the core */
+      hurtPlayer(contactDmg[t.type] || 8);
+      t.vx = -dx / dist * 3.5; t.vy = -dy / dist * 3.5;
+    }
     if (t.x < t.r || t.x > W - t.r) t.vx *= -1;
     if (t.y < t.r || t.y > H - t.r) t.vy *= -1;
     t.vx *= t.type === 'swarm' ? 0.995 : 0.985;
@@ -1034,8 +1226,10 @@ requestAnimationFrame(loop);
   }
 
   $('apexNova').addEventListener('click', () => {
-    if (typeof triggerOverdrive === 'function') triggerOverdrive();
-    if (typeof triggerOrbital === 'function') triggerOrbital();
+    if (cd.nova.t > 0) { toast('NOVA BURST // COOLING ' + cd.nova.t.toFixed(1) + 's'); return; }
+    cd.nova.t = cd.nova.max;
+    doOverdrive();
+    doOrbital();
     if (typeof addWave === 'function') {
       addWave(W/2, H/2, Math.max(W,H)*0.85, '#ffffff', 8);
       addWave(W/2, H/2, Math.max(W,H)*0.62, '#ff007f', 5);
@@ -1115,10 +1309,10 @@ requestAnimationFrame(loop);
   });
 
   byId('apex50Rift').addEventListener('click', () => {
-    if (pulseLock) return;
-    pulseLock = true;
-    if (typeof triggerOrbital === 'function') triggerOrbital();
-    if (typeof triggerOverdrive === 'function') triggerOverdrive();
+    if (cd.rift.t > 0) { ping('RIFT PULSE // COOLING ' + cd.rift.t.toFixed(1) + 's'); return; }
+    cd.rift.t = cd.rift.max;
+    doOrbital();
+    doOverdrive();
     if (typeof addWave === 'function') {
       addWave(W/2, H/2, Math.max(W,H)*1.15, '#ffffff', 12);
       addWave(W/2, H/2, Math.max(W,H)*.9, '#b829ea', 8);
@@ -1127,7 +1321,6 @@ requestAnimationFrame(loop);
     if (typeof damageTargets === 'function') damageTargets(W/2, H/2, Math.max(W,H)*1.4, volt*5);
     ping('RIFT PULSE // REALITY BREACH');
     flash();
-    setTimeout(() => pulseLock = false, 1800);
   });
 
   // Charge the top bar from the elimination/combo readout already maintained by the HUD.
@@ -1150,7 +1343,7 @@ requestAnimationFrame(loop);
   });
 
   // Make the existing lightning more cinematic with a quick flash on nova/rift activations.
-  ['apexNova'].forEach(id => byId(id)?.addEventListener('click', flash));
+  byId('apexNova')?.addEventListener('click', () => { if (cd.nova.t >= cd.nova.max - 0.1) flash(); });
 })();
 </script>
 
