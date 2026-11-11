@@ -253,6 +253,81 @@
     background:radial-gradient(ellipse at center,transparent 42%,rgba(255,0,40,.6) 100%); }
   @media(max-width:760px) { #player-hud { width:200px; top:44px; left:8px; } }
 </style>
+
+<style id="apex-ultra-style">
+  #apex-radar {
+    position:absolute; z-index:13; right:16px; top:76px; width:220px;
+    padding:8px 9px 6px; background:rgba(2,8,20,.78);
+    border:1px solid rgba(0,243,255,.42); box-shadow:0 0 22px rgba(0,243,255,.12);
+    backdrop-filter:blur(8px); pointer-events:none;
+    clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);
+  }
+  .radar-head,.radar-foot { display:flex; justify-content:space-between; align-items:center; gap:6px; }
+  .radar-head { color:#b9faff; font:800 8px Orbitron,sans-serif; letter-spacing:1px; margin-bottom:5px; }
+  .radar-head b { color:#ff6ba9; font-size:7px; }
+  #radarCanvas { display:block; width:100%; height:auto; background:rgba(0,243,255,.025); }
+  .radar-foot { color:#7dd3fc; font:700 7px Orbitron,sans-serif; margin-top:4px; }
+  .radar-foot span:nth-child(2) { color:#ff648f; }
+  .radar-foot span:nth-child(3) { color:#ffbe0b; }
+  #apex-combat-readout {
+    position:absolute; right:16px; top:242px; width:220px; z-index:13;
+    padding:8px 10px; background:rgba(2,8,20,.72); border:1px solid rgba(184,41,234,.4);
+    color:#94a3b8; font:800 8px Orbitron,sans-serif; letter-spacing:1px; pointer-events:none;
+  }
+  #apex-combat-readout b { float:right; color:#4ade80; }
+  #apex-combat-readout i { display:block; height:4px; background:rgba(255,255,255,.1); margin-top:7px; overflow:hidden; }
+  #apex-combat-readout em { display:block; width:0; height:100%; background:linear-gradient(90deg,#4ade80,#ffbe0b,#ff007f); box-shadow:0 0 10px #ff007f; transition:width .2s; }
+  #apexDash { position:absolute; z-index:24; left:16px; bottom:62px; min-width:174px; }
+  #apexDash.ready { border-color:#8cff5a; box-shadow:0 0 16px rgba(140,255,90,.2); }
+  #apexDash.cooling { opacity:.62; filter:saturate(.5); }
+  #apexDash kbd { margin-left:7px; color:#8cff5a; font:800 8px Orbitron,sans-serif; }
+  #apexDash.cooling kbd { color:#ffbe0b; }
+  #apex-dash-flash { position:absolute; inset:0; z-index:11; pointer-events:none; opacity:0;
+    background:linear-gradient(105deg,transparent 25%,rgba(0,243,255,.2),rgba(255,255,255,.2),transparent 75%); }
+  #apex-dash-flash.fire { animation:dashStreak .42s ease-out; }
+  @keyframes dashStreak { 0%{opacity:1;transform:translateX(-8%)} 100%{opacity:0;transform:translateX(8%)} }
+  @media(max-width:760px) {
+    #apex-radar { top:auto; right:8px; bottom:165px; width:150px; }
+    #apex-combat-readout { display:none; }
+    #apexDash { left:8px; bottom:150px; min-width:130px; padding:7px; font-size:8px; }
+    #apex-telemetry { bottom:54px; }
+  }
+  @media(prefers-reduced-motion:reduce) {
+    #apex-radar *, #apex-combat-readout *, #apex-dash-flash { animation:none !important; transition:none !important; }
+  }
+</style>
+
+
+<style>
+#apex-start-menu{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;overflow:auto;
+ background:radial-gradient(ellipse at 50% 42%,rgba(12,35,66,.76),rgba(1,3,12,.97) 62%),linear-gradient(135deg,#030713,#090016);
+ color:#eafcff;font-family:'Rajdhani',sans-serif}
+#apex-start-menu:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.23;
+ background-image:linear-gradient(rgba(0,243,255,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(0,243,255,.16) 1px,transparent 1px);
+ background-size:46px 46px;mask-image:linear-gradient(transparent,black 20%,black 80%,transparent)}
+.apex-menu-card{position:relative;width:min(620px,92vw);padding:clamp(24px,5vw,52px);text-align:center;
+ border:1px solid rgba(0,243,255,.55);background:linear-gradient(145deg,rgba(5,16,35,.94),rgba(20,4,35,.94));
+ box-shadow:0 0 70px rgba(0,243,255,.16),inset 0 0 35px rgba(184,41,234,.10);clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,22px 100%,0 calc(100% - 22px))}
+.apex-menu-kicker{font:800 10px Orbitron,sans-serif;letter-spacing:5px;color:#ff4fba;margin-bottom:16px}
+.apex-menu-title{font:900 clamp(30px,7vw,62px) Orbitron,sans-serif;line-height:1.08;letter-spacing:2px;
+ background:linear-gradient(90deg,#00f3ff,#fff,#c45cff,#ff007f);-webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 0 17px rgba(0,243,255,.3))}
+.apex-menu-sub{margin:15px 0 30px;color:#9bb8d3;letter-spacing:2.4px;font-size:12px}
+.apex-menu-actions{display:grid;gap:12px;width:min(330px,100%);margin:0 auto}
+.apex-menu-btn{padding:15px 18px;border:1px solid #00f3ff;background:linear-gradient(100deg,rgba(0,243,255,.18),rgba(184,41,234,.2));
+ color:#fff;font:800 13px Orbitron,sans-serif;letter-spacing:2px;cursor:pointer;transition:.18s}
+.apex-menu-btn.primary{background:linear-gradient(100deg,#007f9b,#6624a6);box-shadow:0 0 25px rgba(0,243,255,.25)}
+.apex-menu-btn:hover{transform:translateY(-2px);box-shadow:0 0 28px rgba(0,243,255,.48);border-color:white}
+.apex-menu-foot{margin-top:28px;color:#54718b;font:10px Orbitron,sans-serif;letter-spacing:2px}
+#apex-settings-panel{display:none;text-align:left}
+#apex-settings-panel h2{font:800 21px Orbitron,sans-serif;color:#00f3ff;text-align:center;margin-bottom:24px}
+.apex-setting-row{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:14px 0;border-bottom:1px solid rgba(0,243,255,.17);color:#c7d8e9}
+.apex-setting-row input{accent-color:#00f3ff}
+.apex-setting-row input[type=range]{width:45%}
+#apex-settings-panel .apex-menu-actions{margin-top:24px}
+@media(max-width:520px){.apex-menu-card{padding:24px 18px}.apex-menu-sub{letter-spacing:1px}}
+</style>
+
 </head>
 <body>
 <aside id="sidebar">
@@ -326,30 +401,46 @@
 <div id="apex50-topline">SINGULARITY CORE <span>///</span> OVERDRIVE PROTOCOL</div>
 <div id="apex50-barwrap"><div id="apex50-bar"></div></div>
 <div id="apex50-dock">
-  <button class="apex50-btn" id="apex50Hyper">⚡ HYPERDRIVE [T]</button>
-  <button class="apex50-btn" id="apex50Rift">✹ RIFT PULSE [R]</button>
+  <button type="button" class="apex50-btn" id="apex50Hyper">⚡ HYPERDRIVE [T]</button>
+  <button type="button" class="apex50-btn" id="apex50Rift">✹ RIFT PULSE [R]</button>
 </div>
 <div id="apex50-flash"></div>
 
-<div id="apex-reticle"></div>
+<div id="apex-dash-flash"></div>
+  <div id="apex-reticle"></div>
   <div id="apex-toast"></div>
   <div id="apex-paused">SYSTEM PAUSED</div>
   <div id="apex-dock">
-    <button class="apex-btn hot" id="apexNova">✦ NOVA BURST [N]</button>
-    <button class="apex-btn" id="apexPause">Ⅱ PAUSE [P]</button>
-    <button class="apex-btn" id="apexFull">⛶ FULLSCREEN</button>
-    <button class="apex-btn" id="apexShot">◎ CAPTURE</button>
+    <button type="button" class="apex-btn hot" id="apexNova">✦ NOVA BURST [N]</button>
+    <button type="button" class="apex-btn" id="apexPause">Ⅱ PAUSE [P]</button>
+    <button type="button" class="apex-btn" id="apexFull">⛶ FULLSCREEN</button>
+    <button type="button" class="apex-btn" id="apexShot">◎ CAPTURE</button>
   </div>
   <div id="apex-telemetry">APEX TELEMETRY<br>ELIMINATIONS <b id="apexKills">0000</b><br>COMBO <b id="apexCombo">x1</b><br>CORE <b id="apexCore">STABLE</b></div>
+  <section id="apex-radar" aria-label="Tactical radar">
+    <div class="radar-head"><span>TACTICAL RADAR</span><b id="radarCount">00 HOSTILES</b></div>
+    <canvas id="radarCanvas" width="220" height="138"></canvas>
+    <div class="radar-foot"><span>● YOU</span><span>● HOSTILE</span><span>◉ ELITE</span></div>
+  </section>
+  <div id="apex-combat-readout"><span>THREAT LEVEL</span><b id="threatLevel">LOW</b><i><em id="threatFill"></em></i></div>
+  <button id="apexDash" class="apex-btn" type="button">➤ PHASE DASH <kbd>SHIFT</kbd></button>
 
 </main>
 
 <script>
 const C = document.getElementById('c'), X = C.getContext('2d');
 let W, H, dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+let VIEW_W = 0, VIEW_H = 0, camX = 0, camY = 0;
+const MAP_SCALE = 4.2; // 4.2x the original playable area in each direction
 let px = 0, py = 0, pInit = false;   /* player core position */
-const resize = () => { W = C.offsetWidth; H = C.offsetHeight; C.width = W * dpr; C.height = H * dpr; X.setTransform(dpr, 0, 0, dpr, 0, 0);
-  if (!pInit) { px = W/2; py = H/2; pInit = true; } else { px = Math.min(W - 24, Math.max(24, px)); py = Math.min(H - 24, Math.max(24, py)); } };
+const resize = () => {
+  VIEW_W = C.parentElement.clientWidth; VIEW_H = C.parentElement.clientHeight;
+  W = Math.round(VIEW_W * MAP_SCALE); H = Math.round(VIEW_H * MAP_SCALE);
+  C.style.width = VIEW_W + 'px'; C.style.height = VIEW_H + 'px';
+  C.width = W * dpr; C.height = H * dpr; X.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (!pInit) { px = W/2; py = H/2; pInit = true; }
+  else { px = Math.min(W - 24, Math.max(24, px)); py = Math.min(H - 24, Math.max(24, py)); }
+};
 window.addEventListener('resize', resize); resize();
 
 /* State & Parameters */
@@ -890,13 +981,13 @@ document.getElementById('codeIn').onkeydown = e => { if (e.key === 'Enter') exec
 
 /* Input & Hotkeys */
 C.onpointerdown = e => {
-  hold = true; mx = e.offsetX; my = e.offsetY;
+  hold = true; mx = e.offsetX + camX; my = e.offsetY + camY;
   if (mode === 'orb') {
     if (locked.orb) notify('PLASMA NODES // OVERHEATED');
     else { heat.orb = Math.min(1, heat.orb + 0.17); nodes.push({x: mx, y: my}); addWave(mx, my, 65, activeCol(), 2); beep(520, 0.12, 'sine'); }
   }
 };
-C.onpointermove = e => { mx = e.offsetX; my = e.offsetY; };
+C.onpointermove = e => { mx = e.offsetX + camX; my = e.offsetY + camY; };
 window.onpointerup = () => {
   if (hold && !locked[mode] && blastModes.includes(mode)) supernova();
   hold = false; holdCharge = 0;
@@ -939,8 +1030,11 @@ function loop(now) {
   tick += tScale; singAngle += 0.055 * tScale * (1 + holdCharge * 1.5);
   updateSystems(dt);
 
+  camX = Math.max(0, Math.min(W - VIEW_W, px - VIEW_W / 2));
+  camY = Math.max(0, Math.min(H - VIEW_H, py - VIEW_H / 2));
   X.save();
-  X.fillStyle = 'rgba(2, 3, 8, 0.28)'; X.fillRect(0, 0, W, H);
+  X.translate(-camX, -camY);
+  X.fillStyle = 'rgba(2, 3, 8, 0.28)'; X.fillRect(camX, camY, VIEW_W, VIEW_H);
 
   /* Parallax Starfield & Cyber Grid */
   X.fillStyle = 'rgba(148, 163, 184, 0.35)';
@@ -950,6 +1044,19 @@ function loop(now) {
   for (let y = 0; y < H; y += 48) { X.beginPath(); X.moveTo(0,y); X.lineTo(W,y); X.stroke(); }
 
   if (shake > 0.2) { X.translate((Math.random()-0.5)*shake, (Math.random()-0.5)*shake); shake *= 0.88; }
+
+  /* Expanded arena perimeter and distant sector beacons */
+  X.save();
+  X.strokeStyle = 'rgba(0,243,255,.18)'; X.lineWidth = 5;
+  X.setLineDash([24, 18]); X.strokeRect(28, 28, W - 56, H - 56);
+  X.setLineDash([]);
+  for (let sx = 1; sx <= 5; sx++) for (let sy = 1; sy <= 5; sy++) {
+    const bx = W * sx / 6, by = H * sy / 6;
+    X.fillStyle = 'rgba(0,243,255,.10)'; X.beginPath(); X.arc(bx, by, 42, 0, 6.28); X.fill();
+    X.strokeStyle = 'rgba(0,243,255,.28)'; X.lineWidth = 1.5; X.beginPath(); X.arc(bx, by, 30 + Math.sin(tick*.025+sx+sy)*5, 0, 6.28); X.stroke();
+    X.fillStyle = 'rgba(120,230,255,.55)'; X.font = '10px monospace'; X.fillText('SECTOR ' + (sx + (sy-1)*5), bx - 28, by + 58);
+  }
+  X.restore();
 
   /* Persistent Plasma Nodes */
   nodes.forEach((n, i) => {
@@ -1215,6 +1322,7 @@ setInterval(() => {
 }, 2600);
 requestAnimationFrame(loop);
 
+window.__apexPaused = true;
 /* APEX EXPANSION // telemetry, nova, pause, capture, and targeting feedback */
 (() => {
   const $ = id => document.getElementById(id);
@@ -1369,5 +1477,162 @@ requestAnimationFrame(loop);
 })();
 </script>
 
+
+<script id="apex-ultra-systems">
+/* APEX ULTRA // tactical radar, threat analysis, and phase-dash mobility */
+(() => {
+  const $ = id => document.getElementById(id);
+  const radar = $('radarCanvas');
+  const R = radar.getContext('2d');
+  const dashButton = $('apexDash');
+  const dashFlash = $('apex-dash-flash');
+  let dashCooldown = 0;
+  const DASH_COOLDOWN = 4.5;
+  const DASH_DISTANCE = 190;
+  let radarFrame = 0;
+
+  function phaseDash() {
+    if (window.__apexPaused) return;
+    if (player.hp <= 0 || dashCooldown > 0) {
+      notify('PHASE DASH // RECHARGING ' + dashCooldown.toFixed(1) + 's');
+      return;
+    }
+    let dx = mx - px, dy = my - py;
+    let len = Math.hypot(dx, dy);
+    if (len < 8) {
+      dx = (keysDown.ArrowRight ? 1 : 0) - (keysDown.ArrowLeft ? 1 : 0);
+      dy = (keysDown.ArrowDown ? 1 : 0) - (keysDown.ArrowUp ? 1 : 0);
+      len = Math.hypot(dx, dy);
+    }
+    if (len < 1) { dx = 1; dy = 0; len = 1; }
+    const ox = px, oy = py;
+    px = Math.max(24, Math.min(W - 24, px + dx / len * DASH_DISTANCE));
+    py = Math.max(24, Math.min(H - 24, py + dy / len * DASH_DISTANCE));
+    player.inv = Math.max(player.inv, .72);
+    player.sinceHit = 0;
+    dashCooldown = DASH_COOLDOWN;
+    addWave(ox, oy, 105, '#00f3ff', 3);
+    addWave(px, py, 82, '#ffffff', 2);
+    addSparks(ox, oy, 28, '#00f3ff');
+    addSparks(px, py, 24, '#b829ea');
+    bolt(ox, oy, px, py, 34, 3.2, 0, '#00f3ff');
+    shake = Math.max(shake, 5);
+    dashFlash.classList.remove('fire'); void dashFlash.offsetWidth; dashFlash.classList.add('fire');
+    beep(310, .22, 'triangle', .08);
+    notify('PHASE SHIFT // INVULNERABILITY ACTIVE');
+  }
+  dashButton.addEventListener('click', phaseDash);
+  window.addEventListener('keydown', e => {
+    if (e.repeat || typing()) return;
+    if (e.key === 'Shift') { e.preventDefault(); phaseDash(); }
+  });
+
+  function drawRadar() {
+    const w = radar.width, h = radar.height, cx = w/2, cy = h/2;
+    R.clearRect(0,0,w,h);
+    R.save();
+    R.strokeStyle = 'rgba(0,243,255,.22)'; R.lineWidth = 1;
+    for (let r=22;r<=66;r+=22) { R.beginPath(); R.arc(cx,cy,r,0,Math.PI*2); R.stroke(); }
+    R.beginPath(); R.moveTo(cx,4); R.lineTo(cx,h-4); R.moveTo(4,cy); R.lineTo(w-4,cy); R.stroke();
+    const sweep = (performance.now()*.0007)%(Math.PI*2);
+    const grad = R.createConicalGradient ? null : null;
+    R.strokeStyle = 'rgba(0,243,255,.8)'; R.globalAlpha=.6;
+    R.beginPath(); R.moveTo(cx,cy); R.lineTo(cx+Math.cos(sweep)*67,cy+Math.sin(sweep)*67); R.stroke();
+    R.globalAlpha=1;
+    let shown=0;
+    for (const t of targets) {
+      const dx=(t.x-px)*.22, dy=(t.y-py)*.22;
+      const d=Math.hypot(dx,dy), scale=d>64?64/d:1;
+      const x=cx+dx*scale, y=cy+dy*scale;
+      R.fillStyle=(t.type==='boss'||t.type==='rift'||t.type==='mini')?'#ffbe0b':'#ff547d';
+      R.shadowColor=R.fillStyle; R.shadowBlur=7;
+      R.beginPath(); R.arc(x,y,(t.type==='boss'?4:2.5),0,Math.PI*2); R.fill();
+      R.shadowBlur=0; shown++;
+    }
+    R.fillStyle='#fff'; R.shadowColor='#00f3ff'; R.shadowBlur=10;
+    R.beginPath(); R.arc(cx,cy,3.5,0,Math.PI*2); R.fill();
+    R.restore();
+    $('radarCount').textContent=String(shown).padStart(2,'0')+' HOSTILES';
+  }
+  function updateDash(dt) {
+    dashCooldown=Math.max(0,dashCooldown-dt);
+    dashButton.classList.toggle('cooling',dashCooldown>0);
+    dashButton.classList.toggle('ready',dashCooldown<=0);
+    dashButton.innerHTML=dashCooldown>0
+      ? '➤ PHASE DASH <kbd>'+dashCooldown.toFixed(1)+'s</kbd>'
+      : '➤ PHASE DASH <kbd>SHIFT</kbd>';
+  }
+  // Wrap the existing systems update so the new ability uses the game's real delta time.
+  const oldUpdate = updateSystems;
+  updateSystems = function(dt) {
+    oldUpdate(dt);
+    updateDash(dt);
+  };
+  function radarLoop() {
+    if (!window.__apexPaused && ++radarFrame % 2 === 0) drawRadar();
+    requestAnimationFrame(radarLoop);
+  }
+  requestAnimationFrame(radarLoop);
+
+  // Radar is also refreshed immediately after boot, before the first combat frame.
+  drawRadar();
+})();
+</script>
+
+
+<div id="apex-start-menu" role="dialog" aria-modal="true" aria-label="APEX SINGULARITY main menu">
+ <div class="apex-menu-card">
+  <div id="apex-main-panel">
+   <div class="apex-menu-kicker">NEURAL COMBAT SYSTEM // ONLINE</div>
+   <div class="apex-menu-title">APEX<br>SINGULARITY</div>
+   <div class="apex-menu-sub">ENTER THE ARENA. BECOME THE ANOMALY.</div>
+   <div class="apex-menu-actions">
+    <button class="apex-menu-btn primary" id="apex-menu-play">▶ PLAY</button>
+    <button class="apex-menu-btn" id="apex-menu-settings">⚙ SETTINGS</button>
+   </div>
+   <div class="apex-menu-foot">EXPANDED SECTOR // COMBAT SIMULATION</div>
+  </div>
+  <div id="apex-settings-panel">
+   <h2>⚙ SYSTEM SETTINGS</h2>
+   <label class="apex-setting-row"><span>Show tactical HUD</span><input id="apex-setting-hud" type="checkbox" checked></label>
+   <label class="apex-setting-row"><span>Game speed</span><input id="apex-setting-speed" type="range" min="0.6" max="1.6" step="0.1" value="1"></label>
+   <div class="apex-menu-actions"><button class="apex-menu-btn" id="apex-settings-back">← BACK</button></div>
+  </div>
+ </div>
+</div>
+
+<script id="apex-main-menu-boot">
+(() => {
+ const menu=document.getElementById('apex-start-menu');
+ const main=document.getElementById('apex-main-panel');
+ const settings=document.getElementById('apex-settings-panel');
+ const play=document.getElementById('apex-menu-play');
+ const showSettings=()=>{main.style.display='none';settings.style.display='block';};
+ const showMain=()=>{settings.style.display='none';main.style.display='block';};
+ // The menu is an entry screen: combat stays covered until PLAY is selected.
+ window.__apexMenuOpen=true;
+ document.getElementById('apex-menu-settings').addEventListener('click',showSettings);
+ document.getElementById('apex-settings-back').addEventListener('click',showMain);
+ play.addEventListener('click',()=>{
+   window.__apexMenuOpen=false;
+   menu.style.transition='opacity .35s ease';
+   menu.style.opacity='0';
+   setTimeout(()=>menu.remove(),360);
+   if(window.__apexPaused!==undefined) window.__apexPaused=false;
+   const pause=document.getElementById('apex-paused');
+   if(pause) pause.classList.remove('show');
+   const pauseBtn=document.getElementById('apexPause');
+   if(pauseBtn) pauseBtn.textContent='Ⅱ PAUSE [P]';
+ });
+ document.getElementById('apex-setting-hud').addEventListener('change',e=>{
+   const sidebar=document.getElementById('sidebar');
+   if(sidebar) sidebar.style.opacity=e.target.checked?'1':'.18';
+ });
+ document.getElementById('apex-setting-speed').addEventListener('input',e=>{
+   window.__apexMenuSpeed=Number(e.target.value);
+   if(typeof tScale!=='undefined') tScale=window.__apexMenuSpeed;
+ });
+})();
+</script>
 </body>
 </html>
