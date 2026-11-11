@@ -176,6 +176,34 @@
   }
 </style>
 
+
+<style id="apex-50x-style">
+  #apex50-scanlines { position:absolute; inset:0; z-index:8; pointer-events:none; opacity:.13;
+    background:repeating-linear-gradient(to bottom,transparent 0 3px,rgba(110,245,255,.18) 4px,transparent 5px);
+    mix-blend-mode:screen; }
+  #apex50-vignette { position:absolute; inset:0; z-index:7; pointer-events:none;
+    background:radial-gradient(ellipse at center,transparent 42%,rgba(0,0,0,.45) 100%); }
+  #apex50-topline { position:absolute; z-index:21; top:12px; left:50%; transform:translateX(-50%);
+    color:#dffcff; font:900 10px 'Orbitron',sans-serif; letter-spacing:3px; text-align:center;
+    text-shadow:0 0 12px #00f3ff; pointer-events:none; white-space:nowrap; }
+  #apex50-topline span { color:#ff007f; }
+  #apex50-barwrap { position:absolute; z-index:21; top:34px; left:50%; transform:translateX(-50%);
+    width:min(290px,42vw); height:5px; background:rgba(255,255,255,.12); overflow:hidden; pointer-events:none; }
+  #apex50-bar { height:100%; width:0%; background:linear-gradient(90deg,#00f3ff,#b829ea,#ff007f,#ffbe0b);
+    box-shadow:0 0 14px #00f3ff; transition:width .15s; }
+  #apex50-dock { position:absolute; z-index:23; left:50%; bottom:68px; transform:translateX(-50%);
+    display:flex; gap:7px; pointer-events:auto; }
+  .apex50-btn { cursor:pointer; border:1px solid rgba(255,0,127,.65); background:rgba(18,3,20,.88);
+    color:#ffd9ed; padding:8px 10px; font:800 9px 'Orbitron',sans-serif; letter-spacing:1px;
+    box-shadow:0 0 16px rgba(255,0,127,.12); transition:.18s; }
+  .apex50-btn:hover { background:#ff007f; color:white; box-shadow:0 0 24px #ff007f; transform:translateY(-2px); }
+  #apex50-flash { position:absolute; inset:0; z-index:22; opacity:0; pointer-events:none;
+    background:radial-gradient(circle,rgba(255,255,255,.55),rgba(0,243,255,.16) 35%,transparent 72%); }
+  #apex50-flash.fire { animation:apex50flash .55s ease-out; }
+  @keyframes apex50flash { 0%{opacity:1} 100%{opacity:0} }
+  @media(max-width:760px) { #apex50-dock { bottom:112px; } #apex50-topline{font-size:8px;letter-spacing:1px;top:6px} }
+</style>
+
 </head>
 <body>
 <aside id="sidebar">
@@ -233,7 +261,17 @@
   <div id="banner">OMEGA DREADNOUGHT DETECTED</div>
   <canvas id="c"></canvas>
 
-  <div id="apex-reticle"></div>
+  
+<div id="apex50-scanlines"></div><div id="apex50-vignette"></div>
+<div id="apex50-topline">SINGULARITY CORE <span>///</span> OVERDRIVE PROTOCOL</div>
+<div id="apex50-barwrap"><div id="apex50-bar"></div></div>
+<div id="apex50-dock">
+  <button class="apex50-btn" id="apex50Hyper">⚡ HYPERDRIVE [T]</button>
+  <button class="apex50-btn" id="apex50Rift">✹ RIFT PULSE [R]</button>
+</div>
+<div id="apex50-flash"></div>
+
+<div id="apex-reticle"></div>
   <div id="apex-toast"></div>
   <div id="apex-paused">SYSTEM PAUSED</div>
   <div id="apex-dock">
@@ -861,5 +899,70 @@ requestAnimationFrame(loop);
 })();
 
 </script>
+
+<script>
+/* 50X OVERDRIVE // additive systems; original simulation remains intact */
+(() => {
+  const byId = id => document.getElementById(id);
+  let hyper = false, charge = 0, lastCount = 0, pulseLock = false;
+  const flash = () => {
+    const el = byId('apex50-flash');
+    el.classList.remove('fire'); void el.offsetWidth; el.classList.add('fire');
+  };
+  const ping = text => {
+    const toast = byId('apex-toast');
+    if (!toast) return;
+    toast.textContent = text; toast.classList.add('show');
+    clearTimeout(ping.timer); ping.timer = setTimeout(() => toast.classList.remove('show'), 1450);
+  };
+
+  byId('apex50Hyper').addEventListener('click', () => {
+    hyper = !hyper;
+    tScale = hyper ? 2.35 : 1.0;
+    byId('apex50Hyper').textContent = hyper ? '◈ HYPERDRIVE ON [T]' : '⚡ HYPERDRIVE [T]';
+    ping(hyper ? 'TIME DILATION // 235%' : 'TIME FLOW // NORMAL');
+    flash();
+  });
+
+  byId('apex50Rift').addEventListener('click', () => {
+    if (pulseLock) return;
+    pulseLock = true;
+    if (typeof triggerOrbital === 'function') triggerOrbital();
+    if (typeof triggerOverdrive === 'function') triggerOverdrive();
+    if (typeof addWave === 'function') {
+      addWave(W/2, H/2, Math.max(W,H)*1.15, '#ffffff', 12);
+      addWave(W/2, H/2, Math.max(W,H)*.9, '#b829ea', 8);
+      addWave(W/2, H/2, Math.max(W,H)*.62, '#00f3ff', 5);
+    }
+    if (typeof damageTargets === 'function') damageTargets(W/2, H/2, Math.max(W,H)*1.4, volt*5);
+    ping('RIFT PULSE // REALITY BREACH');
+    flash();
+    setTimeout(() => pulseLock = false, 1800);
+  });
+
+  // Charge the top bar from the elimination/combo readout already maintained by the HUD.
+  const refresh = () => {
+    const countEl = byId('apexKills'), comboEl = byId('apexCombo');
+    const count = countEl ? parseInt(countEl.textContent,10) || 0 : 0;
+    const combo = comboEl ? parseInt(comboEl.textContent.replace(/\D/g,''),10) || 1 : 1;
+    if (count > lastCount) { charge = Math.min(100, charge + (count-lastCount)*13 + combo*2); lastCount = count; }
+    else charge = Math.max(0, charge - .035);
+    byId('apex50-bar').style.width = charge + '%';
+    byId('apex50-topline').style.textShadow = `0 0 ${10+combo*2}px #00f3ff, 0 0 ${Math.min(40,combo*3)}px #ff007f`;
+    requestAnimationFrame(refresh);
+  };
+  requestAnimationFrame(refresh);
+
+  window.addEventListener('keydown', e => {
+    if (e.repeat || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if (e.key.toLowerCase() === 't') byId('apex50Hyper').click();
+    if (e.key.toLowerCase() === 'r') byId('apex50Rift').click();
+  });
+
+  // Make the existing lightning more cinematic with a quick flash on nova/rift activations.
+  ['apexNova'].forEach(id => byId(id)?.addEventListener('click', flash));
+})();
+</script>
+
 </body>
 </html>
