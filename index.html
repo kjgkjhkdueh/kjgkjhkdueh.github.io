@@ -1772,5 +1772,170 @@ requestAnimationFrame(loop);
   });
 })();
 </script>
+
+<style id="matrix-expansion-style">
+#am-settings,#am-story{display:none;text-align:left;color:#d5faff;font:700 13px/1.8 'Rajdhani',sans-serif}
+#am-settings label{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:8px 0;color:#a5f3fc}
+#am-settings input[type=range]{width:48%}
+#am-settings select{width:48%}
+#am-story p{margin:10px 0;color:#cbd5e1}
+#am-story strong{color:#ff4db8}
+#am-story .chapter{border-left:2px solid #00f3ff;padding:7px 10px;margin:9px 0;background:#00f3ff0d}
+#am-settings .am-btn,#am-story .am-btn{margin-top:14px}
+#story-feed{position:absolute;z-index:17;top:86px;left:50%;transform:translateX(-50%);width:min(440px,75vw);text-align:center;pointer-events:none;color:#bafaff;text-shadow:0 0 12px #00f3ff;font:800 10px/1.6 'Orbitron';opacity:0;transition:opacity .5s}
+#story-feed.show{opacity:1}
+#difficulty-pill{position:absolute;z-index:11;top:55px;right:16px;pointer-events:none;color:#ff8bd1;font:800 9px 'Orbitron';letter-spacing:1px}
+</style>
+<div id="story-feed"></div><div id="difficulty-pill">DIFFICULTY // NORMAL</div>
+<script id="matrix-expansion">
+(() => {
+ const $=id=>document.getElementById(id), menu=$('ascend-menu'), main=$('am-main');
+ if(!menu||!main)return;
+ // Retro campaign chapters
+ const story=document.createElement('div'); story.className='am-box'; story.id='am-story';
+ story.innerHTML=`<h2 style="text-align:center">NEON CHRONICLES</h2><small style="text-align:center">THE LAST PILOT // 1989-NEO</small>
+ <div class="chapter"><strong>CHAPTER 01 — STATIC CITY</strong><p>In 2089, the city of Vanta-9 went dark. The Matrix beneath its streets began whispering in dead radio frequencies. You are KAI-7, the last human pilot wired to the Arc Core.</p></div>
+ <div class="chapter"><strong>CHAPTER 02 — GHOST SIGNAL</strong><p>Ten enemy strains escaped the rift. Their signal is rewriting the skyline. Every boss you defeat reveals another fragment of the broadcast.</p></div>
+ <div class="chapter"><strong>CHAPTER 03 — THE SINGULARITY WAR</strong><p>The Rift Titan guards the source. Charge your weapons, survive the neon storm, and decide whether to seal the Matrix—or become its new guardian.</p></div>
+ <button class="am-btn" id="am-storyback">← BACK</button>`;
+ menu.querySelector('.am-box').after(story);
+ const settings=document.createElement('div'); settings.className='am-box'; settings.id='am-settings';
+ settings.innerHTML=`<h2 style="text-align:center">SYSTEM SETTINGS</h2><small style="text-align:center">TUNE YOUR SIMULATION</small>
+ <label>DIFFICULTY <select id="mx-diff"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option><option value="extreme">EXTREME</option></select></label>
+ <label>AIM ASSIST <select id="mx-aim"><option value="on">ON</option><option value="off">OFF</option></select></label>
+ <label>MAIN MENU MUSIC <input id="mx-music" type="range" min="0" max="100" value="38"></label>
+ <label>SOUND EFFECTS <input id="mx-sfx" type="range" min="0" max="100" value="65"></label>
+ <label>PARTICLE QUALITY <select id="mx-particles"><option>LOW</option><option selected>HIGH</option><option>ULTRA</option></select></label>
+ <label>LIGHTNING INTENSITY <input id="mx-lightning" type="range" min="25" max="150" value="100"></label>
+ <label>SCREEN SHAKE <select id="mx-shake"><option value="on" selected>ON</option><option value="off">OFF</option></select></label>
+ <label>REDUCED FLASHES <select id="mx-flash"><option value="off" selected>OFF</option><option value="on">ON</option></select></label>
+ <button class="am-btn" id="mx-save">SAVE SETTINGS</button><button class="am-btn" id="mx-back">← BACK</button>`;
+ story.after(settings);
+ const add=(id,label)=>{const b=document.createElement('button');b.className='am-btn';b.id=id;b.textContent=label;main.insertBefore(b,$('am-full'));return b};
+ add('am-settings-open','⚙ SETTINGS'); add('am-story-open','▣ STORY ARCHIVE');
+ const panels=[main,story,settings];
+ function show(panel){panels.forEach(p=>p.style.display=p===panel?(panel===main?'':'block'):'none')}
+ $('am-settings-open').onclick=()=>show(settings);
+ $('am-story-open').onclick=()=>show(story);
+ $('am-storyback').onclick=$('mx-back').onclick=()=>show(main);
+ // Persist options
+ let cfg={difficulty:'normal',aim:'on',music:38,sfx:65,particles:'HIGH',lightning:100,shake:'on',flash:'off'};
+ try{cfg={...cfg,...JSON.parse(localStorage.getItem('dm-settings')||'{}')}}catch(e){}
+ const ids={difficulty:'mx-diff',aim:'mx-aim',music:'mx-music',sfx:'mx-sfx',particles:'mx-particles',lightning:'mx-lightning',shake:'mx-shake',flash:'mx-flash'};
+ Object.entries(ids).forEach(([k,id])=>$(id).value=cfg[k]);
+ let musicNodes=[],musicTimer=null,step=0;
+ function audio(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();return actx}
+ function note(freq,dur,vol,wave='triangle',delay=0){const a=audio(),o=a.createOscillator(),g=a.createGain();o.type=wave;o.frequency.value=freq;g.gain.setValueAtTime(.0001,a.currentTime+delay);g.gain.exponentialRampToValueAtTime(Math.max(.0002,vol*cfg.music/100),a.currentTime+delay+.035);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+delay+dur);o.connect(g);g.connect(a.destination);o.start(a.currentTime+delay);o.stop(a.currentTime+delay+dur+.03);musicNodes.push(o)}
+ const melody=[110,164.81,220,164.81,130.81,196,261.63,196,98,146.83,196,146.83,123.47,185,246.94,185];
+ function musicLoop(){if(!audioOn||cfg.music<=0||menu.classList.contains('hide'))return;const n=melody[step++%melody.length];note(n,.42,.035,'triangle');note(n*2,.22,.014,'sine',.08);if(step%4===0)note(n/2,.7,.025,'sawtooth');musicTimer=setTimeout(musicLoop,390)}
+ function startMusic(){if(musicTimer)clearTimeout(musicTimer);if(audioOn&&cfg.music>0)musicLoop()}
+ const oldAudioClick=$('audBtn').onclick;
+ $('audBtn').onclick=e=>{oldAudioClick?.(e);if(audioOn)startMusic();else{clearTimeout(musicTimer);musicTimer=null}};
+ const oldPlay=$('am-play').onclick;
+ $('am-play').onclick=()=>{clearTimeout(musicTimer);musicTimer=null;oldPlay()};
+ $('am-restart').addEventListener('click',()=>{show(main)});
+ $('mx-save').onclick=()=>{
+   Object.entries(ids).forEach(([k,id])=>cfg[k]=$(id).value);
+   try{localStorage.setItem('dm-settings',JSON.stringify(cfg))}catch(e){}
+   window.__dmDifficulty=cfg.difficulty;window.__dmAim=cfg.aim==='on';
+   $('difficulty-pill').textContent='DIFFICULTY // '+cfg.difficulty.toUpperCase();
+   notify('SETTINGS SAVED // '+cfg.difficulty.toUpperCase());
+   startMusic();show(main);
+ };
+ // Apply defaults and gameplay tuning
+ window.__dmDifficulty=cfg.difficulty;window.__dmAim=cfg.aim==='on';
+ $('difficulty-pill').textContent='DIFFICULTY // '+cfg.difficulty.toUpperCase();
+ const oldSpawn=spawnEntity;
+ window.spawnEntity=function(){oldSpawn();const t=targets[targets.length-1];if(!t)return;
+   const m={easy:.65,normal:1,hard:1.65,extreme:2.5}[window.__dmDifficulty]||1;
+   t.hp*=m;t.maxHp*=m;t.sh*=m;t.maxSh*=m;t.vx*=({easy:.82,normal:1,hard:1.18,extreme:1.38}[window.__dmDifficulty]||1)};
+ const oldHurt=hurtPlayer;
+ window.hurtPlayer=function(d){const m={easy:.65,normal:1,hard:1.35,extreme:1.8}[window.__dmDifficulty]||1;oldHurt(d*m)};
+ const oldUpdate=updateSystems;
+ window.updateSystems=function(dt){oldUpdate(dt);if(window.__dmAim&&targets.length&&hold){
+   let best=null,bd=170;for(const t of targets){const d=Math.hypot(t.x-mx,t.y-my);if(d<bd){bd=d;best=t}}
+   if(best){mx+=(best.x-mx)*Math.min(1,dt*8);my+=(best.y-my)*Math.min(1,dt*8)}
+ }};
+ // Character upgrade: luminous human pilot silhouette with animated neon trim.
+ const oldDraw=drawCore;
+ window.drawCore=function(){oldDraw();X.save();X.translate(px,py);X.globalCompositeOperation='lighter';
+   const pulse=.75+.25*Math.sin(tick*.12);X.shadowBlur=18*pulse;X.shadowColor='#00f3ff';
+   X.fillStyle='#071a2c';X.strokeStyle='#00f3ff';X.lineWidth=2;
+   X.beginPath();X.arc(0,-13,6,0,Math.PI*2);X.fill();X.stroke();
+   X.beginPath();X.moveTo(-5,-6);X.lineTo(-9,9);X.lineTo(-5,14);X.lineTo(5,14);X.lineTo(9,9);X.lineTo(5,-6);X.closePath();X.fill();X.stroke();
+   X.beginPath();X.moveTo(-5,-3);X.lineTo(-13,5);X.lineTo(-10,9);X.moveTo(5,-3);X.lineTo(13,5);X.lineTo(10,9);
+   X.moveTo(-4,13);X.lineTo(-7,23);X.moveTo(4,13);X.lineTo(7,23);X.stroke();
+   X.strokeStyle='#ff39c8';X.lineWidth=1.5;X.beginPath();X.moveTo(-4,1);X.lineTo(4,1);X.moveTo(-3,7);X.lineTo(3,7);X.stroke();
+   X.fillStyle='#fff';X.beginPath();X.arc(-2,-14,1.1,0,7);X.arc(2,-14,1.1,0,7);X.fill();X.restore();
+ };
+ // Retro story radio transmission cadence during play.
+ const chapters=['RADIO 88.9 // KAI-7, VANTA-9 IS GONE. FOLLOW THE BLUE STATIC.','INCOMING TRANSMISSION // THE PHANTOMS ARE LEARNING YOUR MOVES.','ARCHIVE FRAGMENT // THE RIFT TITAN WAS BUILT TO GUARD A HUMAN MEMORY.','FINAL BROADCAST // SEAL THE MATRIX BEFORE THE SUNRISE SIGNAL.'];
+ let ci=0;setInterval(()=>{if(menu.classList.contains('hide')&&!window.__apexPaused){const f=$('story-feed');f.textContent=chapters[ci++%chapters.length];f.classList.add('show');setTimeout(()=>f.classList.remove('show'),4200)}},26000);
+ // Save menu music settings, no autoplay before user gesture.
+})();
+</script>
+
+
+<style id="matrix-cinematic-menu">
+#ascend-menu{background:
+ radial-gradient(ellipse at 50% 42%,rgba(13,35,75,.5),transparent 43%),
+ linear-gradient(135deg,rgba(1,4,16,.97),rgba(9,4,27,.96) 55%,rgba(1,8,18,.98))!important;
+ overflow:hidden}
+#ascend-menu:before{content:"";position:absolute;inset:-50%;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,243,255,.055) 4px,transparent 5px);animation:mxScan 12s linear infinite;pointer-events:none}
+#ascend-menu:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 49.8%,rgba(0,243,255,.12) 50%,transparent 50.2%),linear-gradient(transparent 49.8%,rgba(255,0,127,.1) 50%,transparent 50.2%);background-size:90px 90px;mask-image:linear-gradient(transparent,#000 35%,#000 80%,transparent);pointer-events:none}
+@keyframes mxScan{to{transform:translateY(80px)}}
+#ascend-menu .am-box{position:relative;z-index:2;width:min(460px,90vw);padding:30px 34px 26px;background:linear-gradient(145deg,rgba(4,17,37,.88),rgba(10,4,28,.92));border:1px solid rgba(0,243,255,.6);box-shadow:0 0 30px #00f3ff33,inset 0 0 32px #b829ea18;clip-path:polygon(0 15px,15px 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,0 100%)}
+#ascend-menu .am-box:before{content:"";position:absolute;left:0;top:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,#00f3ff,#fff,#ff007f,transparent);animation:mxSweep 3s linear infinite}
+@keyframes mxSweep{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+#ascend-menu .am-box h2{font-size:clamp(27px,6vw,43px);letter-spacing:5px;filter:drop-shadow(0 0 12px #00f3ff99)}
+#ascend-menu .am-box small{color:#ff9cde}
+#ascend-menu .am-btn{position:relative;background:linear-gradient(90deg,#061629dd,#170b2ddd);border-color:#00f3ff99;box-shadow:inset 3px 0 #00f3ff44,0 0 12px #00f3ff14}
+#ascend-menu .am-btn.go{background:linear-gradient(90deg,#3b082ddd,#10142ddd);border-color:#ff39c8}
+#ascend-menu .am-btn:hover{letter-spacing:4px}
+#ascend-menu .am-box:after{content:"NEURAL LINK // PILOT KAI-7 // SYSTEM ONLINE";display:block;margin-top:18px;color:#5f91a9;font:700 8px Orbitron;letter-spacing:2px}
+@media(max-width:520px){#ascend-menu .am-box{padding:22px 18px}}
+</style>
+<script id="matrix-boss-cosmetics">
+(()=>{
+// Give the pilot a more detailed powered exosuit silhouette.
+const previous=window.drawCore;
+if(typeof previous==='function')window.drawCore=function(){
+ previous();const pulse=.7+.3*Math.sin(tick*.15);
+ X.save();X.translate(px,py);X.globalCompositeOperation='lighter';
+ X.shadowBlur=22*pulse;X.shadowColor='#00eaff';
+ // shoulder armor and chest reactor
+ X.fillStyle='#07172b';X.strokeStyle='#4dfaff';X.lineWidth=1.7;
+ X.beginPath();X.moveTo(-7,-7);X.lineTo(-15,-5);X.lineTo(-18,2);X.lineTo(-12,7);X.lineTo(-7,3);X.closePath();X.fill();X.stroke();
+ X.beginPath();X.moveTo(7,-7);X.lineTo(15,-5);X.lineTo(18,2);X.lineTo(12,7);X.lineTo(7,3);X.closePath();X.fill();X.stroke();
+ X.beginPath();X.moveTo(-5,-5);X.lineTo(0,-1);X.lineTo(5,-5);X.lineTo(4,8);X.lineTo(0,12);X.lineTo(-4,8);X.closePath();X.fill();X.stroke();
+ X.fillStyle='#fff';X.shadowBlur=14;X.beginPath();X.arc(0,4,2.4,0,6.28);X.fill();
+ // helmet crest, visor and twin energy blades
+ X.strokeStyle='#ff4bd1';X.lineWidth=2;X.beginPath();X.moveTo(-4,-18);X.lineTo(0,-24);X.lineTo(4,-18);X.stroke();
+ X.fillStyle='#a6ffff';X.fillRect(-4,-15,8,2);
+ X.strokeStyle='#00f3ff';X.lineWidth=2.4;X.beginPath();X.moveTo(-12,5);X.lineTo(-19,14);X.moveTo(12,5);X.lineTo(19,14);X.stroke();
+ X.restore();
+};
+// Add a moving halo, segmented armor rings and crown spikes to every boss.
+function bossOverlay(){
+ if(!X||!targets)return;
+ X.save();X.globalCompositeOperation='lighter';
+ for(const t of targets){
+  if(!t||!['boss','rift','juggernaut','mini'].includes(t.type))continue;
+  const r=t.r||24, phase=(tick*.035)+(t.phase||0), col=t.col||'#ff39c8';
+  X.save();X.translate(t.x,t.y);X.rotate(phase*.18);
+  X.shadowBlur=20;X.shadowColor=col;X.strokeStyle=col;X.lineWidth=2;
+  X.globalAlpha=.7+.2*Math.sin(phase*2);
+  X.beginPath();X.arc(0,0,r*1.42,0,Math.PI*2);X.stroke();
+  X.setLineDash([r*.35,r*.2]);X.lineWidth=3;X.beginPath();X.arc(0,0,r*1.62,phase,phase+Math.PI*1.65);X.stroke();X.setLineDash([]);
+  X.fillStyle='#fff';X.strokeStyle=col;X.lineWidth=2;
+  for(let k=0;k<6;k++){const a=k*Math.PI/3;X.beginPath();X.moveTo(Math.cos(a)*r*.85,Math.sin(a)*r*.85);X.lineTo(Math.cos(a)*r*1.38,Math.sin(a)*r*1.38);X.lineTo(Math.cos(a+.18)*r*.85,Math.sin(a+.18)*r*.85);X.closePath();X.fill();X.stroke()}
+  X.restore();X.restore();
+ }
+}
+let last=0;function overlayLoop(now){if(now-last>24){bossOverlay();last=now}requestAnimationFrame(overlayLoop)}
+requestAnimationFrame(overlayLoop);
+})();
+</script>
+
 </body>
 </html>
