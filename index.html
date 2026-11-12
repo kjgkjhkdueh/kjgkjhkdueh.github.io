@@ -297,37 +297,6 @@
   }
 </style>
 
-
-<style>
-#apex-start-menu{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;overflow:auto;
- background:radial-gradient(ellipse at 50% 42%,rgba(12,35,66,.76),rgba(1,3,12,.97) 62%),linear-gradient(135deg,#030713,#090016);
- color:#eafcff;font-family:'Rajdhani',sans-serif}
-#apex-start-menu:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.23;
- background-image:linear-gradient(rgba(0,243,255,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(0,243,255,.16) 1px,transparent 1px);
- background-size:46px 46px;mask-image:linear-gradient(transparent,black 20%,black 80%,transparent)}
-.apex-menu-card{position:relative;width:min(620px,92vw);padding:clamp(24px,5vw,52px);text-align:center;
- border:1px solid rgba(0,243,255,.55);background:linear-gradient(145deg,rgba(5,16,35,.94),rgba(20,4,35,.94));
- box-shadow:0 0 70px rgba(0,243,255,.16),inset 0 0 35px rgba(184,41,234,.10);clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,22px 100%,0 calc(100% - 22px))}
-.apex-menu-kicker{font:800 10px Orbitron,sans-serif;letter-spacing:5px;color:#ff4fba;margin-bottom:16px}
-.apex-menu-title{font:900 clamp(30px,7vw,62px) Orbitron,sans-serif;line-height:1.08;letter-spacing:2px;
- background:linear-gradient(90deg,#00f3ff,#fff,#c45cff,#ff007f);-webkit-background-clip:text;background-clip:text;color:transparent;
- filter:drop-shadow(0 0 17px rgba(0,243,255,.3))}
-.apex-menu-sub{margin:15px 0 30px;color:#9bb8d3;letter-spacing:2.4px;font-size:12px}
-.apex-menu-actions{display:grid;gap:12px;width:min(330px,100%);margin:0 auto}
-.apex-menu-btn{padding:15px 18px;border:1px solid #00f3ff;background:linear-gradient(100deg,rgba(0,243,255,.18),rgba(184,41,234,.2));
- color:#fff;font:800 13px Orbitron,sans-serif;letter-spacing:2px;cursor:pointer;transition:.18s}
-.apex-menu-btn.primary{background:linear-gradient(100deg,#007f9b,#6624a6);box-shadow:0 0 25px rgba(0,243,255,.25)}
-.apex-menu-btn:hover{transform:translateY(-2px);box-shadow:0 0 28px rgba(0,243,255,.48);border-color:white}
-.apex-menu-foot{margin-top:28px;color:#54718b;font:10px Orbitron,sans-serif;letter-spacing:2px}
-#apex-settings-panel{display:none;text-align:left}
-#apex-settings-panel h2{font:800 21px Orbitron,sans-serif;color:#00f3ff;text-align:center;margin-bottom:24px}
-.apex-setting-row{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:14px 0;border-bottom:1px solid rgba(0,243,255,.17);color:#c7d8e9}
-.apex-setting-row input{accent-color:#00f3ff}
-.apex-setting-row input[type=range]{width:45%}
-#apex-settings-panel .apex-menu-actions{margin-top:24px}
-@media(max-width:520px){.apex-menu-card{padding:24px 18px}.apex-menu-sub{letter-spacing:1px}}
-</style>
-
 </head>
 <body>
 <aside id="sidebar">
@@ -430,17 +399,9 @@
 <script>
 const C = document.getElementById('c'), X = C.getContext('2d');
 let W, H, dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-let VIEW_W = 0, VIEW_H = 0, camX = 0, camY = 0;
-const MAP_SCALE = 4.2; // 4.2x the original playable area in each direction
 let px = 0, py = 0, pInit = false;   /* player core position */
-const resize = () => {
-  VIEW_W = C.parentElement.clientWidth; VIEW_H = C.parentElement.clientHeight;
-  W = Math.round(VIEW_W * MAP_SCALE); H = Math.round(VIEW_H * MAP_SCALE);
-  C.style.width = VIEW_W + 'px'; C.style.height = VIEW_H + 'px';
-  C.width = W * dpr; C.height = H * dpr; X.setTransform(dpr, 0, 0, dpr, 0, 0);
-  if (!pInit) { px = W/2; py = H/2; pInit = true; }
-  else { px = Math.min(W - 24, Math.max(24, px)); py = Math.min(H - 24, Math.max(24, py)); }
-};
+const resize = () => { W = C.offsetWidth; H = C.offsetHeight; C.width = W * dpr; C.height = H * dpr; X.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (!pInit) { px = W/2; py = H/2; pInit = true; } else { px = Math.min(W - 24, Math.max(24, px)); py = Math.min(H - 24, Math.max(24, py)); } };
 window.addEventListener('resize', resize); resize();
 
 /* State & Parameters */
@@ -981,13 +942,13 @@ document.getElementById('codeIn').onkeydown = e => { if (e.key === 'Enter') exec
 
 /* Input & Hotkeys */
 C.onpointerdown = e => {
-  hold = true; mx = e.offsetX + camX; my = e.offsetY + camY;
+  hold = true; mx = e.offsetX; my = e.offsetY;
   if (mode === 'orb') {
     if (locked.orb) notify('PLASMA NODES // OVERHEATED');
     else { heat.orb = Math.min(1, heat.orb + 0.17); nodes.push({x: mx, y: my}); addWave(mx, my, 65, activeCol(), 2); beep(520, 0.12, 'sine'); }
   }
 };
-C.onpointermove = e => { mx = e.offsetX + camX; my = e.offsetY + camY; };
+C.onpointermove = e => { mx = e.offsetX; my = e.offsetY; };
 window.onpointerup = () => {
   if (hold && !locked[mode] && blastModes.includes(mode)) supernova();
   hold = false; holdCharge = 0;
@@ -1030,11 +991,8 @@ function loop(now) {
   tick += tScale; singAngle += 0.055 * tScale * (1 + holdCharge * 1.5);
   updateSystems(dt);
 
-  camX = Math.max(0, Math.min(W - VIEW_W, px - VIEW_W / 2));
-  camY = Math.max(0, Math.min(H - VIEW_H, py - VIEW_H / 2));
   X.save();
-  X.translate(-camX, -camY);
-  X.fillStyle = 'rgba(2, 3, 8, 0.28)'; X.fillRect(camX, camY, VIEW_W, VIEW_H);
+  X.fillStyle = 'rgba(2, 3, 8, 0.28)'; X.fillRect(0, 0, W, H);
 
   /* Parallax Starfield & Cyber Grid */
   X.fillStyle = 'rgba(148, 163, 184, 0.35)';
@@ -1044,19 +1002,6 @@ function loop(now) {
   for (let y = 0; y < H; y += 48) { X.beginPath(); X.moveTo(0,y); X.lineTo(W,y); X.stroke(); }
 
   if (shake > 0.2) { X.translate((Math.random()-0.5)*shake, (Math.random()-0.5)*shake); shake *= 0.88; }
-
-  /* Expanded arena perimeter and distant sector beacons */
-  X.save();
-  X.strokeStyle = 'rgba(0,243,255,.18)'; X.lineWidth = 5;
-  X.setLineDash([24, 18]); X.strokeRect(28, 28, W - 56, H - 56);
-  X.setLineDash([]);
-  for (let sx = 1; sx <= 5; sx++) for (let sy = 1; sy <= 5; sy++) {
-    const bx = W * sx / 6, by = H * sy / 6;
-    X.fillStyle = 'rgba(0,243,255,.10)'; X.beginPath(); X.arc(bx, by, 42, 0, 6.28); X.fill();
-    X.strokeStyle = 'rgba(0,243,255,.28)'; X.lineWidth = 1.5; X.beginPath(); X.arc(bx, by, 30 + Math.sin(tick*.025+sx+sy)*5, 0, 6.28); X.stroke();
-    X.fillStyle = 'rgba(120,230,255,.55)'; X.font = '10px monospace'; X.fillText('SECTOR ' + (sx + (sy-1)*5), bx - 28, by + 58);
-  }
-  X.restore();
 
   /* Persistent Plasma Nodes */
   nodes.forEach((n, i) => {
@@ -1322,7 +1267,6 @@ setInterval(() => {
 }, 2600);
 requestAnimationFrame(loop);
 
-window.__apexPaused = true;
 /* APEX EXPANSION // telemetry, nova, pause, capture, and targeting feedback */
 (() => {
   const $ = id => document.getElementById(id);
@@ -1579,59 +1523,253 @@ window.__apexPaused = true;
 })();
 </script>
 
+<style id="ascend-style">
+  #ascend-fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:9;mix-blend-mode:screen}
+  #ascend-rank{position:absolute;z-index:13;left:16px;top:172px;pointer-events:none;font:900 9px 'Orbitron',sans-serif;letter-spacing:2px;color:#7dd3fc}
+  #ascend-rank b{display:block;font-size:54px;line-height:1;letter-spacing:0;color:var(--rc,#00f3ff);text-shadow:0 0 18px var(--rc,#00f3ff),0 0 44px var(--rc,#00f3ff);opacity:.0;transition:opacity .25s}
+  #ascend-rank.on b{opacity:1}
+  #ascend-rank.pop b{animation:ascPop .35s cubic-bezier(.2,1.6,.4,1)}
+  @keyframes ascPop{0%{transform:scale(2.2);filter:brightness(3)}100%{transform:scale(1)}}
+  #ascend-rank i{display:block;height:3px;width:110px;margin:4px 0;background:rgba(255,255,255,.12)}
+  #ascend-rank em{display:block;height:100%;width:0;background:var(--rc,#00f3ff);box-shadow:0 0 10px var(--rc,#00f3ff)}
+  #ascend-rank span{color:#ffbe0b}
+  #ascend-boot{position:fixed;inset:0;z-index:999;background:#020308;display:grid;place-items:center;transition:opacity .7s,visibility .7s;cursor:pointer}
+  #ascend-boot.gone{opacity:0;visibility:hidden}
+  #ascend-boot pre{font:800 12px/1.9 'Orbitron',monospace;color:#00f3ff;text-shadow:0 0 10px #00f3ff;letter-spacing:2px}
+  #ascend-boot pre u{text-decoration:none;color:#ff007f}
+  #ascend-boot::after{content:'';position:absolute;left:0;right:0;height:2px;background:#00f3ff;box-shadow:0 0 22px #00f3ff;animation:ascScan 1.6s linear infinite}
+  @keyframes ascScan{from{top:0}to{top:100%}}
+</style>
 
-<div id="apex-start-menu" role="dialog" aria-modal="true" aria-label="APEX SINGULARITY main menu">
- <div class="apex-menu-card">
-  <div id="apex-main-panel">
-   <div class="apex-menu-kicker">NEURAL COMBAT SYSTEM // ONLINE</div>
-   <div class="apex-menu-title">APEX<br>SINGULARITY</div>
-   <div class="apex-menu-sub">ENTER THE ARENA. BECOME THE ANOMALY.</div>
-   <div class="apex-menu-actions">
-    <button class="apex-menu-btn primary" id="apex-menu-play">▶ PLAY</button>
-    <button class="apex-menu-btn" id="apex-menu-settings">⚙ SETTINGS</button>
-   </div>
-   <div class="apex-menu-foot">EXPANDED SECTOR // COMBAT SIMULATION</div>
-  </div>
-  <div id="apex-settings-panel">
-   <h2>⚙ SYSTEM SETTINGS</h2>
-   <label class="apex-setting-row"><span>Show tactical HUD</span><input id="apex-setting-hud" type="checkbox" checked></label>
-   <label class="apex-setting-row"><span>Game speed</span><input id="apex-setting-speed" type="range" min="0.6" max="1.6" step="0.1" value="1"></label>
-   <div class="apex-menu-actions"><button class="apex-menu-btn" id="apex-settings-back">← BACK</button></div>
-  </div>
- </div>
-</div>
-
-<script id="apex-main-menu-boot">
+<script id="ascend-systems">
+/* ASCENSION // kill shards, combo ranks, wingman drones, event-horizon ultimate, boot sequence */
 (() => {
- const menu=document.getElementById('apex-start-menu');
- const main=document.getElementById('apex-main-panel');
- const settings=document.getElementById('apex-settings-panel');
- const play=document.getElementById('apex-menu-play');
- const showSettings=()=>{main.style.display='none';settings.style.display='block';};
- const showMain=()=>{settings.style.display='none';main.style.display='block';};
- // The menu is an entry screen: combat stays covered until PLAY is selected.
- window.__apexMenuOpen=true;
- document.getElementById('apex-menu-settings').addEventListener('click',showSettings);
- document.getElementById('apex-settings-back').addEventListener('click',showMain);
- play.addEventListener('click',()=>{
-   window.__apexMenuOpen=false;
-   menu.style.transition='opacity .35s ease';
-   menu.style.opacity='0';
-   setTimeout(()=>menu.remove(),360);
-   if(window.__apexPaused!==undefined) window.__apexPaused=false;
-   const pause=document.getElementById('apex-paused');
-   if(pause) pause.classList.remove('show');
-   const pauseBtn=document.getElementById('apexPause');
-   if(pauseBtn) pauseBtn.textContent='Ⅱ PAUSE [P]';
- });
- document.getElementById('apex-setting-hud').addEventListener('change',e=>{
-   const sidebar=document.getElementById('sidebar');
-   if(sidebar) sidebar.style.opacity=e.target.checked?'1':'.18';
- });
- document.getElementById('apex-setting-speed').addEventListener('input',e=>{
-   window.__apexMenuSpeed=Number(e.target.value);
-   if(typeof tScale!=='undefined') tScale=window.__apexMenuSpeed;
- });
+  const vp = document.getElementById('viewport'), cv = document.createElement('canvas');
+  cv.id = 'ascend-fx'; vp.appendChild(cv);
+  const F = cv.getContext('2d');
+  const fit = () => { cv.width = vp.clientWidth; cv.height = vp.clientHeight; };
+  fit(); addEventListener('resize', fit);
+
+  const shards = [], rings = [], texts = [], trail = [], embers = [];
+  let streak = 0, streakT = 0, score = 0, rankIdx = -1, frozen = false, colCd = 0, col = null, last = performance.now();
+  const RANKS = [[3,'D','#7dd3fc'],[6,'C','#4ade80'],[10,'B','#ffbe0b'],[15,'A','#fb923c'],[22,'S','#ff007f'],[30,'SS','#c084fc'],[40,'SSS','#ffffff']];
+
+  /* ---- HUD ---- */
+  const rk = document.createElement('div'); rk.id = 'ascend-rank';
+  rk.innerHTML = '<b id="ar-l">D</b><i><em id="ar-bar"></em></i>SCORE <span id="ar-s">000000</span>';
+  vp.appendChild(rk);
+
+  const dock = document.getElementById('apex50-dock'), btn = document.createElement('button');
+  btn.className = 'apex50-btn'; btn.textContent = '◉ COLLAPSE [Q]'; dock.appendChild(btn);
+
+  /* ---- kill / hit hooks (wraps the original damage routine) ---- */
+  const hitAt = new WeakMap();
+  const _dmg = damageTargets;
+  damageTargets = function (...a) {
+    const before = targets.map(t => [t, t.hp + t.sh]);
+    _dmg.apply(this, a);
+    for (const [t, v] of before) {
+      if (!targets.includes(t) && t.hp <= 0) onKill(t);
+      else { const d = v - (t.hp + t.sh); if (d >= 6 && tick - (hitAt.get(t) || -9) > 7) { hitAt.set(t, tick); texts.push({x:t.x+(Math.random()-.5)*20,y:t.y-t.r,v:Math.round(d),l:1,c:'#fff',s:13}); } }
+    }
+  };
+
+  function onKill(t) {
+    const big = ['boss','mini','rift','juggernaut'].includes(t.type);
+    const n = big ? 46 : 18;
+    for (let i = 0; i < n; i++) { const a = Math.random()*6.28, s = 2 + Math.random()*(big?11:7);
+      shards.push({x:t.x,y:t.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,a,va:(Math.random()-.5)*.5,len:6+Math.random()*(big?22:12),l:1,c:Math.random()<.3?'#fff':t.col}); }
+    rings.push({x:t.x,y:t.y,r:t.r,mr:t.r*(big?9:5),c:t.col,w:big?5:3});
+    streak++; streakT = 3.2;
+    const pts = Math.round((xpValues[t.type] || 10) * 10 * (1 + streak * .1)); score += pts;
+    texts.push({x:t.x,y:t.y,v:'+' + pts,l:1.6,c:t.col,s:big?24:16});
+    const ri = RANKS.reduce((r,x,i) => streak >= x[0] ? i : r, -1);
+    if (ri !== rankIdx) { rankIdx = ri; rk.classList.remove('pop'); void rk.offsetWidth; rk.classList.add('pop'); if (ri >= 0) notify('RANK ' + RANKS[ri][1] + ' // ' + streak + ' CHAIN'); }
+    if ((t.type === 'boss' || t.type === 'rift') && !frozen) {          /* cinematic hit-stop */
+      frozen = true; const old = tScale; tScale = .12; flash = .5;
+      setTimeout(() => { tScale = old < .5 ? 1 : old; frozen = false; }, 420);
+    }
+  }
+
+  /* ---- Event Horizon ultimate ---- */
+  function collapse() {
+    if (colCd > 0) return notify('COLLAPSE // COOLING ' + Math.ceil(colCd) + 's');
+    if (col || player.hp <= 0) return;
+    colCd = 30; col = {x:mx,y:my,t:0}; notify('EVENT HORIZON // HOSTILES CONVERGING');
+  }
+  btn.onclick = collapse;
+  addEventListener('ascend-reset', () => { score = 0; streak = 0; rankIdx = -1; colCd = 0; col = null; });
+  addEventListener('keydown', e => { if (!e.repeat && !typing() && e.key.toLowerCase() === 'q') collapse(); });
+
+  /* ---- helpers ---- */
+  const zap = (x1,y1,x2,y2,c,w=2) => {
+    const d = Math.hypot(x2-x1,y2-y1), n = Math.max(5,d/18|0), nx = -(y2-y1)/d, ny = (x2-x1)/d;
+    F.beginPath(); F.moveTo(x1,y1);
+    for (let i = 1; i < n; i++) { const t = i/n, o = (Math.random()-.5)*26*Math.sin(Math.PI*t); F.lineTo(x1+(x2-x1)*t+nx*o,y1+(y2-y1)*t+ny*o); }
+    F.lineTo(x2,y2);
+    F.strokeStyle = c; F.globalAlpha = .45; F.lineWidth = w*4; F.stroke();
+    F.strokeStyle = '#fff'; F.globalAlpha = 1; F.lineWidth = w*.7; F.stroke();
+  };
+
+  /* ---- main FX loop ---- */
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (window.__apexPaused) { last = now; return; }
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    F.clearRect(0,0,cv.width,cv.height);
+    F.save(); F.globalCompositeOperation = 'lighter'; F.lineCap = 'round';
+
+    colCd = Math.max(0, colCd - dt); streakT -= dt;
+    if (streakT <= 0 && streak) { streak = 0; rankIdx = -1; }
+    btn.textContent = colCd > 0 ? '◉ COLLAPSE ' + colCd.toFixed(0) + 's' : '◉ COLLAPSE [Q]';
+
+    /* warp streaks while hyperdrive is on */
+    if (tScale > 1.5) { const cx = cv.width/2, cy = cv.height/2; F.strokeStyle = '#7dd3fc';
+      for (let i = 0; i < 26; i++) { const a = Math.random()*6.28, r = 80 + Math.random()*Math.max(cv.width,cv.height)*.55, l = 30 + Math.random()*90;
+        F.globalAlpha = .1 + Math.random()*.25; F.lineWidth = 1; F.beginPath(); F.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r); F.lineTo(cx+Math.cos(a)*(r+l),cy+Math.sin(a)*(r+l)); F.stroke(); } }
+
+    /* ambient embers */
+    if (embers.length < 50 && Math.random() < .5) embers.push({x:Math.random()*cv.width,y:cv.height+5,v:.4+Math.random()*1.2,s:1+Math.random()*1.8,p:Math.random()*6});
+    for (let i = embers.length-1; i >= 0; i--) { const e = embers[i]; e.y -= e.v; e.x += Math.sin(e.p += .03)*.5;
+      F.globalAlpha = .35; F.fillStyle = i % 3 ? '#00f3ff' : '#ff007f'; F.fillRect(e.x,e.y,e.s,e.s); if (e.y < -5) embers.splice(i,1); }
+
+    /* comet trail */
+    if (!trail.length || Math.hypot(trail[trail.length-1].x-px,trail[trail.length-1].y-py) > 2) trail.push({x:px,y:py,l:1});
+    for (let i = trail.length-1; i >= 0; i--) { const p = trail[i]; p.l -= dt*2.4; if (p.l <= 0) { trail.splice(i,1); continue; }
+      if (i) { F.globalAlpha = p.l*.7; F.strokeStyle = `hsl(${185 + (1-p.l)*130},100%,60%)`; F.lineWidth = 7*p.l; F.beginPath(); F.moveTo(trail[i-1].x,trail[i-1].y); F.lineTo(p.x,p.y); F.stroke(); } }
+
+    /* wingman drones: scale with level, auto-target nearest hostile */
+    const nd = Math.min(8, 2 + (player.lvl >> 1));
+    for (let i = 0; i < nd; i++) {
+      const a = now*.0018 + i*6.283/nd, dx = px + Math.cos(a)*52, dy = py + Math.sin(a)*52;
+      F.globalAlpha = 1; F.drawImage(getGlow(i % 2 ? '#ff007f' : '#00f3ff'), dx-11, dy-11, 22, 22);
+      if (((now/16|0) + i*11) % 48 === 0 && targets.length) {
+        let best = null, bd = 460; for (const t of targets) { const d = Math.hypot(t.x-dx,t.y-dy); if (d < bd) { bd = d; best = t; } }
+        if (best) { zap(dx,dy,best.x,best.y,i%2?'#ff007f':'#00f3ff'); damageTargets(best.x,best.y,2,volt*.32); }
+      }
+    }
+
+    /* event horizon */
+    if (col) {
+      col.t += dt; const k = col.t/1.4;
+      for (const t of targets) { t.x += (col.x-t.x)*Math.min(1,dt*3.4); t.y += (col.y-t.y)*Math.min(1,dt*3.4); }
+      for (let arm = 0; arm < 5; arm++) { F.beginPath();
+        for (let s = 0; s <= 28; s++) { const f = s/28, r = (200*(1-k)+12)*(1-f*.9), an = arm*1.2566 + f*5 + col.t*9;
+          const x = col.x+Math.cos(an)*r, y = col.y+Math.sin(an)*r; s ? F.lineTo(x,y) : F.moveTo(x,y); }
+        F.globalAlpha = .8; F.strokeStyle = arm % 2 ? '#ff007f' : '#00f3ff'; F.lineWidth = 3; F.stroke(); }
+      F.globalAlpha = 1; F.drawImage(getGlow('#b829ea'), col.x-30-k*40, col.y-30-k*40, 60+k*80, 60+k*80);
+      if (col.t >= 1.4) { damageTargets(col.x,col.y,170,volt*9); addWave(col.x,col.y,Math.max(W,H),'#fff',10); addWave(col.x,col.y,420,'#b829ea',7);
+        rings.push({x:col.x,y:col.y,r:10,mr:Math.max(cv.width,cv.height),c:'#ffffff',w:9}); flash = .8; shake = 36; beep(60,.7,'sawtooth',.16); col = null; }
+    }
+
+    /* shards, rings, floating numbers */
+    for (let i = shards.length-1; i >= 0; i--) { const s = shards[i]; s.x += s.vx; s.y += s.vy; s.vx *= .95; s.vy *= .95; s.a += s.va; s.l -= dt*1.5;
+      if (s.l <= 0) { shards.splice(i,1); continue; }
+      F.globalAlpha = s.l; F.strokeStyle = s.c; F.lineWidth = 2; F.beginPath(); F.moveTo(s.x,s.y); F.lineTo(s.x+Math.cos(s.a)*s.len*s.l,s.y+Math.sin(s.a)*s.len*s.l); F.stroke(); }
+    for (let i = rings.length-1; i >= 0; i--) { const r = rings[i]; r.r += (r.mr-r.r)*.14+2; const f = 1-r.r/r.mr;
+      if (f < .03) { rings.splice(i,1); continue; } F.globalAlpha = f; F.strokeStyle = r.c; F.lineWidth = r.w*f+1; F.beginPath(); F.arc(r.x,r.y,r.r,0,6.283); F.stroke(); }
+    F.restore();
+    F.save(); F.textAlign = 'center';
+    for (let i = texts.length-1; i >= 0; i--) { const t = texts[i]; t.y -= 38*dt; t.l -= dt*1.4; if (t.l <= 0) { texts.splice(i,1); continue; }
+      F.globalAlpha = Math.min(1,t.l); F.font = `900 ${t.s}px Orbitron,sans-serif`; F.shadowColor = t.c; F.shadowBlur = 12; F.fillStyle = t.c; F.fillText(t.v,t.x,t.y); }
+    F.restore();
+
+    /* HUD + chromatic aberration on big impacts */
+    const R = RANKS[rankIdx];
+    rk.classList.toggle('on', !!R);
+    if (R) { rk.style.setProperty('--rc', R[2]); document.getElementById('ar-l').textContent = R[1]; document.getElementById('ar-bar').style.width = Math.max(0,streakT/3.2*100) + '%'; }
+    document.getElementById('ar-s').textContent = String(score).padStart(6,'0');
+    C.style.filter = shake > 8 ? 'drop-shadow(4px 0 0 rgba(255,0,80,.55)) drop-shadow(-4px 0 0 rgba(0,210,255,.55))' : '';
+  }
+  requestAnimationFrame(frame);
+
+  /* ---- boot sequence (click to skip) ---- */
+  const boot = document.createElement('div'); boot.id = 'ascend-boot'; boot.innerHTML = '<pre></pre>'; document.body.appendChild(boot);
+  const lines = ['DISCHARGE MATRIX // ASCENSION KERNEL','CALIBRATING SINGULARITY CORE ........ <u>OK</u>','SYNCING WINGMAN DRONES ........... <u>OK</u>','EVENT HORIZON CAPACITOR .......... <u>ARMED</u>','','ALL SYSTEMS NOMINAL // GOOD HUNTING'];
+  const pre = boot.firstChild; let li = 0;
+  const type = setInterval(() => { pre.innerHTML += (li < lines.length ? lines[li++] : '') + '\n'; if (li >= lines.length) { clearInterval(type); setTimeout(end, 500); } }, 260);
+  function end() { boot.classList.add('gone'); setTimeout(() => boot.remove(), 800); }
+  boot.onclick = () => { clearInterval(type); end(); };
+})();
+</script>
+
+<script id="ascend-audio-autostart">
+/* Browsers block sound until a user gesture, so arm audio on the first click/keypress. */
+(() => {
+  const arm = () => {
+    const b = document.getElementById('audBtn');
+    if (b && !audioOn) b.click();
+    if (actx && actx.state === 'suspended') actx.resume();
+    ['pointerdown','keydown'].forEach(t => removeEventListener(t, arm, true));
+  };
+  ['pointerdown','keydown'].forEach(t => addEventListener(t, arm, true));
+})();
+</script>
+<style id="ascend-menu-style">
+  #ascend-menu{position:fixed;inset:0;z-index:998;display:grid;place-items:center;background:radial-gradient(ellipse at center,rgba(8,14,34,.88),rgba(2,3,8,.97));backdrop-filter:blur(6px);transition:opacity .3s,visibility .3s}
+  #ascend-menu.hide{opacity:0;visibility:hidden;pointer-events:none}
+  .am-box{width:min(380px,90vw);text-align:center}
+  .am-box h2{font:900 clamp(22px,5vw,34px) 'Orbitron',sans-serif;letter-spacing:4px;background:linear-gradient(90deg,#00f3ff,#fff,#b829ea,#ff007f) 0/200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:flow 4s linear infinite}
+  .am-box small{display:block;margin:6px 0 22px;font:700 10px 'Orbitron',sans-serif;letter-spacing:3px;color:#7dd3fc}
+  .am-btn{display:block;width:100%;margin:8px 0;padding:13px;cursor:pointer;color:#dffcff;background:rgba(3,10,24,.9);border:1px solid rgba(0,243,255,.55);font:800 12px 'Orbitron',sans-serif;letter-spacing:3px;clip-path:var(--cut);transition:.16s}
+  .am-btn:hover{background:#00f3ff;color:#020308;box-shadow:0 0 26px #00f3ff;transform:translateX(4px)}
+  .am-btn.go{border-color:#ff007f;color:#ffd9ed}.am-btn.go:hover{background:#ff007f;color:#fff;box-shadow:0 0 26px #ff007f}
+  .am-panel{display:none;text-align:left;font:700 13px/1.9 'Rajdhani',sans-serif;color:#cbd5e1}
+  .am-panel b{color:#00f3ff;font-family:'Orbitron',sans-serif;font-size:10px;display:inline-block;min-width:110px}
+  #ascend-back{margin-left:0}
+</style>
+<div id="ascend-menu">
+  <div class="am-box" id="am-main">
+    <h2>DISCHARGE MATRIX</h2><small>APEX ASCENSION // MAIN MENU</small>
+    <button class="am-btn go" id="am-play">▶ DEPLOY</button>
+    <button class="am-btn" id="am-restart">⟲ NEW RUN</button>
+    <button class="am-btn" id="am-controls">⌖ CONTROLS</button>
+    <button class="am-btn" id="am-audio">♪ AUDIO: OFF</button>
+    <button class="am-btn" id="am-full">⛶ FULLSCREEN</button>
+  </div>
+  <div class="am-box am-panel" id="am-ctl">
+    <h2 style="text-align:center">CONTROLS</h2><small style="text-align:center">FIELD MANUAL</small>
+    <b>HOLD MOUSE</b> fire weapon<br><b>1 – 0</b> switch weapon<br><b>ARROWS</b> move core<br><b>SHIFT</b> phase dash<br>
+    <b>SPACE</b> overdrive<br><b>O</b> orbital strike<br><b>N</b> nova burst<br><b>R</b> rift pulse<br><b>Q</b> event horizon<br>
+    <b>T</b> hyperdrive<br><b>B / C</b> spawn / purge<br><b>P</b> pause<br><b>ESC</b> menu
+    <button class="am-btn" id="am-back" style="margin-top:18px">← BACK</button>
+  </div>
+</div>
+<script id="ascend-menu-sys">
+/* MENU + BACK BUTTON // pauses the sim while open; ESC toggles */
+(() => {
+  const $ = id => document.getElementById(id), M = $('ascend-menu'), main = $('am-main'), ctl = $('am-ctl');
+  const syncPause = on => { window.__apexPaused = on; const b = $('apexPause'), o = $('apex-paused');
+    if (b) b.textContent = on ? '▶ RESUME [P]' : 'Ⅱ PAUSE [P]'; if (o) o.classList.remove('show'); };
+  let started = false;
+  const open = () => { syncPause(true); main.style.display = ''; ctl.style.display = 'none';
+    $('am-play').textContent = started ? '▶ RESUME' : '▶ DEPLOY'; $('am-audio').textContent = 'AUDIO: ' + (audioOn ? 'ON' : 'OFF'); $('am-audio').textContent = '♪ ' + $('am-audio').textContent;
+    M.classList.remove('hide'); };
+  const close = () => { started = true; M.classList.add('hide'); syncPause(false); };
+  syncPause(true);                                   /* game waits behind the menu on load */
+
+  const back = document.createElement('button');     /* in-game back button */
+  back.className = 'apex-btn'; back.id = 'ascend-back'; back.textContent = '← MENU [ESC]';
+  $('apex-dock').appendChild(back); back.onclick = open;
+
+  $('am-play').onclick = close;
+  $('am-restart').onclick = () => {
+    Object.assign(player, {hp:100,maxHp:100,lvl:1,xp:0,inv:2,sinceHit:99});
+    targets = []; nodes = []; sparks = []; waves = []; bhDebris = []; photonMissiles = [];
+    Object.keys(heat).forEach(k => { heat[k] = 0; locked[k] = false; });
+    Object.keys(cd).forEach(k => cd[k].t = 0);
+    dispatchEvent(new Event('ascend-reset')); close(); notify('NEW RUN // GOOD HUNTING');
+  };
+  $('am-controls').onclick = () => { main.style.display = 'none'; ctl.style.display = 'block'; };
+  $('am-back').onclick = () => { ctl.style.display = 'none'; main.style.display = ''; };
+  $('am-audio').onclick = () => { $('audBtn').click(); $('am-audio').textContent = '♪ AUDIO: ' + (audioOn ? 'ON' : 'OFF'); };
+  $('am-full').onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.(); };
+
+  addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || e.repeat) return;
+    if (!M.classList.contains('hide')) { if (ctl.style.display === 'block') $('am-back').click(); else if (started) close(); }
+    else open();
+  });
 })();
 </script>
 </body>
