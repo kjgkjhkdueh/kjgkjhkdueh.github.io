@@ -464,13 +464,41 @@ function playerDown() {
   Object.keys(heat).forEach(k => { heat[k] = 0; locked[k] = false; });
 }
 function drawCore() {
-  const cx = px, cy = py, frac = player.hp / player.maxHp;
-  X.save(); X.globalCompositeOperation = 'lighter';
-  if (player.inv > 0 && Math.floor(tick / 3) % 2) X.globalAlpha = 0.35;
-  X.strokeStyle = frac > 0.5 ? '#4ade80' : frac > 0.25 ? '#fbbf24' : '#ef4444';
-  X.lineWidth = 3; X.beginPath(); X.arc(cx, cy, 20, -Math.PI/2, -Math.PI/2 + 6.28 * frac); X.stroke();
-  X.strokeStyle = activeCol(); X.lineWidth = 1.5; X.beginPath(); X.arc(cx, cy, 14, 0, 6.28); X.stroke();
-  X.drawImage(getGlow(activeCol()), cx - 20, cy - 20, 40, 40);
+  const cx=px, cy=py, frac=player.hp/player.maxHp;
+  const pulse=.78+.22*Math.sin(tick*.13);
+  X.save(); X.translate(cx,cy); X.globalCompositeOperation='lighter';
+  if(player.inv>0 && Math.floor(tick/3)%2) X.globalAlpha=.35;
+  // Outer integrity halo
+  X.shadowBlur=13*pulse; X.shadowColor=activeCol();
+  X.strokeStyle=frac>.5?'#4ade80':frac>.25?'#fbbf24':'#ef4444';
+  X.lineWidth=2.5; X.beginPath(); X.arc(0,0,29,-Math.PI/2,-Math.PI/2+Math.PI*2*frac); X.stroke();
+  // Neon human pilot: dark armored core with bright cyan silhouette
+  X.shadowBlur=22*pulse; X.shadowColor='#00eaff';
+  X.fillStyle='#06152a'; X.strokeStyle='#7dfaff'; X.lineWidth=2.4;
+  X.lineCap='round'; X.lineJoin='round';
+  // Helmet and neck
+  X.beginPath(); X.arc(0,-21,7.2,0,Math.PI*2); X.fill(); X.stroke();
+  X.fillStyle='#ff39c8'; X.fillRect(-4.3,-22,8.6,2.2);
+  X.fillStyle='#06152a'; X.fillRect(-2.5,-14.5,5,4);
+  // Torso and waist
+  X.beginPath(); X.moveTo(-6,-12); X.lineTo(-10,-2); X.lineTo(-8,9);
+  X.lineTo(-5,12); X.lineTo(5,12); X.lineTo(8,9); X.lineTo(10,-2);
+  X.lineTo(6,-12); X.closePath(); X.fill(); X.stroke();
+  // Arms with articulated shoulders and forearms
+  X.beginPath(); X.moveTo(-6,-10); X.lineTo(-13,-7); X.lineTo(-18,2); X.lineTo(-15,7); X.lineTo(-11,5); X.lineTo(-8,-1);
+  X.moveTo(6,-10); X.lineTo(13,-7); X.lineTo(18,2); X.lineTo(15,7); X.lineTo(11,5); X.lineTo(8,-1); X.stroke();
+  // Legs and luminous boots
+  X.beginPath(); X.moveTo(-5,11); X.lineTo(-7,22); X.lineTo(-8,27); X.lineTo(-2,28); X.lineTo(0,23);
+  X.moveTo(5,11); X.lineTo(7,22); X.lineTo(8,27); X.lineTo(2,28); X.lineTo(0,23); X.stroke();
+  // Chest reactor, joints, and circuit accents
+  X.shadowBlur=15; X.shadowColor='#ff39c8'; X.fillStyle='#fff';
+  X.beginPath(); X.arc(0,-3,2.6,0,Math.PI*2); X.fill();
+  X.strokeStyle='#ff39c8'; X.lineWidth=1.5; X.beginPath();
+  X.moveTo(-5,4); X.lineTo(5,4); X.moveTo(-4,9); X.lineTo(4,9);
+  X.moveTo(-12,-5); X.lineTo(-15,1); X.moveTo(12,-5); X.lineTo(15,1); X.stroke();
+  X.strokeStyle='#b8ffff'; X.lineWidth=1.2; X.beginPath();
+  X.moveTo(-4,-17); X.lineTo(4,-17); X.moveTo(-3,15); X.lineTo(-4,22);
+  X.moveTo(3,15); X.lineTo(4,22); X.stroke();
   X.restore();
 }
 function supernova() {
@@ -1934,6 +1962,337 @@ function bossOverlay(){
 }
 let last=0;function overlayLoop(now){if(now-last>24){bossOverlay();last=now}requestAnimationFrame(overlayLoop)}
 requestAnimationFrame(overlayLoop);
+})();
+</script>
+
+
+
+<!-- NEON CHRONICLES ADVENTURE EXPANSION // additive patch; original 1,941-line game retained -->
+<style id="neon-adventure-expansion-style">
+  #neon-mode-note{color:#9befff;font:700 9px 'Orbitron',sans-serif;letter-spacing:1px;line-height:1.7;margin:8px 0 12px;text-align:center}
+  #neon-jump{position:absolute;z-index:35;right:24px;bottom:112px;width:94px;height:68px;border:2px solid #00f3ff;border-radius:14px;
+    color:#fff;background:linear-gradient(145deg,rgba(0,243,255,.25),rgba(184,41,234,.32));font:900 12px 'Orbitron',sans-serif;
+    letter-spacing:1px;text-shadow:0 0 10px #00f3ff;box-shadow:0 0 22px #00f3ff66,inset 0 0 18px #00f3ff22;cursor:pointer;touch-action:manipulation}
+  #neon-jump:active{transform:scale(.94);background:rgba(0,243,255,.5)}
+  #neon-campaign{position:absolute;z-index:26;left:50%;top:125px;transform:translateX(-50%);max-width:min(520px,80vw);padding:8px 14px;
+    text-align:center;color:#dffcff;background:rgba(2,8,20,.78);border:1px solid #00f3ff88;font:800 9px/1.6 'Orbitron',sans-serif;
+    letter-spacing:1.2px;pointer-events:none;box-shadow:0 0 18px #00f3ff22}
+  #neon-campaign b{color:#ff75cf}
+  @media(max-width:760px){#neon-jump{right:14px;bottom:108px;width:82px;height:62px}#neon-campaign{top:118px;font-size:8px}}
+</style>
+<div id="neon-campaign" style="display:none"></div>
+<button id="neon-jump" type="button" aria-label="Jump">⬆ JUMP<br><small>J</small></button>
+<script id="neon-adventure-expansion">
+(()=>{
+  const $=id=>document.getElementById(id);
+  const menu=$('ascend-menu'), main=$('am-main');
+  if(!menu||!main)return;
+  const maps=[
+    {name:'ISLAND 01 // NEON HARBOR',short:'NEON HARBOR',goal:'Explore the harbor, complete the island quest, then challenge its one boss.',tint:'rgba(0,145,190,.11)',accent:'#00f3ff',kind:'city'},
+    {name:'ISLAND 02 // VERDANT WILDS',short:'VERDANT WILDS',goal:'Explore the glowing jungle and defeat its island guardian.',tint:'rgba(25,150,90,.12)',accent:'#8cff5a',kind:'garden'},
+    {name:'ISLAND 03 // EMBER FOUNDRY',short:'EMBER FOUNDRY',goal:'Search the volcanic foundry and take down its single forge boss.',tint:'rgba(190,70,20,.13)',accent:'#ffbe0b',kind:'reactor'},
+    {name:'ISLAND 04 // VOID SUMMIT',short:'VOID SUMMIT',goal:'Reach the final island and defeat its one singularity overlord.',tint:'rgba(150,30,180,.14)',accent:'#ff39c8',kind:'citadel'}
+  ];
+  let selectedMode='freeplay',mapIndex=0,chapterKills=0,jumpHeight=0,jumpVelocity=0,jumpCooldown=0;
+  const campaign=$('neon-campaign');
+  const showCampaign=()=>{
+    if(selectedMode!=='story'){campaign.style.display='none';return;}
+    const m=maps[mapIndex];campaign.style.display='block';
+    campaign.innerHTML='<b>'+m.name+'</b><br>EXPLORE THIS AREA • FIND THE GLOWING SUPPLIES • USE THE MAP TO TRAVEL<br>AREA '+(mapIndex+1)+' / '+maps.length+' • ITEMS FOUND: '+(inventory?inventory.length:0);
+  };
+  const modeLabel=$('hudMode');
+  const begin=(mode)=>{
+    selectedMode=mode;mapIndex=0;chapterKills=0;
+    if(typeof inventory!=='undefined'){inventory.length=0;seedAreaItems();}
+    targets=[];nodes=[];sparks=[];waves=[];bhDebris=[];photonMissiles=[];
+    Object.assign(player,{hp:100,maxHp:100,lvl:1,xp:0,inv:1,sinceHit:99});
+    px=W/2;py=H/2;
+    if(mode==='story'){
+      if(modeLabel)modeLabel.textContent='NEON CHRONICLES // STORY ADVENTURE';
+      notify('STORY MODE // '+maps[0].short+' // ADVENTURE START');
+    }else{
+      if(modeLabel)modeLabel.textContent='FREE PLAY // APEX SANDBOX';
+      notify('FREE PLAY // SANDBOX READY');
+    }
+    showCampaign();
+    menu.classList.add('hide');window.__apexPaused=false;
+  };
+  const addModeButton=(id,label,mode,cls='')=>{
+    if($(id))return;
+    const b=document.createElement('button');b.className='am-btn '+cls;b.id=id;b.textContent=label;
+    b.addEventListener('click',()=>begin(mode));
+    const anchor=$('am-play');anchor.parentNode.insertBefore(b,anchor);
+  };
+  addModeButton('neon-freeplay','▶ FREE PLAY MODE','freeplay','go');
+  addModeButton('neon-storymode','✦ STORY MODE // ADVENTURE','story');
+  const note=document.createElement('div');note.id='neon-mode-note';note.textContent='CHOOSE YOUR RUN // FOUR STORY MAPS • NEON PILOT • JUMP ACTION';
+  main.insertBefore(note,$('am-play'));
+  // Keep the original DEPLOY button working as the original free-play entry point.
+  $('am-play').textContent='▶ QUICK DEPLOY // FREE PLAY';
+  const oldDeploy=$('am-play').onclick;
+  $('am-play').onclick=()=>begin('freeplay');
+  $('am-restart').addEventListener('click',()=>{selectedMode='freeplay';mapIndex=0;chapterKills=0;showCampaign();});
+
+  // A true animated hop for the neon human. JUMP and the J key both trigger it.
+  const jumpButton=$('neon-jump');
+  function jump(){if(menu.classList.contains('hide')===false||window.__apexPaused||jumpCooldown>0)return;jumpVelocity=8.8;jumpCooldown=.22;notify('NEON HOP // EVADE');}
+  jumpButton.addEventListener('pointerdown',e=>{e.preventDefault();jump()});
+  window.addEventListener('keydown',e=>{
+    if(e.repeat||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
+    if(e.key.toLowerCase()==='j'){e.preventDefault();jump();}
+  });
+  const oldDraw=window.drawCore;
+  window.drawCore=function(){
+    const groundY=py;const lift=jumpHeight;
+    X.save();X.globalCompositeOperation='lighter';X.globalAlpha=.22+Math.max(0,1-lift/58)*.2;
+    X.fillStyle='#00f3ff';X.shadowColor='#00f3ff';X.shadowBlur=18;
+    X.beginPath();X.ellipse(px,groundY+22,Math.max(5,17-lift*.12),Math.max(2,5-lift*.035),0,0,Math.PI*2);X.fill();X.restore();
+    py=groundY-lift;oldDraw();py=groundY;
+    if(lift>1){X.save();X.globalCompositeOperation='lighter';X.strokeStyle='#00f3ff';X.globalAlpha=Math.min(.55,lift/35);X.lineWidth=2;X.beginPath();X.ellipse(px,groundY+22,20+lift*.18,6+lift*.08,0,0,Math.PI*2);X.stroke();X.restore();}
+  };
+  // Story map scenery: distinct city, garden, reactor and citadel palettes/patterns.
+  const oldAtmosphere=window.drawIonAtmosphere;
+  window.drawIonAtmosphere=function(){
+    oldAtmosphere();
+    const m=selectedMode==='story'?maps[mapIndex]:null;
+    if(!m)return;
+    X.save();X.globalCompositeOperation='screen';X.fillStyle=m.tint;X.fillRect(0,0,W,H);
+    X.globalAlpha=.24;X.strokeStyle=m.accent;X.lineWidth=1;
+    if(m.kind==='city'){
+      for(let x=22;x<W;x+=92){const h=55+((x*17)%130);X.strokeRect(x,H-h,48,h);X.beginPath();X.moveTo(x+8,H-h+15);X.lineTo(x+38,H-h+15);X.stroke();}
+    }else if(m.kind==='garden'){
+      for(let x=30;x<W;x+=75){X.beginPath();X.arc(x,35+(x%4)*17,13,0,Math.PI*2);X.stroke();X.beginPath();X.moveTo(x,48);X.lineTo(x+((x%3)-1)*16,90);X.stroke();}
+    }else if(m.kind==='reactor'){
+      for(let x=40;x<W;x+=110){X.beginPath();X.arc(x,H*.5,24+(x%5)*5,tick*.008,tick*.008+Math.PI*1.55);X.stroke();X.beginPath();X.moveTo(x-38,0);X.lineTo(x-38,H);X.moveTo(x+38,0);X.lineTo(x+38,H);X.stroke();}
+    }else{
+      X.translate(W/2,H/2);for(let r=70;r<Math.max(W,H);r+=70){X.beginPath();X.ellipse(0,0,r,r*.48,tick*.001,0,Math.PI*2);X.stroke();}
+      X.setLineDash([8,12]);X.beginPath();X.arc(0,0,Math.min(W,H)*.34,tick*.006,tick*.006+Math.PI*1.6);X.stroke();X.setLineDash([]);
+    }
+    X.restore();
+  };
+  // Jumping grants a brief evade window; physics remain compatible with the original top-down arena.
+  const oldHurt=window.hurtPlayer;
+  window.hurtPlayer=function(d){if(jumpHeight>12)return;oldHurt(d)};
+  const oldUpdate=window.updateSystems;
+  window.updateSystems=function(dt){
+    oldUpdate(dt);
+    jumpCooldown=Math.max(0,jumpCooldown-dt);
+    if(jumpVelocity>0||jumpHeight>0){jumpHeight=Math.max(0,jumpHeight+jumpVelocity);jumpVelocity-=.62*(dt*60);if(jumpHeight===0)jumpVelocity=0;}
+  };
+  // Count actual eliminations and advance the adventure through four different maps.
+  const oldDamage=window.damageTargets;
+  window.damageTargets=function(...args){const before=targets.length;const result=oldDamage.apply(this,args);const removed=Math.max(0,before-targets.length);
+    if(selectedMode==='story'&&removed){chapterKills+=removed;showCampaign();}
+    return result;};
+  // Exploration layer: collectible supplies, an item bag, and freely selectable areas.
+  const inventory=[];
+  const areaLoot=[
+    [{name:'Arc Cell',icon:'✦',color:'#00f3ff'},{name:'Med Patch',icon:'✚',color:'#8cff5a'},{name:'Data Shard',icon:'◇',color:'#ff4dc4'}],
+    [{name:'Bio Bloom',icon:'❀',color:'#8cff5a'},{name:'Med Patch',icon:'✚',color:'#8cff5a'},{name:'Garden Key',icon:'⚿',color:'#d6ff7a'}],
+    [{name:'Plasma Core',icon:'◉',color:'#ffbe0b'},{name:'Arc Cell',icon:'✦',color:'#00f3ff'},{name:'Reactor Key',icon:'⚿',color:'#ff8a36'}],
+    [{name:'Rift Crystal',icon:'✧',color:'#ff39c8'},{name:'Med Patch',icon:'✚',color:'#8cff5a'},{name:'Citadel Key',icon:'⚿',color:'#ff39c8'}]
+  ];
+  let areaItems=[];
+  const bag=document.createElement('div');bag.id='neon-bag-panel';
+  bag.innerHTML='<b>ITEM BAG</b><div id="neon-bag-list">Your bag is empty.</div>';
+  const mapPanel=document.createElement('div');mapPanel.id='neon-map-panel';
+  mapPanel.innerHTML='<b>AREA MAP // SELECT A DESTINATION</b><div id="neon-map-list"></div><small>Explore freely. Walk near glowing objects to collect them.</small>';
+  document.body.append(bag,mapPanel);
+  const bagBtn=document.createElement('button');bagBtn.id='neon-bag-toggle';bagBtn.textContent='▣ ITEM BAG';
+  const mapBtn=document.createElement('button');mapBtn.id='neon-map-toggle';mapBtn.textContent='⌖ AREA MAP';
+  document.body.append(bagBtn,mapBtn);
+  const refreshBag=()=>{
+    const counts={};inventory.forEach(it=>counts[it.name]=(counts[it.name]||0)+1);
+    $('neon-bag-list').innerHTML=Object.keys(counts).length?Object.entries(counts).map(([n,c])=>'<div class="bag-item"><span>'+n+'</span><b>×'+c+'</b></div>').join(''):'Your bag is empty. Find glowing supplies in each area!';
+    showCampaign();
+  };
+  const seedAreaItems=()=>{
+    areaItems=(areaLoot[mapIndex]||[]).map((it,i)=>({...it,x:W*(.22+i*.27),y:H*(.3+(i%2)*.34),found:false}));
+  };
+  const renderMap=()=>{
+    $('neon-map-list').innerHTML=maps.map((m,i)=>'<button class="area-choice" data-area="'+i+'">'+(i===mapIndex?'▶ ':'')+(i+1)+'. '+m.short+'</button>').join('');
+    $('neon-map-list').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+      mapIndex=Number(b.dataset.area);chapterKills=0;targets=[];nodes=[];px=W/2;py=H/2;seedAreaItems();
+      notify('AREA TRANSFER // '+maps[mapIndex].short);renderMap();showCampaign();mapPanel.style.display='none';
+    }));
+  };
+  bagBtn.addEventListener('click',()=>{bag.style.display=bag.style.display==='block'?'none':'block';refreshBag();});
+  mapBtn.addEventListener('click',()=>{mapPanel.style.display=mapPanel.style.display==='block'?'none':'block';renderMap();});
+  const exploreStyle=document.createElement('style');exploreStyle.textContent=`
+    #neon-bag-toggle,#neon-map-toggle{position:fixed;z-index:45;top:12px;padding:9px 12px;border:1px solid #00eaff;color:#dffcff;background:#061326dd;border-radius:8px;font:800 10px Orbitron;box-shadow:0 0 14px #00eaff55;cursor:pointer}
+    #neon-bag-toggle{left:12px}#neon-map-toggle{left:116px}
+    #neon-bag-panel,#neon-map-panel{display:none;position:fixed;z-index:46;top:54px;left:12px;width:min(270px,80vw);padding:13px;background:#050b1cf2;border:1px solid #00eaff;border-radius:10px;color:#dffcff;font:700 12px Rajdhani;box-shadow:0 0 24px #00eaff44}
+    #neon-map-panel{left:12px;top:54px;width:min(310px,85vw)}#neon-bag-panel>b,#neon-map-panel>b{display:block;color:#ff75cf;font:900 12px Orbitron;margin-bottom:9px}
+    .bag-item{display:flex;justify-content:space-between;padding:6px 2px;border-bottom:1px solid #00eaff33}.area-choice{display:block;width:100%;margin:5px 0;padding:8px;text-align:left;color:#dffcff;background:#071c32;border:1px solid #00eaff66;border-radius:6px;font:800 10px Orbitron;cursor:pointer}
+    #neon-map-panel small{display:block;margin-top:8px;color:#91aebd}
+    @media(max-width:760px){#neon-bag-toggle,#neon-map-toggle{top:8px;font-size:8px;padding:7px}#neon-map-toggle{left:100px}}
+  `;document.head.append(exploreStyle);
+  seedAreaItems();refreshBag();renderMap();
+  const oldDrawForLoot=window.drawCore;
+  window.drawCore=function(){
+    X.save();X.globalCompositeOperation='lighter';
+    if(selectedMode==='story')areaItems.forEach(it=>{if(it.found)return;X.save();X.shadowColor=it.color;X.shadowBlur=20;X.fillStyle=it.color;X.beginPath();X.arc(it.x,it.y,8+Math.sin(tick*.12)*2,0,Math.PI*2);X.fill();X.font='bold 14px sans-serif';X.fillText(it.icon,it.x-5,it.y+5);X.restore();});
+    X.restore();oldDrawForLoot();
+  };
+  const oldUpdateForLoot=window.updateSystems;
+  window.updateSystems=function(dt){oldUpdateForLoot(dt);if(selectedMode!=='story')return;
+    areaItems.forEach(it=>{if(!it.found&&Math.hypot(px-it.x,py-it.y)<30){it.found=true;inventory.push(it);notify('ITEM COLLECTED // '+it.name);refreshBag();}});
+  };
+  const originalStoryBegin=$('neon-storymode');
+  originalStoryBegin.addEventListener('click',()=>{inventory.length=0;seedAreaItems();refreshBag();renderMap();bag.style.display='none';mapPanel.style.display='none';},true);
+  // Keep the campaign banner synchronized while playing.
+  const oldLoop=window.loop;
+  // Existing loop is started by requestAnimationFrame; scenery and campaign UI are hooked without replacing it.
+  showCampaign();
+})();
+</script>
+
+
+
+<!-- ISLAND RPG EXPANSION: original island progression with one unique boss per island -->
+<style id="neon-island-rpg-style">
+  #neon-island-quest{position:fixed;z-index:44;top:68px;right:14px;width:min(300px,calc(100vw - 28px));
+    padding:12px 14px;background:linear-gradient(145deg,rgba(3,13,31,.96),rgba(20,5,35,.94));
+    border:1px solid #00eaffaa;border-radius:10px;color:#e6fbff;box-shadow:0 0 20px #00eaff33;
+    font:700 12px Rajdhani,sans-serif;pointer-events:none;display:none}
+  #neon-island-quest b{display:block;color:#ff76d4;font:900 11px Orbitron,sans-serif;letter-spacing:1px;margin-bottom:6px}
+  #neon-island-quest .island-line{display:flex;justify-content:space-between;gap:8px;margin-top:5px}
+  #neon-island-quest .island-state{color:#8cff5a}
+  #neon-island-quest .island-progress{height:6px;background:#13243a;border-radius:8px;overflow:hidden;margin-top:7px}
+  #neon-island-quest .island-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#00eaff,#ff39c8);box-shadow:0 0 10px #00eaff}
+  #neon-island-quest .island-tip{color:#9db6c8;font-size:11px;margin-top:6px}
+  #neon-map-panel .area-choice.locked{opacity:.42;cursor:not-allowed;border-color:#64748b}
+  #neon-map-panel .area-choice.current{border-color:#ff39c8;box-shadow:0 0 12px #ff39c855}
+  @media(max-width:760px){#neon-island-quest{top:52px;right:8px;width:min(230px,calc(100vw - 16px));font-size:10px;padding:9px}}
+</style>
+<div id="neon-island-quest">
+  <b id="neon-island-name">ISLAND QUEST</b>
+  <div id="neon-island-objective">Explore the island.</div>
+  <div class="island-line"><span>ENEMIES CLEARED</span><strong id="neon-island-kills">0 / 8</strong></div>
+  <div class="island-progress"><i id="neon-island-bar"></i></div>
+  <div class="island-line"><span>ISLAND BOSS</span><strong class="island-state" id="neon-island-boss-state">NOT SUMMONED</strong></div>
+  <div class="island-tip" id="neon-island-tip">Defeat 8 enemies to summon this island's boss.</div>
+</div>
+<script id="neon-island-rpg">
+(()=>{
+  const $=id=>document.getElementById(id);
+  const names=[
+    {island:'NEON HARBOR',boss:'DOCKMASTER VOLT',hp:1050,color:'#00eaff'},
+    {island:'VERDANT WILDS',boss:'THORNBYTE GUARDIAN',hp:1450,color:'#8cff5a'},
+    {island:'EMBER FOUNDRY',boss:'THE FORGE COLOSSUS',hp:1850,color:'#ff9b35'},
+    {island:'VOID SUMMIT',boss:'SINGULARITY OVERLORD',hp:2350,color:'#ff39c8'}
+  ];
+  const need=8;
+  let story=false,activeIsland=0;
+  const kills=[0,0,0,0],bossSpawned=[false,false,false,false],bossDefeated=[false,false,false,false];
+  const panel=$('neon-island-quest'),mapPanel=$('neon-map-panel');
+  const status=()=>{
+    if(!panel)return;
+    panel.style.display=story?'block':'none';
+    if(!story)return;
+    const d=names[activeIsland],k=Math.min(need,kills[activeIsland]);
+    $('neon-island-name').textContent='ISLAND '+(activeIsland+1)+' // '+d.island;
+    $('neon-island-objective').textContent=bossDefeated[activeIsland]?'Island cleared! Explore and collect anything you missed.':'Explore the island and clear '+need+' enemies to call out its boss.';
+    $('neon-island-kills').textContent=k+' / '+need;
+    $('neon-island-bar').style.width=(k/need*100)+'%';
+    $('neon-island-boss-state').textContent=bossDefeated[activeIsland]?'DEFEATED':bossSpawned[activeIsland]?'IN BATTLE':k>=need?'READY':'NOT SUMMONED';
+    $('neon-island-tip').textContent=bossDefeated[activeIsland]?'Next island unlocked. Use AREA MAP to travel.':bossSpawned[activeIsland]?'Only one boss belongs to this island. Defeat it to unlock the next island.':'Defeat '+(need-k)+' more enemies. This island has exactly one boss.';
+  };
+  const convertRandomBoss=t=>{
+    if(!t||!['boss','mini'].includes(t.type))return;
+    t.type='phantom';t.hp=95;t.maxHp=95;t.sh=20;t.maxSh=20;t.r=17;t.col='#c084fc';
+  };
+  // In story mode, random boss rolls become ordinary enemies. Island bosses are controlled here.
+  const originalSpawn=window.spawnEntity;
+  if(typeof originalSpawn==='function'){
+    window.spawnEntity=function(){
+      originalSpawn();
+      if(story&&targets.length)convertRandomBoss(targets[targets.length-1]);
+    };
+  }
+  const spawnIslandBoss=()=>{
+    const i=activeIsland,d=names[i];
+    if(!story||bossSpawned[i]||bossDefeated[i]||kills[i]<need)return;
+    bossSpawned[i]=true;
+    const a=Math.random()*Math.PI*2;
+    targets.push({
+      x:Math.max(55,Math.min(W-55,W*.72)),y:Math.max(55,Math.min(H-55,H*.35)),
+      vx:Math.cos(a)*.48,vy:Math.sin(a)*.48,type:'boss',
+      hp:d.hp,maxHp:d.hp,sh:Math.round(d.hp*.24),maxSh:Math.round(d.hp*.24),
+      r:40,col:d.color,phase:Math.random()*6.28,attack:0,healClock:0,
+      islandBoss:true,bossName:d.boss,islandIndex:i
+    });
+    const banner=$('banner');
+    if(banner){banner.textContent='ISLAND BOSS // '+d.boss+' HAS ARRIVED';banner.style.opacity=1;setTimeout(()=>banner.style.opacity=0,2200);}
+    notify('BOSS ENCOUNTER // '+d.boss);
+    status();
+  };
+  const originalDamage=window.damageTargets;
+  if(typeof originalDamage==='function'){
+    window.damageTargets=function(...args){
+      const before=targets.slice();
+      const result=originalDamage.apply(this,args);
+      const after=new Set(targets);
+      for(const t of before){
+        if(after.has(t))continue;
+        if(t.islandBoss&&story&&t.islandIndex===activeIsland){
+          bossDefeated[activeIsland]=true;
+          if(activeIsland<names.length-1)notify('BOSS DEFEATED // ISLAND '+(activeIsland+2)+' UNLOCKED');
+          else notify('FINAL ISLAND CLEARED // MATRIX RESTORED');
+          status();refreshIslandButtons();
+        }else if(story&&!t.islandBoss){
+          kills[activeIsland]=Math.min(need,kills[activeIsland]+1);
+        }
+      }
+      if(story&&!bossSpawned[activeIsland]&&kills[activeIsland]>=need)spawnIslandBoss();
+      status();
+      return result;
+    };
+  }
+  const refreshIslandButtons=()=>{
+    const list=$('neon-map-list');if(!list)return;
+    list.querySelectorAll('[data-area]').forEach(b=>{
+      const i=Number(b.dataset.area),locked=i>Math.max(0,...bossDefeated.map((v,n)=>v?n+1:0));
+      b.classList.toggle('locked',locked);b.classList.toggle('current',i===activeIsland);
+      b.textContent=(i===activeIsland?'▶ ':'')+(i+1)+'. '+names[i].island+(bossDefeated[i]?' ✓':locked?' 🔒':'');
+    });
+  };
+  // Prevent travel to a new island until the previous island boss is defeated.
+  if(mapPanel){
+    mapPanel.addEventListener('click',e=>{
+      const b=e.target.closest('[data-area]');if(!b||!story)return;
+      const i=Number(b.dataset.area);
+      if(i>0&&!bossDefeated[i-1]){
+        e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+        notify('ISLAND LOCKED // DEFEAT THE PREVIOUS ISLAND BOSS');
+      }
+    },true);
+    mapPanel.addEventListener('click',e=>{
+      const b=e.target.closest('[data-area]');if(!b)return;
+      activeIsland=Number(b.dataset.area);
+      // Clear old island enemies, but preserve each island's boss/quest progress.
+      status();refreshIslandButtons();
+    });
+  }
+  const storyBtn=$('neon-storymode'),freeBtn=$('neon-freeplay'),deploy=$('am-play');
+  const startStory=()=>{
+    story=true;activeIsland=0;
+    for(let i=0;i<targets.length;i++)convertRandomBoss(targets[i]);
+    targets=targets.filter(t=>!t.islandBoss);
+    status();refreshIslandButtons();
+  };
+  const stopStory=()=>{story=false;status();};
+  if(storyBtn)storyBtn.addEventListener('click',startStory);
+  if(freeBtn)freeBtn.addEventListener('click',stopStory);
+  if(deploy)deploy.addEventListener('click',stopStory);
+  const restart=$('am-restart');if(restart)restart.addEventListener('click',stopStory);
+  // Keep the unique boss label visible in the existing target HUD.
+  const oldDraw=window.drawTargets;
+  if(typeof oldDraw==='function'){
+    window.drawTargets=function(...args){oldDraw.apply(this,args);};
+  }
+  // Replace the generic random-boss alert with the island's authored encounter name.
+  status();refreshIslandButtons();
 })();
 </script>
 
